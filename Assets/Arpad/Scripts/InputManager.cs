@@ -6,7 +6,11 @@ public class InputManager : MonoBehaviour
     public static InputManager Instance;
 
     public GameObject conduitPrefab; // Assign in Inspector
-    public LayerMask nodeLayer; // Set this later
+    
+    // *** NEW AND IMPORTANT ***
+    // Create a Layer in Unity called "Nodes" and assign your NodePrefab to it.
+    // Then select that layer here in the Inspector.
+    public LayerMask nodeLayerMask; 
 
     private Node startNode;
     private Vector3 mouseWorldPos;
@@ -27,7 +31,9 @@ public class InputManager : MonoBehaviour
         tempDrawingLine.positionCount = 2;
         tempDrawingLine.startWidth = 0.1f;
         tempDrawingLine.endWidth = 0.1f;
-        tempDrawingLine.material.color = Color.yellow; // Make it obvious
+        tempDrawingLine.material = new Material(Shader.Find("Legacy Shaders/Particles/Alpha Blended Premultiply"));
+        tempDrawingLine.startColor = Color.yellow;
+        tempDrawingLine.endColor = Color.yellow;
         tempDrawingLine.enabled = false;
     }
 
@@ -39,42 +45,57 @@ public class InputManager : MonoBehaviour
         float zPos = GameManager.Instance.currentLayerIndex * GameManager.Instance.layerZSpacing;
         mouseWorldPos = GetMouseWorldPosition(zPos);
 
-        // While drawing a line
-        if (startNode != null && Input.GetMouseButton(0))
+        // --- While dragging ---
+        if (startNode != null)
         {
+            // Update the temp line
             tempDrawingLine.SetPosition(1, mouseWorldPos);
-        }
 
-        // --- Mouse Button Up (Cancel or Finish) ---
-        if (Input.GetMouseButtonUp(0))
-        {
-            startNode = null;
-            tempDrawingLine.enabled = false;
+            // --- Check for Mouse Button Up (End Drag) ---
+            if (Input.GetMouseButtonUp(0))
+            {
+                // Fire a raycast from the camera to the mouse position
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                RaycastHit hit; // We use 3D raycast since we are in 3D space
+
+                Node endNode = null;
+                
+                // Perform the raycast ONLY against the "Nodes" layer
+                if (Physics.Raycast(ray, out hit, 100f, nodeLayerMask))
+                {
+                    // We hit something! Try to get a Node component from it.
+                    endNode = hit.collider.GetComponent<Node>();
+                }
+
+                // Now, check if we found a valid end node
+                if (endNode != null && endNode != startNode)
+                {
+                    // SUCCESS! Create the conduit.
+                    CreateConduit(startNode, endNode);
+                }
+                
+                // No matter what, stop the drag (this clears startNode)
+                CancelDrag();
+            }
         }
     }
 
-    // This is called by Node.cs via OnMouseDown/OnMouseUp
-    public void OnNodeClicked(Node clickedNode)
+    // Called by Node.cs OnMouseDown()
+    public void StartDrag(Node node)
     {
-        if (GameManager.Instance.isGameOver) return;
+        if (GameManager.Instance.isGameOver || startNode != null) return; // Don't start a new drag if one is active
 
-        // This is the click-down event
-        if (Input.GetMouseButtonDown(0))
-        {
-            startNode = clickedNode;
-            tempDrawingLine.enabled = true;
-            tempDrawingLine.SetPosition(0, startNode.transform.position);
-            tempDrawingLine.SetPosition(1, startNode.transform.position);
-        }
-        // This is the click-up event
-        else if (Input.GetMouseButtonUp(0) && startNode != null)
-        {
-            // If we release on a *different* node, create a conduit
-            if (clickedNode != startNode)
-            {
-                CreateConduit(startNode, clickedNode);
-            }
-        }
+        startNode = node;
+        tempDrawingLine.enabled = true;
+        tempDrawingLine.SetPosition(0, startNode.transform.position);
+        tempDrawingLine.SetPosition(1, startNode.transform.position);
+    }
+
+    // Resets the drag state
+    void CancelDrag()
+    {
+        startNode = null;
+        tempDrawingLine.enabled = false;
     }
 
     void CreateConduit(Node nodeA, Node nodeB)

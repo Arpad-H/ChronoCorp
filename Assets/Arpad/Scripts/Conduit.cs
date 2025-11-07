@@ -19,7 +19,7 @@ public class Conduit : MonoBehaviour
     }
 
     // Call this to set up the conduit
-    public voidInitialize(Node a, Node b)
+    public void Initialize(Node a, Node b)
     {
         nodeA = a;
         nodeB = b;
