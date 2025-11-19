@@ -5,11 +5,7 @@ public class InputManager : MonoBehaviour
 {
     public static InputManager Instance;
 
-    public GameObject conduitPrefab; // Assign in Inspector
-    
-    // *** NEW AND IMPORTANT ***
-    // Create a Layer in Unity called "Nodes" and assign your NodePrefab to it.
-    // Then select that layer here in the Inspector.
+    public GameObject conduitPrefab; 
     public LayerMask nodeLayerMask; 
 
     private Node startNode;
@@ -39,12 +35,9 @@ public class InputManager : MonoBehaviour
 
     void Update()
     {
-        if (GameManager.Instance.isGameOver) return;
-
-        // Get mouse position in world space at the current Z level
-        float zPos = GameManager.Instance.currentLayerIndex * GameManager.Instance.layerZSpacing;
-        mouseWorldPos = GetMouseWorldPosition(zPos);
-
+        if (GameStateManager.Instance.isGameOver) return;
+        
+       
         // --- While dragging ---
         if (startNode != null)
         {
@@ -83,7 +76,7 @@ public class InputManager : MonoBehaviour
     // Called by Node.cs OnMouseDown()
     public void StartDrag(Node node)
     {
-        if (GameManager.Instance.isGameOver || startNode != null) return; // Don't start a new drag if one is active
+        if (GameStateManager.Instance.isGameOver || startNode != null) return; // Don't start a new drag if one is active
 
         startNode = node;
         tempDrawingLine.enabled = true;
@@ -100,18 +93,7 @@ public class InputManager : MonoBehaviour
 
     void CreateConduit(Node nodeA, Node nodeB)
     {
-        // Check if a conduit already exists
-        foreach (Conduit c in nodeA.connectedConduits)
-        {
-            if (c.nodeA == nodeB || c.nodeB == nodeB)
-                return; // Conduit already exists
-        }
 
-        GameObject conduitObj = Instantiate(conduitPrefab, Vector3.zero, Quaternion.identity);
-        Conduit newConduit = conduitObj.GetComponent<Conduit>();
-        newConduit.Initialize(nodeA, nodeB);
-        
-        GameManager.Instance.AddConduit(newConduit);
     }
 
     Vector3 GetMouseWorldPosition(float z)

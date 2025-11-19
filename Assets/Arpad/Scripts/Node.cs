@@ -52,7 +52,7 @@ public class Node : MonoBehaviour
                 spriteRenderer.color = Color.red; // Visual feedback
                 if (collapseTimer > COLLAPSE_TIME_LIMIT)
                 {
-                    GameManager.Instance.GameOver("A Time Ripple collapsed!");
+                    GameStateManager.Instance.GameOver("A Time Ripple collapsed!");
                 }
             }
             else
