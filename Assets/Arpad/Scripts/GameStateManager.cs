@@ -43,8 +43,8 @@ public class GameStateManager : MonoBehaviour
         //test
         Vector3 testPos = SnapToGrid(new Vector3(2.3f, 3.7f, 0), 0);
         Vector3 testPos2 = SnapToGrid(new Vector3(4.6f, 1.2f, 0), 1);
-        Instantiate(nodePrefab, testPos, Quaternion.identity);
-        Instantiate(nodePrefab, testPos2, Quaternion.identity);
+        // Instantiate(nodePrefab, testPos, Quaternion.identity);
+        // Instantiate(nodePrefab, testPos2, Quaternion.identity);
     }
 
     void Update()
