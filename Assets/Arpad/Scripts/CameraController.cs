@@ -13,7 +13,7 @@ public class CameraController : MonoBehaviour
 {
     public CamShowcase camShowcase;
     public float zoomSpeed = 3f;
-
+    public Camera cam;
 
     [Header("Stacked Tower Attributes")] private float currentAngle;
     private float currentHeight;
@@ -28,6 +28,7 @@ public class CameraController : MonoBehaviour
 
     void Start()
     {
+        if (cam == null) cam = FindObjectOfType<Camera>();
         InputManager.Instance.OnLeftClick += HandleClickEvent;
         InputManager.Instance.OnMouseScroll += HandleScrollEvent;
         camShowcase.OnCameraModeChanged += CameraModeChanged;
@@ -126,13 +127,16 @@ public class CameraController : MonoBehaviour
 
     public RaycastHit[] RaycastAll()
     {
-        RaycastHit[] hits;
-        Vector3 origin = transform.position;
-        Vector3 direction = transform.forward;
-        float distance =1000.0F;
-        //debug with drawing the ray
-        Debug.DrawRay(origin, direction * distance, Color.red, 10.0f);
-        hits = Physics.RaycastAll(transform.position, transform.forward, 1000.0F);
-        return hits;
+        
+        // RaycastHit[] hits;
+        // Vector3 origin = transform.position;
+        // Vector3 direction = transform.forward;
+        // float distance =1000.0F;
+        // //debug with drawing the ray
+        // Debug.DrawRay(origin, direction * distance, Color.red, 10.0f);
+        // hits = Physics.RaycastAll(transform.position, transform.forward, 1000.0F);
+        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+        Debug.DrawRay(ray.origin, ray.direction * 1000f, Color.red, 1f);
+        return Physics.RaycastAll(ray, 1000f);
     }
 }

@@ -9,10 +9,11 @@ public class InputManager : MonoBehaviour
     public static InputManager Instance;
 
     public event Action OnLeftClick;
+    public event Action OnButtonN;
+    public event Action OnButtonG;
     public event Action<Vector2> OnMouseMove;
     public event Action<float> OnMouseScroll;
-    
-    public CameraController cameraController;
+  
 
    
 
@@ -43,7 +44,7 @@ public class InputManager : MonoBehaviour
         // tempDrawingLine.startColor = Color.yellow;
         // tempDrawingLine.endColor = Color.yellow;
         // tempDrawingLine.enabled = false;
-        if (cameraController == null) cameraController = FindObjectOfType<CameraController>();
+     
     }
 
     void Update()
@@ -60,11 +61,11 @@ public class InputManager : MonoBehaviour
         float scroll = Input.GetAxis("Mouse ScrollWheel");
         if (Mathf.Abs(scroll) > 0.01f) OnMouseScroll?.Invoke(scroll);
         
-            // --- Button N ---
-        if (Input.GetKeyDown(KeyCode.N))
-        {
-            HandleButton_N();
-        }
+        // --- Button N ---
+        if (Input.GetKeyDown(KeyCode.N)) OnButtonN?.Invoke();
+        
+        // --- Button G ---
+        if (Input.GetKeyDown(KeyCode.G)) OnButtonG?.Invoke();
        
         // --- While dragging ---
         // if (startNode != null)
@@ -101,23 +102,7 @@ public class InputManager : MonoBehaviour
         // }
     }
 
-    private void HandleButton_N()
-    {
-        RaycastHit[] hits = cameraController.RaycastAll();
-        foreach (var hit in hits)
-        {
-            CoordinatePlane frame = hit.transform.GetComponentInParent<CoordinatePlane>();
-            Vector3 hitPoint = hit.point;
-            if (frame != null)
-            {
-                Vector3 spawnPos = frame.WorldToLocal(hitPoint);
-                frame.PlaceNode(GameStateManager.Instance.nodePrefab, spawnPos);
-                break;
-            }
-        }
-    }
-
-    // Called by Node.cs OnMouseDown()
+   
     public void StartDrag(Node node)
     {
         // if (GameStateManager.Instance.isGameOver || startNode != null) return; // Don't start a new drag if one is active
@@ -133,11 +118,6 @@ public class InputManager : MonoBehaviour
     {
         // startNode = null;
         // tempDrawingLine.enabled = false;
-    }
-
-    void CreateConduit(Node nodeA, Node nodeB)
-    {
-
     }
 
     Vector3 GetMouseWorldPosition(float z)

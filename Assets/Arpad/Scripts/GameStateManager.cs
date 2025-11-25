@@ -7,7 +7,11 @@ using System.Collections.Generic;
 public class GameStateManager : MonoBehaviour
 {
     public static GameStateManager Instance; // Singleton
-    [Header("Asset References")] public GameObject nodePrefab;
+    public CameraController cameraController;
+    
+    [Header("Asset References")]
+    public GameObject nodePrefab;
+    public GameObject generatorPrefab;
 
     [Header("Game State")] public bool isGameOver = false;
     public float totalNetworkSupply = 0f;
@@ -20,7 +24,7 @@ public class GameStateManager : MonoBehaviour
     public int currentLayerIndex = 0; // 0 is the present
     public List<TimeLayerState> temporalLayers = new List<TimeLayerState>();
     
-
+    
 
     [Header("Energy Management")]
     private EnergyNetworkManager energyNetworkManager;
@@ -34,7 +38,9 @@ public class GameStateManager : MonoBehaviour
 
     void Start()
     {
-        //test
+        if (cameraController == null) cameraController = FindObjectOfType<CameraController>();
+        InputManager.Instance.OnButtonN += () => SpawnOnHoveredFrame(nodePrefab);
+        InputManager.Instance.OnButtonG += () => SpawnOnHoveredFrame(generatorPrefab);
     }
 
     void Update()
@@ -42,9 +48,20 @@ public class GameStateManager : MonoBehaviour
 
         
     }
-    public void SpawnNode(CoordinatePlane coordPlane,Vector2 planePosition)
+    private void SpawnOnHoveredFrame(GameObject nodeType)
     {
-        coordPlane.PlaceNode(nodePrefab, planePosition);
+        RaycastHit[] hits = cameraController.RaycastAll(); //maybe replace with single ray with custom layer?
+        foreach (var hit in hits)
+        {
+            CoordinatePlane frame = hit.transform.GetComponentInParent<CoordinatePlane>();
+            Vector3 hitPoint = hit.point;
+            if (frame != null)
+            {
+                Vector3 spawnPos = frame.WorldToLocal(hitPoint);
+                frame.PlaceNode(nodeType, spawnPos);
+                break;
+            }
+        }
     }
 
     public void GameOver(string reason)
