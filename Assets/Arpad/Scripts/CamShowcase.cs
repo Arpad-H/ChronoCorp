@@ -38,15 +38,19 @@ public class CamShowcase : MonoBehaviour
       
     
     private List<GameObject> frames = new List<GameObject>();
-    
-    
 
-    void Start()
+    private void Awake()
     {
         GenerateFrames();
         OnCameraModeChanged?.Invoke(cameraMode);
         half = numberOfFrames / 2;;
         baseScale = framePrefab.transform.localScale;
+    }
+
+
+    void Start()
+    {
+       
         
     }
 

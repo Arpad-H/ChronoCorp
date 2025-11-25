@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public enum CameraMode
@@ -13,14 +14,13 @@ public class CameraController : MonoBehaviour
     public CamShowcase camShowcase;
     public float zoomSpeed = 3f;
 
-    
-    [Header("Stacked Tower Attributes")]
-    private  float currentAngle;
+
+    [Header("Stacked Tower Attributes")] private float currentAngle;
     private float currentHeight;
-   
+
 
     private CameraMode cameraMode;
- 
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void OnEnable()
     {
@@ -58,7 +58,7 @@ public class CameraController : MonoBehaviour
                 float radius = camShowcase.radius;
                 float heightOffset = camShowcase.heightOffset;
                 float lookAheadAngle = camShowcase.lookAheadAngle;
-                
+
                 // Advance angle and height based on scroll
                 currentAngle += scroll * angleSpeed;
                 currentHeight += scroll * heightStep;
@@ -76,7 +76,7 @@ public class CameraController : MonoBehaviour
 
                 // Rotate camera so it both looks toward center and orbits Y
                 // Option 1: always face slightly ahead along the spiral
-                float lookAheadRad = (currentAngle+ lookAheadAngle) * Mathf.Deg2Rad; // tweak 15° for smooth look
+                float lookAheadRad = (currentAngle + lookAheadAngle) * Mathf.Deg2Rad; // tweak 15° for smooth look
                 Vector3 lookTarget = new Vector3(
                     Mathf.Cos(lookAheadRad) * radius,
                     currentHeight,
@@ -90,8 +90,8 @@ public class CameraController : MonoBehaviour
                 camShowcase.UpdateFrames(scroll);
                 break;
         }
-       
     }
+
     public void ForceCamUpdate()
     {
         cameraMode = camShowcase.cameraMode;
@@ -101,7 +101,6 @@ public class CameraController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-       
     }
 
     void CameraModeChanged(CameraMode mode)
@@ -110,18 +109,30 @@ public class CameraController : MonoBehaviour
         switch (cameraMode)
         {
             case CameraMode.IsoGlide:
-                transform.position = new Vector3(-13,16,-20);
+                transform.position = new Vector3(-13, 16, -20);
                 transform.rotation = Quaternion.Euler(30, 38, 0);
                 break;
 
             case CameraMode.StackedTower:
-                HandleScrollEvent(0); 
+                HandleScrollEvent(0);
                 break;
 
             case CameraMode.CoverFlow:
-                transform.position = new Vector3(0,0,-20);
+                transform.position = new Vector3(0, 0, -20);
                 transform.rotation = Quaternion.Euler(0, 0, 0);
                 break;
         }
+    }
+
+    public RaycastHit[] RaycastAll()
+    {
+        RaycastHit[] hits;
+        Vector3 origin = transform.position;
+        Vector3 direction = transform.forward;
+        float distance =1000.0F;
+        //debug with drawing the ray
+        Debug.DrawRay(origin, direction * distance, Color.red, 10.0f);
+        hits = Physics.RaycastAll(transform.position, transform.forward, 1000.0F);
+        return hits;
     }
 }
