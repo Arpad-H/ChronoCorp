@@ -11,6 +11,9 @@ public class InputManager : MonoBehaviour
     public event Action OnLeftClick;
     public event Action OnButtonN;
     public event Action OnButtonG;
+    public event Action OnButtonD;
+    
+    
     public event Action<Vector2> OnMouseMove;
     public event Action<float> OnMouseScroll;
   
@@ -66,6 +69,9 @@ public class InputManager : MonoBehaviour
         
         // --- Button G ---
         if (Input.GetKeyDown(KeyCode.G)) OnButtonG?.Invoke();
+        
+        // --- Button D ---
+        if (Input.GetKeyDown(KeyCode.D)) OnButtonD?.Invoke();
        
         // --- While dragging ---
         // if (startNode != null)
