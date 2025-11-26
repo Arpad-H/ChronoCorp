@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Numerics;
+using Lukas.Simulation.Energy;
 
 namespace NodeBase
 {
@@ -14,14 +15,14 @@ namespace NodeBase
             Pos = pos;
         }
 
-        private Vector2 Pos { get; set; }
-        protected NodeType NodeType { get; }
+        public Vector2 Pos { get; set; }
+        public NodeType NodeType { get; }
     }
 
     /**
      * Refers to generator objects that exist multiple times in the simulation
      */
-    public class GeneratorInstance : AbstractNodeInstance
+    public class GeneratorInstance : AbstractNodeInstance, EnergyPacketSpawner
     {
         public GeneratorInstance(Vector2 pos) : base(pos, NodeType.GENERATOR)
         {
@@ -36,14 +37,16 @@ namespace NodeBase
  */
     public class TimeRippleInstance : AbstractNodeInstance, NodeWithConnections
     {
+        public List<Connection<AbstractNodeInstance, AbstractNodeInstance>> Connections;
+
         public TimeRippleInstance(Vector2 pos, EnergyType energyType) : base(pos, NodeType.TIME_RIPPLE)
         {
             Connections = new List<Connection<AbstractNodeInstance, AbstractNodeInstance>>();
             EnergyType = energyType;
         }
 
-        public List<Connection<AbstractNodeInstance, AbstractNodeInstance>> Connections;
         public EnergyType EnergyType { get; set; }
+
         public List<Connection<AbstractNodeInstance, AbstractNodeInstance>> getConnections()
         {
             return Connections;
@@ -55,6 +58,10 @@ namespace NodeBase
         public List<Connection<AbstractNodeInstance, AbstractNodeInstance>> getConnections();
     }
 
+    public interface EnergyPacketSpawner
+    {
+    }
+
     /**
      * An output of a generator. A generator can have n outputs
      */
@@ -62,6 +69,10 @@ namespace NodeBase
     {
         public GeneratorInstance Parent { get; set; }
         public GeneratorToRippleConnection Connection { get; set; }
+
+        public OutputRouteStorage RouteStorage { get; set; }
+        public int lastGenerationTick { get; set; }
+        public int targetIndex { get; set; }
     }
 
     /**
@@ -91,10 +102,14 @@ namespace NodeBase
         {
             this.node1 = node1;
             this.node2 = node2;
+            var direction = node2.Pos - node1.Pos;
+            length = direction.Length();
         }
 
         public NODE1 node1 { get; }
         public NODE2 node2 { get; }
+
+        public float length { get; }
     }
 
     public class GeneratorToRippleConnection : Connection<GeneratorInstance, TimeRippleInstance>
@@ -126,6 +141,8 @@ namespace NodeBase
      */
     public enum EnergyType
     {
+        // Wildcard energy Type. Everytime a node would accept all energy types -> We use white
+        WHITE,
         RED,
         BLUE,
         GREEN
