@@ -3,8 +3,10 @@
 using System;
 using UnityEngine;
 using System.Collections.Generic;
+using Lukas.Simulation.Energy;
+using NodeBase;
 
-public class GameStateManager : MonoBehaviour
+public class GameStateManager : MonoBehaviour, Interfaces.IFrontend
 {
     public static GameStateManager Instance; // Singleton
     public CameraController cameraController;
@@ -15,15 +17,12 @@ public class GameStateManager : MonoBehaviour
     public GameObject conduitPrefab;
 
     [Header("Game State")] public bool isGameOver = false;
-    public float totalNetworkSupply = 0f;
-    public float totalNetworkDemand = 0f;
-    public float networkEfficiency = 1f;
+
 
     [Header("Layer Management")] public float layerDuplicationTime = 60f;
     private float layerTimer = 0f;
     public float layerZSpacing = 15f; // How far apart to space layers
-    public int currentLayerIndex = 0; // 0 is the present
-    public List<TimeLayerState> temporalLayers = new List<TimeLayerState>();
+    //public List<TimeLayerState> temporalLayers = new List<TimeLayerState>(); // were gonan get this from backend couse CBA
     
     
 
@@ -62,7 +61,7 @@ public class GameStateManager : MonoBehaviour
                 Vector3 spawnPos = frame.WorldToLocal(hitPoint);
                 if(frame.PlaceNode(nodeType, spawnPos, out GameObject newNode));
                 {
-                    ConduitManager.Instance.RegisterNodeEvents(newNode.GetComponent<Node>());
+                    //ConduitManager.Instance.RegisterNodeEvents(newNode.GetComponent<Node>());
                 }
                 break;
             }
@@ -95,5 +94,33 @@ public class GameStateManager : MonoBehaviour
         UIManager.Instance.ShowGameOver(reason);
     }
 
-   
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    public void UpdateEnergyPackets(List<EnergyPacket> energyPackets)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void DeleteEnergyPackets(List<EnergyPacket> energyPackets)
+    {
+        throw new NotImplementedException();
+    }
+    public bool PlaceNodeVisual(AbstractNodeInstance node, int layerNum, Vector2 planePos)
+    {
+        throw new NotImplementedException();
+    }
+
+    public bool AddTimeSlice(int sliceNum)
+    {
+        throw new NotImplementedException();
+    }
 }

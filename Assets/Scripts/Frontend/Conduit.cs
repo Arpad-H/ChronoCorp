@@ -25,8 +25,10 @@ public class Conduit : MonoBehaviour
     // Call this to set up the conduit
     public void Initialize(Node a, Node b)
     {
-        nodeA = a;
-        nodeB = b;
+        // nodeA = a;
+        // nodeB = b;
+        SetStartNode(a);
+        FinalizeConduit(b);
     }
     public void SetStartNode(Node node)
     {

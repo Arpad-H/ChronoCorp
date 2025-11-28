@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Interfaces;
 using Unity.VisualScripting.Dependencies.NCalc;
 using UnityEngine;
 
@@ -16,7 +17,9 @@ public class CoordinatePlane : MonoBehaviour
     public bool showGrid = false;
     private int numX, numY; // Number of cells in each direction
     private float maxX, maxY, minX, minY; // Max/min bounds (avoid placing outside frame)
-
+    private int layerNum=0;//changed when bakcend spawns layer
+    private IBackend _backend;
+    
     private List<GameObject> nodes = new List<GameObject>();
 
     void Awake()
@@ -59,13 +62,16 @@ public class CoordinatePlane : MonoBehaviour
     /// </summary>
     public bool PlaceNode(GameObject prefab, Vector3 planePos, out GameObject obj)
     {
+        obj = null;
         Vector3 localPos = ToPlaneLocal(planePos);
+        // if (! _backend.PlaceNode(prefab,layerNum, new Vector2(localPos.x,localPos.y))) return false;
+       
+       
         obj = null;
         if (!IsWithinBounds(localPos) || IsPlaceOccupied(localPos)) return false;
-
         obj = Instantiate(prefab, nodeContainer);
         obj.transform.localPosition = localPos;
-        nodes.Add(obj);
+         nodes.Add(obj);
         return true;
     }
 

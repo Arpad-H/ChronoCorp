@@ -127,15 +127,16 @@ public class CameraController : MonoBehaviour
     public RaycastHit[] RaycastAll()
     {
         
-        // RaycastHit[] hits;
-        // Vector3 origin = transform.position;
-        // Vector3 direction = transform.forward;
-        // float distance =1000.0F;
-        // //debug with drawing the ray
-        // Debug.DrawRay(origin, direction * distance, Color.red, 10.0f);
-        // hits = Physics.RaycastAll(transform.position, transform.forward, 1000.0F);
         Ray ray = cam.ScreenPointToRay(Input.mousePosition);
-        Debug.DrawRay(ray.origin, ray.direction * 1000f, Color.red, 1f);
+
         return Physics.RaycastAll(ray, 1000f);
+    }
+    public bool RaycastForFirst(out RaycastHit hit)
+    {
+        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+      //  Debug.DrawRay(ray.origin, ray.direction * 1000f, Color.red, 1f);
+        hit = new RaycastHit();
+        if( Physics.Raycast(ray, out hit,1000f)) return true;
+        return false;
     }
 }

@@ -83,8 +83,14 @@ public class InputManager : MonoBehaviour
         if (startNode != null)
         {
             // Update the line to follow mouse
-            // Vector3 lineEnd = GetMouseWorldPosition(startNode.transform.position.z);
-            Vector3 lineEnd = cameraController.RaycastAll()[0].point;
+            RaycastHit raycastHit;
+            Vector3 lineEnd;
+            if (cameraController.RaycastForFirst(out raycastHit))
+            {
+                lineEnd  = raycastHit.point;
+            }
+            else return;
+            
             // Debug: print 3D world position of mouse
             Debug.Log("Mouse World Position: " + lineEnd);
             tempDrawingLine.SetPosition(0, startNode.transform.position);
@@ -94,8 +100,8 @@ public class InputManager : MonoBehaviour
             if (Input.GetMouseButtonUp(0))
             {
                 // Raycast against node layer to find end node
-                RaycastHit rh = cameraController.RaycastAll()[0];
-                if (rh.collider != null)
+                RaycastHit rh;
+                if (cameraController.RaycastForFirst(out rh))
                 {
                     Node endNode = rh.collider.GetComponent<Node>();
                     if (endNode != null && endNode != startNode)
@@ -111,40 +117,6 @@ public class InputManager : MonoBehaviour
                 CancelDrag();
             }
         }
-        // Previous code (remove once new code is confirmed working)
-        // --- While dragging ---
-        // if (startNode != null)
-        // {
-        //     // Update the temp line
-        //     tempDrawingLine.SetPosition(1, mouseWorldPos);
-        //
-        //     // --- Check for Mouse Button Up (End Drag) ---
-        //     if (Input.GetMouseButtonUp(0))
-        //     {
-        //         // Fire a raycast from the camera to the mouse position
-        //         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        //         RaycastHit hit; // We use 3D raycast since we are in 3D space
-        //
-        //         Node endNode = null;
-        //         
-        //         // Perform the raycast ONLY against the "Nodes" layer
-        //         if (Physics.Raycast(ray, out hit, 100f, nodeLayerMask))
-        //         {
-        //             // We hit something! Try to get a Node component from it.
-        //             endNode = hit.collider.GetComponent<Node>();
-        //         }
-        //
-        //         // Now, check if we found a valid end node
-        //         if (endNode != null && endNode != startNode)
-        //         {
-        //             // SUCCESS! Create the conduit.
-        //             CreateConduit(startNode, endNode);
-        //         }
-        //         
-        //         // No matter what, stop the drag (this clears startNode)
-        //         CancelDrag();
-        //     }
-        // }
     }
    
     public void StartDrag(Node node)
@@ -166,59 +138,4 @@ public class InputManager : MonoBehaviour
         startNode = null;
         if (tempDrawingLine != null) tempDrawingLine.enabled = false;
     }
-
-    Vector3 GetMouseWorldPosition(float z)
-    {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        Plane xyPlane = new Plane(Vector3.forward, new Vector3(0, 0, z));
-        xyPlane.Raycast(ray, out float distance);
-        return ray.GetPoint(distance);
-    }
-
-    // Vector3 GetMouseWorldPositionOnHoveredSlice(Vector3 fallbackPosition)
-    // {
-    //     Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-    //     RaycastHit hit;
-
-    //     // Assuming all your slices have the layer "Slices" or a tag "Slice"
-    //     int sliceLayerMask = LayerMask.GetMask("Slices"); 
-
-    //     if (Physics.Raycast(ray, out hit, 100f, sliceLayerMask))
-    //     {
-    //         // We hit a slice — convert world position to local of that slice if needed
-    //         return hit.point;
-    //     }
-    //     else
-    //     {
-    //         // Nothing hit —> fallback to start node slice
-    //         return fallbackPosition;
-    //     }
-    // }
-
-    Vector3 GetMouseWorldPositionOnPossibleLayers(Vector3 fallbackPosition, int startNodeLayerZ)
-    {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit[] hits = Physics.RaycastAll(ray, 100f); // all hits
-        List<int> validLayerIndices = new List<int>();
-
-        for (int i = 0; i < 3; i++)
-        {
-            int idx = startNodeLayerZ - i;
-            if (idx >= 0 && idx < GameStateManager.Instance.temporalLayers.Count)
-                validLayerIndices.Add(idx);
-        }
-
-        // foreach (var hit in hits)
-        // {
-        //     CoordinatePlane plane = hit.transform.GetComponentInParent<CoordinatePlane>();
-        //     if (plane != null && validLayerIndices.Contains(plane.layerIndex))
-        //     {
-        //         return hit.point;   // First valid slice hit
-        //     }
-        // }
-
-        return fallbackPosition;    // By default use the slice of the start node
-    }
-
-
 }

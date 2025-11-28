@@ -5,7 +5,8 @@ using System.Collections.Generic;
 public class Node : MonoBehaviour
 {
     [Header("Node Properties")]
-    public int id;
+    public int id; 
+
     public bool isSource; // Is it an energy source or a Time Ripple?
     public float energySupply = 0f; // Energy generated (if source)
     public float energyDemand = 0f; // Energy consumed (if ripple)
