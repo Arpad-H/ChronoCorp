@@ -187,7 +187,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   frameMesh: {fileID: 8058484938478437209}
   nodeContainer: {fileID: 377210291662841251}
-  gridWidth: 10
-  gridHeight: 10
   cellWidth: 1
   cellHeight: 1
+  showGrid: 0

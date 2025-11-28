@@ -122,11 +122,11 @@ public class CamShowcase : MonoBehaviour
                     // Position in helix
                     Vector3 pos = center + new Vector3(
                         Mathf.Cos(angle) * radius,
-                        i * heightStep,
-                        Mathf.Sin(angle) * radius
+                        Mathf.Sin(angle) * radius,
+                        i * heightStep
                     );
                     
-                    Quaternion rot = Quaternion.Euler(90f,0f,  i * angleStep);
+                    Quaternion rot = Quaternion.Euler(0f, 0f, i * angleStep);
 
                     GameObject frame = InstantiatePrefab(pos, rot,$"SpiralFrame_{i}");
                     frames.Add(frame);

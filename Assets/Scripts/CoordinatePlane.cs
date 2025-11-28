@@ -26,19 +26,16 @@ public class CoordinatePlane : MonoBehaviour
         Vector3 scale = frameMesh.localScale;
         numX = Mathf.CeilToInt(scale.x / cellWidth);
         numY = Mathf.CeilToInt(scale.y / cellHeight);
+        // Calculate min/max local bounds of the grid
         minX = -scale.x / 2f;
         maxX = minX + numX * cellWidth;
         minY = -scale.y / 2f;
         maxY = minY + numY * cellHeight;
-    }
-
-    void Update()
-    {
+        // Draw grid lines if debugging
         if (showGrid) DrawGridLines();
     }
-
     /// <summary>
-    /// Converts plane coords (0→width-1, 0→height-1) into the nodeContainer local space
+    /// Converts plane coords (0→width, 0→height) into the nodeContainer local space
     /// </summary>
     public Vector3 ToPlaneLocal(Vector2 planeNonLocal)
     {
@@ -72,14 +69,11 @@ public class CoordinatePlane : MonoBehaviour
     {
         int x = (int)(position.x / cellWidth);
         int y = (int)(position.y / cellHeight);
-        Debug.Log($"Snapped to grid: ({x}, {y})");
         return new Vector3(x, y, 0f) + new Vector3(0.5f, 0.5f, 0f);
     }
 
     private bool IsWithinBounds(Vector3 position)
     {
-        Debug.Log($"Checking bounds for position: {position}");
-        Debug.Log($"Max/min bounds: X({minX}, {maxX}), Y({minY}, {maxY})");
         return position.x >= minX && position.x <= maxX && position.y >= minY && position.y <= maxY;
     }
     
@@ -117,25 +111,28 @@ public class CoordinatePlane : MonoBehaviour
         if (frameMesh == null) return;
 
         GameObject gridParent = new GameObject("DebugGrid");
-        gridParent.transform.parent = nodeContainer;
+        gridParent.transform.parent = frameMesh;
         gridParent.transform.localPosition = Vector3.zero;
-        float zOffset = -0.51f;
+        gridParent.transform.localRotation = Quaternion.identity;
+        gridParent.transform.localScale = Vector3.one;
 
+        float zLines = -0.51f;          // Local Z offset
         // Vertical lines
         for (int x = 0; x <= numX; x++)
         {
             GameObject lineObj = new GameObject("VLine_" + x);
             lineObj.transform.parent = gridParent.transform;
+
             LineRenderer lr = lineObj.AddComponent<LineRenderer>();
-            lr.positionCount = 2;
-            lr.startWidth = 0.04f;
-            lr.endWidth = 0.04f;
             lr.useWorldSpace = false;
+            lr.positionCount = 2;
+            lr.startWidth = lr.endWidth = 0.04f;
             lr.material = new Material(Shader.Find("Sprites/Default"));
             lr.startColor = lr.endColor = Color.black;
 
-            Vector3 start = new Vector3(minX + x * cellWidth, minY, zOffset);
-            Vector3 end = new Vector3(minX + x * cellWidth, maxY, zOffset);
+            Vector3 start = new Vector3(minX + x * cellWidth, minY, zLines);
+            Vector3 end = new Vector3(minX + x * cellWidth, maxY, zLines);
+
             lr.SetPosition(0, start);
             lr.SetPosition(1, end);
         }
@@ -145,16 +142,16 @@ public class CoordinatePlane : MonoBehaviour
         {
             GameObject lineObj = new GameObject("HLine_" + y);
             lineObj.transform.parent = gridParent.transform;
+
             LineRenderer lr = lineObj.AddComponent<LineRenderer>();
-            lr.positionCount = 2;
-            lr.startWidth = 0.04f;
-            lr.endWidth = 0.04f;
             lr.useWorldSpace = false;
+            lr.positionCount = 2;
+            lr.startWidth = lr.endWidth = 0.04f;
             lr.material = new Material(Shader.Find("Sprites/Default"));
             lr.startColor = lr.endColor = Color.black;
 
-            Vector3 start = new Vector3(minX, minY + y * cellHeight, zOffset);
-            Vector3 end = new Vector3(maxX, minY + y * cellHeight, zOffset);
+            Vector3 start = new Vector3(minX, minY + y * cellHeight, zLines);
+            Vector3 end = new Vector3(maxX, minY + y * cellHeight, zLines);
             lr.SetPosition(0, start);
             lr.SetPosition(1, end);
         }

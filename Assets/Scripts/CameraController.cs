@@ -69,19 +69,19 @@ public class CameraController : MonoBehaviour
                 // Spiral position around the pillar
                 Vector3 spiralPos = new Vector3(
                     Mathf.Cos(rad) * radius,
-                    currentHeight,
-                    Mathf.Sin(rad) * radius
+                    Mathf.Sin(rad) * radius,
+                    currentHeight
                 );
 
-                transform.position = spiralPos + new Vector3(0, heightOffset, 0);
+                transform.position = spiralPos + new Vector3(0, 0, heightOffset);
 
                 // Rotate camera so it both looks toward center and orbits Y
                 // Option 1: always face slightly ahead along the spiral
                 float lookAheadRad = (currentAngle + lookAheadAngle) * Mathf.Deg2Rad; // tweak 15° for smooth look
                 Vector3 lookTarget = new Vector3(
                     Mathf.Cos(lookAheadRad) * radius,
-                    currentHeight,
-                    Mathf.Sin(lookAheadRad) * radius
+                    Mathf.Sin(lookAheadRad) * radius,
+                    currentHeight
                 );
 
                 transform.LookAt(lookTarget);
