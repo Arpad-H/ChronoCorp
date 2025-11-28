@@ -9,6 +9,7 @@ public class Node : MonoBehaviour
     public bool isSource; // Is it an energy source or a Time Ripple?
     public float energySupply = 0f; // Energy generated (if source)
     public float energyDemand = 0f; // Energy consumed (if ripple)
+    public float nodeScale = 0.75f; // Scale of the node (not overfill the grid)
 
     [Header("Simulation State")]
     public float currentEnergy = 0f; // Current energy buffer
@@ -30,6 +31,7 @@ public class Node : MonoBehaviour
     void Start()
     {
         UpdateColor();
+        transform.localScale = Vector3.one * nodeScale;         // Adjust scale to not overcrowd the grid
     }
 
     // This simulation step is for the PRESENT layer
@@ -65,7 +67,7 @@ public class Node : MonoBehaviour
 
     public void UpdateColor()
     {
-        spriteRenderer.color = isSource ? Color.green : Color.cyan;
+        spriteRenderer.color = isSource ? Color.red : Color.cyan;
     }
 
     // --- Mouse Interaction Callbacks (CORRECTED) ---
@@ -79,12 +81,12 @@ public class Node : MonoBehaviour
 
     private void OnMouseEnter()
     {
-        transform.localScale = Vector3.one * 1.2f; // Highlight
+        transform.localScale = Vector3.one * nodeScale * 1.4f; // Highlight
     }
 
     private void OnMouseExit()
     {
-        transform.localScale = Vector3.one;
+        transform.localScale = Vector3.one * nodeScale;
     }
 
 }

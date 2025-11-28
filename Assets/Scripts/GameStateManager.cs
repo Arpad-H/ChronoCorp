@@ -12,6 +12,7 @@ public class GameStateManager : MonoBehaviour
     [Header("Asset References")]
     public GameObject nodePrefab;
     public GameObject generatorPrefab;
+    public GameObject conduitPrefab;
 
     [Header("Game State")] public bool isGameOver = false;
     public float totalNetworkSupply = 0f;
@@ -27,7 +28,7 @@ public class GameStateManager : MonoBehaviour
     
 
     [Header("Energy Management")]
-    private EnergyNetworkManager energyNetworkManager;
+    private EnergyNetworkManager energyNetworkManager = new EnergyNetworkManager();
 
 
     void Awake()
@@ -41,6 +42,7 @@ public class GameStateManager : MonoBehaviour
         if (cameraController == null) cameraController = FindObjectOfType<CameraController>();
         InputManager.Instance.OnButtonN += () => SpawnOnHoveredFrame(nodePrefab);
         InputManager.Instance.OnButtonG += () => SpawnOnHoveredFrame(generatorPrefab);
+
     }
 
     void Update()
@@ -63,6 +65,24 @@ public class GameStateManager : MonoBehaviour
             }
         }
     }
+
+    public void SpawnConduit(Node a, Node b)
+    {
+        if (a == null || b == null || a == b) return;
+
+        // Avoid duplicate conduits between the same nodes
+        foreach (var c in energyNetworkManager.presentConduits)
+        {
+            if ((c.nodeA == a && c.nodeB == b) || (c.nodeA == b && c.nodeB == a))
+                return; // Already connected
+        }
+
+        GameObject conduitObj = Instantiate(conduitPrefab, Vector3.zero, Quaternion.identity);
+        Conduit conduit = conduitObj.GetComponent<Conduit>();
+        conduit.Initialize(a, b);
+        energyNetworkManager.AddConduit(conduit);
+    }
+
 
     public void GameOver(string reason)
     {

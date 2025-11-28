@@ -44,13 +44,13 @@ public class CoordinatePlane : MonoBehaviour
         Vector3 localPos = ToPlaneLocal(planePos);
         
         if (IsPlaceOccupied(localPos)) return false;
-        
-        Debug.Log(planePos);
-        Debug.Log(localPos);
-        GameObject obj = Instantiate(prefab, nodeContainer);
-        obj.transform.localPosition = localPos;
-        nodes.Add(obj);
-        return true;
+        else
+        {
+            GameObject obj = Instantiate(prefab, nodeContainer);
+            obj.transform.localPosition = localPos;
+            nodes.Add(obj);
+            return true;
+        }
     }
     private Vector3 SnapToGrid(Vector3 position)
     {
@@ -84,7 +84,7 @@ public class CoordinatePlane : MonoBehaviour
         return new Vector3(
             local.x + scale.x / 2f,
             local.y + scale.y / 2f, 
-            0.51f
+            0.5f
         );
     }
         
