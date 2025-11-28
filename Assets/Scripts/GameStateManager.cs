@@ -50,25 +50,24 @@ public class GameStateManager : MonoBehaviour
 
         
     }
-private void SpawnOnHoveredFrame(GameObject nodeType)
-{
-    RaycastHit[] hits = cameraController.RaycastAll();
-    if (hits.Length == 0) return;
-
-    // Sort hits so the first one is the closest
-    System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
-
-    // Take closest hit
-    RaycastHit closest = hits[0];
-
-    CoordinatePlane frame = closest.transform.GetComponentInParent<CoordinatePlane>();
-    if (frame == null) return;
-
-    Vector3 hitPoint = closest.point;
-    Vector3 spawnPos = frame.WorldToLocal(hitPoint);
-    frame.PlaceNode(nodeType, spawnPos);
-}
-
+    private void SpawnOnHoveredFrame(GameObject nodeType)
+    {
+        RaycastHit[] hits = cameraController.RaycastAll(); //maybe replace with single ray with custom layer?
+        foreach (var hit in hits)
+        {
+            CoordinatePlane frame = hit.transform.GetComponentInParent<CoordinatePlane>();
+            Vector3 hitPoint = hit.point;
+            if (frame != null)
+            {
+                Vector3 spawnPos = frame.WorldToLocal(hitPoint);
+                if(frame.PlaceNode(nodeType, spawnPos, out GameObject newNode));
+                {
+                    ConduitManager.Instance.RegisterNodeEvents(newNode.GetComponent<Node>());
+                }
+                break;
+            }
+        }
+    }
 
     public void SpawnConduit(Node a, Node b)
     {

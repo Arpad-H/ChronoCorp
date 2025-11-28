@@ -89,4 +89,9 @@ public class Node : MonoBehaviour
         transform.localScale = Vector3.one * nodeScale;
     }
 
+    public Vector3 GetAttachPosition()
+    {
+       return transform.position;
+    }
+
 }

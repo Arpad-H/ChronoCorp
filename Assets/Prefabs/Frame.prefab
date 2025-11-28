@@ -187,6 +187,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   frameMesh: {fileID: 8058484938478437209}
   nodeContainer: {fileID: 377210291662841251}
+  mGrid: {fileID: 2100000, guid: 56d6025d2453d464a89be9a78e065b31, type: 2}
+  mNormal: {fileID: 2100000, guid: 1a1882c20cb6d8c4a922af3997bda56d, type: 2}
   cellWidth: 1
   cellHeight: 1
   showGrid: 0
