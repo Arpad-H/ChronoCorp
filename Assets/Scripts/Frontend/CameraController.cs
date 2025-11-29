@@ -76,7 +76,7 @@ public class CameraController : MonoBehaviour
 
                 // Rotate camera so it both looks toward center and orbits Y
                 // Option 1: always face slightly ahead along the spiral
-                float lookAheadRad = (currentAngle + lookAheadAngle) * Mathf.Deg2Rad; // tweak 15° for smooth look
+                float lookAheadRad = (currentAngle + lookAheadAngle) * Mathf.Deg2Rad; 
                 Vector3 lookTarget = new Vector3(
                     Mathf.Cos(lookAheadRad) * radius,
                     currentHeight,

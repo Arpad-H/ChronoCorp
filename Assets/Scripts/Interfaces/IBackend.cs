@@ -12,7 +12,6 @@ namespace Interfaces
        bool LinkNodes(GameObject nodeA, GameObject nodeB, out GameObject conduitObj);
        bool UnlinkNodes(GameObject conduitObj);
        // TimeLayer GetTimeLayer(int layerNum); //change time layer to whatever applies
-      
-       
+       float GetEnergyPacketProgress(EnergyPacket packet);
     }
 }

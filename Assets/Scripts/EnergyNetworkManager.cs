@@ -3,7 +3,8 @@
 
 public class EnergyNetworkManager : MonoBehaviour
 {
-    // Lists for the "Present" layer (Active GameObjects)
+    //TODO gets replaced by backend link later
+ 
     public List<Node> presentNodes = new List<Node>();
     public List<Conduit> presentConduits = new List<Conduit>();
 

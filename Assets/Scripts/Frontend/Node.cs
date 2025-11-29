@@ -25,7 +25,6 @@ public class Node : MonoBehaviour
     void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
-        // Assign a unique ID. In a real game, this would be more robust.
         id = GetInstanceID(); 
     }
 
@@ -34,49 +33,15 @@ public class Node : MonoBehaviour
         UpdateColor();
         transform.localScale = Vector3.one * nodeScale;         // Adjust scale to not overcrowd the grid
     }
-
-    // This simulation step is for the PRESENT layer
-    public void SimulateStep(float networkEfficiency)
-    {
-        if (isSource)
-        {
-            currentEnergy = energySupply;
-        }
-        else
-        {
-            // If the network is failing, this ripple only gets a fraction of its demand
-            float energyReceived = energyDemand * networkEfficiency;
-            currentEnergy = energyReceived;
-
-            // Check for collapse condition
-            if (currentEnergy < energyDemand * 0.99f) // Check if energy is insufficient
-            {
-                collapseTimer += Time.deltaTime;
-                spriteRenderer.color = Color.red; // Visual feedback
-                if (collapseTimer > COLLAPSE_TIME_LIMIT)
-                {
-                    GameStateManager.Instance.GameOver("A Time Ripple collapsed!");
-                }
-            }
-            else
-            {
-                collapseTimer = 0f;
-                UpdateColor();
-            }
-        }
-    }
+    
 
     public void UpdateColor()
     {
         spriteRenderer.color = isSource ? Color.red : Color.cyan;
     }
 
-    // --- Mouse Interaction Callbacks (CORRECTED) ---
-    // We just report the event to the InputManager.
-    private void OnMouseDown()
+  private void OnMouseDown()
     {
-        // OnMouseDown is the *only* event we need.
-        // It tells the manager "I am the start of a drag."
         InputManager.Instance.StartDrag(this);
     }
 

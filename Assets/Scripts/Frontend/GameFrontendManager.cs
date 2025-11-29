@@ -6,28 +6,27 @@ using System.Collections.Generic;
 using Lukas.Simulation.Energy;
 using NodeBase;
 
-public class GameStateManager : MonoBehaviour, Interfaces.IFrontend
+public class GameFrontendManager : MonoBehaviour, Interfaces.IFrontend
 {
-    public static GameStateManager Instance; // Singleton
+    public static GameFrontendManager Instance; // Singleton
     public CameraController cameraController;
     
     [Header("Asset References")]
     public GameObject nodePrefab;
     public GameObject generatorPrefab;
     public GameObject conduitPrefab;
-
-    [Header("Game State")] public bool isGameOver = false;
-
-
+    
+    //TODO Layer Management via backend
     [Header("Layer Management")] public float layerDuplicationTime = 60f;
     private float layerTimer = 0f;
     public float layerZSpacing = 15f; // How far apart to space layers
-    //public List<TimeLayerState> temporalLayers = new List<TimeLayerState>(); // were gonan get this from backend couse CBA
+    //public List<TimeLayerState> temporalLayers = new List<TimeLayerState>(); // were gonan get this from backend
     
     
 
     [Header("Energy Management")]
-    private EnergyNetworkManager energyNetworkManager = new EnergyNetworkManager();
+    //TODO replaced with backend link later
+    private EnergyNetworkManager energyNetworkManager = new EnergyNetworkManager(); 
 
 
     void Awake()
@@ -88,7 +87,6 @@ public class GameStateManager : MonoBehaviour, Interfaces.IFrontend
 
     public void GameOver(string reason)
     {
-        isGameOver = true;
         Time.timeScale = 0f; // Pause game
         Debug.LogError($"GAME OVER: {reason}");
         UIManager.Instance.ShowGameOver(reason);

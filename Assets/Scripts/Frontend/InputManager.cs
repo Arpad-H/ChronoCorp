@@ -58,7 +58,6 @@ public class InputManager : MonoBehaviour
 
     void Update()
     {
-        if (GameStateManager.Instance.isGameOver) return;
         
         // --- On Left Click ---
         if (Input.GetMouseButtonDown(0)) OnLeftClick?.Invoke();
@@ -91,8 +90,7 @@ public class InputManager : MonoBehaviour
             }
             else return;
             
-            // Debug: print 3D world position of mouse
-            Debug.Log("Mouse World Position: " + lineEnd);
+           
             tempDrawingLine.SetPosition(0, startNode.transform.position);
             tempDrawingLine.SetPosition(1, lineEnd);
 
@@ -107,7 +105,7 @@ public class InputManager : MonoBehaviour
                     if (endNode != null && endNode != startNode)
                     {
                         // Ask GameStateManager to spawn the conduit between the nodes
-                        GameStateManager.Instance.SpawnConduit(startNode, endNode);
+                        GameFrontendManager.Instance.SpawnConduit(startNode, endNode);
                         // Print debug message
                         Debug.Log($"Creating conduit between Node {startNode.id} and Node {endNode.id}");
                     }
@@ -121,7 +119,7 @@ public class InputManager : MonoBehaviour
    
     public void StartDrag(Node node)
     {
-        if (GameStateManager.Instance.isGameOver || startNode != null) return; // Don't start a new drag if one is active
+        if (startNode != null) return; // Don't start a new drag if one is active
 
         startNode = node;
         if (tempDrawingLine != null)
