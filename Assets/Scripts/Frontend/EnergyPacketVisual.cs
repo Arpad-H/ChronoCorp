@@ -17,8 +17,8 @@ public class EnergyPacketVisual : MonoBehaviour
         progress = 0f; //reset progress
     }
 
-    // Update is called once per frame
-    void Update()
+   
+    void LateUpdate()
     {
         //lerp between conduit.nodeA and conduit.nodeB based on progress
         if (conduit != null)
