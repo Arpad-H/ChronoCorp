@@ -157,7 +157,12 @@ namespace NodeBase
             Shape = shape;
         }
 
-        private Shape Shape { get; }
+        private Shape Shape; //  private Shape Shape { get; } only allows internal access
+        
+        public Shape getShape()
+        {
+            return Shape;
+        }
     }
 
     /**

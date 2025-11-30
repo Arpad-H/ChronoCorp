@@ -11,6 +11,13 @@ public class InputManager : MonoBehaviour
     public event Action OnLeftClick;
     public event Action OnButtonN;
     public event Action OnButtonG;
+    public event Action OnButtonX;
+    public event Action OnButton1;
+    public event Action OnButton2;
+    public event Action OnButton3;
+    public event Action OnButton4;
+    public event Action OnButton5;
+    public event Action OnButton6;
     public event Action OnButtonD;
     
     
@@ -18,7 +25,7 @@ public class InputManager : MonoBehaviour
     public event Action<float> OnMouseScroll;
 
     [SerializeField] private LayerMask nodeLayerMask = ~0;
-    private Node startNode = null;
+    private NodeVisual _startNodeVisual = null;
     // Temporary line for visual feedback
     private LineRenderer tempDrawingLine = null;
     [SerializeField] private float tempLineWidth = 0.05f;
@@ -75,11 +82,22 @@ public class InputManager : MonoBehaviour
         // --- Button G ---
         if (Input.GetKeyDown(KeyCode.G)) OnButtonG?.Invoke();
         
+        // --- Button X ---
+        if (Input.GetKeyDown(KeyCode.X)) OnButtonX?.Invoke();
+        
         // --- Button D ---
         if (Input.GetKeyDown(KeyCode.D)) OnButtonD?.Invoke();
+        
+        // --- Buttons 1-6 ---
+        if (Input.GetKeyDown(KeyCode.Alpha1)) OnButton1?.Invoke();
+        if (Input.GetKeyDown(KeyCode.Alpha2)) OnButton2?.Invoke();
+        if (Input.GetKeyDown(KeyCode.Alpha3)) OnButton3?.Invoke();
+        if (Input.GetKeyDown(KeyCode.Alpha4)) OnButton4?.Invoke();
+        if (Input.GetKeyDown(KeyCode.Alpha5)) OnButton5?.Invoke();
+        if (Input.GetKeyDown(KeyCode.Alpha6)) OnButton6?.Invoke();
 
         // --- While dragging: update temp line and check for mouse up to finish ---
-        if (startNode != null)
+        if (_startNodeVisual != null)
         {
             // Update the line to follow mouse
             RaycastHit raycastHit;
@@ -91,7 +109,7 @@ public class InputManager : MonoBehaviour
             else return;
             
            
-            tempDrawingLine.SetPosition(0, startNode.transform.position);
+            tempDrawingLine.SetPosition(0, _startNodeVisual.transform.position);
             tempDrawingLine.SetPosition(1, lineEnd);
 
             // Check for Mouse Button Up (end drag)
@@ -101,13 +119,11 @@ public class InputManager : MonoBehaviour
                 RaycastHit rh;
                 if (cameraController.RaycastForFirst(out rh))
                 {
-                    Node endNode = rh.collider.GetComponent<Node>();
-                    if (endNode != null && endNode != startNode)
+                    NodeVisual endNodeVisual = rh.collider.GetComponent<NodeVisual>();
+                    if (endNodeVisual != null && endNodeVisual != _startNodeVisual)
                     {
                         // Ask GameStateManager to spawn the conduit between the nodes
-                        GameFrontendManager.Instance.SpawnConduit(startNode, endNode);
-                        // Print debug message
-                        Debug.Log($"Creating conduit between Node {startNode.id} and Node {endNode.id}");
+                        GameFrontendManager.Instance.SpawnConduit(_startNodeVisual, endNodeVisual);
                     }
                 }
 
@@ -117,23 +133,23 @@ public class InputManager : MonoBehaviour
         }
     }
    
-    public void StartDrag(Node node)
+    public void StartDrag(NodeVisual nodeVisual)
     {
-        if (startNode != null) return; // Don't start a new drag if one is active
+        if (_startNodeVisual != null) return; // Don't start a new drag if one is active
 
-        startNode = node;
+        _startNodeVisual = nodeVisual;
         if (tempDrawingLine != null)
         {
             tempDrawingLine.enabled = true;
-            tempDrawingLine.SetPosition(0, startNode.transform.position);
-            tempDrawingLine.SetPosition(1, startNode.transform.position);
+            tempDrawingLine.SetPosition(0, _startNodeVisual.transform.position);
+            tempDrawingLine.SetPosition(1, _startNodeVisual.transform.position);
         }
     }
 
     // Resets the drag state
     void CancelDrag()
     {
-        startNode = null;
+        _startNodeVisual = null;
         if (tempDrawingLine != null) tempDrawingLine.enabled = false;
     }
 }

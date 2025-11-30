@@ -18,7 +18,8 @@ namespace Backend.Simulation.World
         public SimulationStorage(IFrontend frontendCallback)
         {
             _frontendCallback = frontendCallback;
-            timeSlices[0] = new TimeSlice(this);
+            //timeSlices[0] = new TimeSlice(this);
+            timeSlices.Add( new TimeSlice(this)); //prevents out of bounds since starts of with count 0
         }
 
         public bool isNodeKnown(GUID guid)

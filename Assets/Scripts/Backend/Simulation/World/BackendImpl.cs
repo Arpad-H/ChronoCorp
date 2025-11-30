@@ -17,14 +17,14 @@ namespace Backend.Simulation.World
             _storage = new SimulationStorage(FrontendCallback);
         }
 
-        public GUID? PlaceNode(NodeType nodeType, int LayerNum, Vector2 planePos)
+        public GUID? PlaceNode(NodeDTO nodeType, int LayerNum, Vector2 planePos)
         {
             var timeSlice = byLayerNum(LayerNum);
 
             GUID? guid = null;
 
-            if (nodeType.Equals(NodeType.GENERATOR)) guid = timeSlice.spawnGenerator(planePos, 1);
-            if (nodeType.Equals(NodeType.RIPPLE)) guid = timeSlice.spawnRipple(planePos);
+            if (nodeType.Equals(NodeDTO.GENERATOR)) guid = timeSlice.spawnGenerator(planePos, 1);
+            if (nodeType.Equals(NodeDTO.RIPPLE)) guid = timeSlice.spawnRipple(planePos);
 
             return guid;
         }

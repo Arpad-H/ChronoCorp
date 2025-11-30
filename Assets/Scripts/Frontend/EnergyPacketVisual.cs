@@ -18,8 +18,8 @@ public class EnergyPacketVisual : MonoBehaviour
         if (conduit != null)
         {
             if (progress >= 1f) EnergyPacketVisualizer.Instance.ReleaseItem(this);
-            var startPos = conduit.nodeA.GetAttachPosition();
-            var endPos = conduit.nodeB.GetAttachPosition();
+            var startPos = conduit.nodeVisualA.GetAttachPosition();
+            var endPos = conduit.nodeVisualB.GetAttachPosition();
             transform.position = Vector3.Lerp(startPos, endPos, progress);
         }
 

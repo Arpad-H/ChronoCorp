@@ -1,5 +1,4 @@
-﻿using Backend.Simulation.Energy;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
 
 namespace Interfaces
@@ -18,7 +17,7 @@ namespace Interfaces
          *
          * The returned GUID is a reference to the backend node object. Can be used to interact with the object (delete, link).
          */
-        GUID? PlaceNode(NodeType nodeType, int LayerNum, Vector2 planePos);
+        GUID? PlaceNode(NodeDTO nodeType, int LayerNum, Vector2 planePos);
         
         /**
          * Takes a node backend id to delete a node.
@@ -55,7 +54,7 @@ namespace Interfaces
         // TimeLayer GetTimeLayer(int layerNum); //change time layer to whatever applies
     }
 
-    public enum NodeType
+    public enum NodeDTO //TODO NodeType got renamed to NodeDTO to prevent double naming with Backend.NodeType
     {
         GENERATOR,
         RIPPLE

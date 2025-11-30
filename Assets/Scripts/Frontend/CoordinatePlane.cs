@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Interfaces;
+using NodeBase;
 using Unity.VisualScripting.Dependencies.NCalc;
 using UnityEngine;
 
@@ -9,17 +10,20 @@ public class CoordinatePlane : MonoBehaviour
     public Transform nodeContainer; // unscaled coordinate space
     public Material mGrid;
     public Material mNormal;
+
     [Header("Grid Settings")]
     // public int gridWidth = 10;
     // public int gridHeight = 10; //currently determined by frameMesh scale
     public int cellWidth = 1;
+
     public int cellHeight = 1;
     public bool showGrid = false;
     private int numX, numY; // Number of cells in each direction
     private float maxX, maxY, minX, minY; // Max/min bounds (avoid placing outside frame)
-    private int layerNum=0;//changed when bakcend spawns layer
+
+    public int layerNum = 0; //changed when bakcend spawns layer
     private IBackend _backend;
-    
+
     private List<GameObject> nodes = new List<GameObject>();
 
     void Awake()
@@ -42,6 +46,7 @@ public class CoordinatePlane : MonoBehaviour
         if (showGrid) frameMesh.GetComponent<MeshRenderer>().material = mGrid;
         else frameMesh.GetComponent<MeshRenderer>().material = mNormal;
     }
+
     /// <summary>
     /// Converts plane coords (0→width, 0→height) into the nodeContainer local space
     /// </summary>
@@ -60,26 +65,25 @@ public class CoordinatePlane : MonoBehaviour
     /// <summary>
     /// Instantiates a node inside the nodeContainer at plane coordinates.
     /// </summary>
-    public bool PlaceNode(GameObject prefab, Vector3 planePos, out GameObject obj)
+    public bool PlaceNode(GameObject node, Vector3 planePos, out GameObject obj)
     {
         obj = null;
         Vector3 localPos = ToPlaneLocal(planePos);
         // if (! _backend.PlaceNode(prefab,layerNum, new Vector2(localPos.x,localPos.y))) return false;
-       
-       
+
+
         obj = null;
         if (!IsWithinBounds(localPos) || IsPlaceOccupied(localPos)) return false;
-        obj = Instantiate(prefab, nodeContainer);
+        obj = Instantiate(node, nodeContainer);
         obj.transform.localPosition = localPos;
-         nodes.Add(obj);
+        nodes.Add(obj);
         return true;
     }
 
-    private Vector3 SnapToGrid(Vector3 position)
+    public Vector3 SnapToGrid(Vector3 position)
     {
         int x = (int)(position.x / cellWidth);
         int y = (int)(position.y / cellHeight);
-        Debug.Log($"Snapped to grid: ({x}, {y})");
         return new Vector3(x, y, 0f) + new Vector3(0.5f, 0.5f, 0f);
     }
 

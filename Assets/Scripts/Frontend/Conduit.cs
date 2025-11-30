@@ -2,14 +2,15 @@
 
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 [RequireComponent(typeof(LineRenderer))]
 public class Conduit : MonoBehaviour
 {
     
     public int id;
-    public Node nodeA;
-    public Node nodeB;
+    [FormerlySerializedAs("nodeA")] public NodeVisual nodeVisualA;
+    [FormerlySerializedAs("nodeB")] public NodeVisual nodeVisualB;
     private Vector3 dragPosition;
     public LineRenderer lineRenderer;
 
@@ -23,27 +24,27 @@ public class Conduit : MonoBehaviour
     }
 
     // Call this to set up the conduit
-    public void Initialize(Node a, Node b)
+    public void Initialize(NodeVisual a, NodeVisual b)
     {
         // nodeA = a;
         // nodeB = b;
         SetStartNode(a);
         FinalizeConduit(b);
     }
-    public void SetStartNode(Node node)
+    public void SetStartNode(NodeVisual nodeVisual)
     {
-        nodeA = node;
-        lineRenderer.SetPosition(0, node.GetAttachPosition());
+        nodeVisualA = nodeVisual;
+        lineRenderer.SetPosition(0, nodeVisual.GetAttachPosition());
     }
     public void UpdateDragPosition(Vector3 position)
     {
         dragPosition = position;
         lineRenderer.SetPosition(1, dragPosition);
     }
-    public void FinalizeConduit(Node node)
+    public void FinalizeConduit(NodeVisual nodeVisual)
     {
-        nodeB = node;
-        lineRenderer.SetPosition(1, node.GetAttachPosition());
+        nodeVisualB = nodeVisual;
+        lineRenderer.SetPosition(1, nodeVisual.GetAttachPosition());
     }
 
     void Update()
