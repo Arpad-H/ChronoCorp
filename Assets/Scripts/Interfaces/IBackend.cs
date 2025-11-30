@@ -46,6 +46,7 @@ namespace Interfaces
          * This function is called per FixedUpdate on a Frontend Energy Packet Game Object. Between frames interpolation might be needed
          */
         float GetEnergyPacketProgress(GUID packetID, out AbstractNodeInstance sourceNode, out AbstractNodeInstance targetNode);//todo had to change it to know the source adn target
+        float GetPacketFrame(GUID packetID);//TODO either seperate function or change the above to return frame as well
 
         /**
          * Called on FixedUpdate by the frontend to trigger a simulation step on the backend.
