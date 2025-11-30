@@ -1,11 +1,14 @@
-﻿using UnityEngine;
+﻿using Interfaces;
+using UnityEditor;
+using UnityEngine;
 using UnityEngine.Pool;
+using UnityEngine.Serialization;
 
 public class EnergyPacketVisualizer : MonoBehaviour
 {
     public static EnergyPacketVisualizer Instance;
     public GameObject prefab;
-    public Conduit conduit;
+    [FormerlySerializedAs("conduit")] public ConduitVisual conduitVisual;
     private ObjectPool<EnergyPacketVisual> pool;
 
     private void Awake()
@@ -28,8 +31,15 @@ public class EnergyPacketVisualizer : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             var ePVisual = pool.Get();
-            ePVisual.SetConduit(conduit);
+            ePVisual.SetConduit(conduitVisual);
         }
+    }
+    public void SpawnEnergyPacket(GUID guid,IBackend backend) //TODO giga dirty. fix backend reference later
+    {
+        EnergyPacketVisual ePVisual = pool.Get();
+        ePVisual.guid = guid;
+        ePVisual.backend = backend;
+        ePVisual.SetConduit(conduitVisual);
     }
 
     private EnergyPacketVisual CreateItem()

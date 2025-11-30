@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿using NodeBase;
+using UnityEditor;
 using UnityEngine;
 
 namespace Interfaces
@@ -44,7 +45,7 @@ namespace Interfaces
          *
          * This function is called per FixedUpdate on a Frontend Energy Packet Game Object. Between frames interpolation might be needed
          */
-        float GetEnergyPacketProgress(GUID packetID, out GUID? connectionID);
+        float GetEnergyPacketProgress(GUID packetID, out AbstractNodeInstance sourceNode, out AbstractNodeInstance targetNode);//todo had to change it to know the source adn target
 
         /**
          * Called on FixedUpdate by the frontend to trigger a simulation step on the backend.

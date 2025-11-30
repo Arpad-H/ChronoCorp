@@ -14,26 +14,20 @@ public class GameFrontendManager : MonoBehaviour, Interfaces.IFrontend
 {
     public static GameFrontendManager Instance; // Singleton
     public CameraController cameraController;
-
+    private EnergyPacketVisualizer energyPacketVisualizer;
+    private IBackend backend; // Link to backend
     [Header("Asset References")] public GameObject nodePrefab;
     public GameObject generatorPrefab;
     public GameObject conduitPrefab;
 
-
-    private IBackend backend; // Link to backend
 
     private long fixedTickCount = 0;
 
     //TODO Layer Management via backend
     [Header("Layer Management")] public float layerDuplicationTime = 60f;
     private float layerTimer = 0f;
+
     public float layerZSpacing = 15f; // How far apart to space layers
-    //public List<TimeLayerState> temporalLayers = new List<TimeLayerState>(); // were gonan get this from backend
-
-
-    [Header("Energy Management")]
-    //TODO replaced with backend link later
-    private EnergyNetworkManager energyNetworkManager = new EnergyNetworkManager();
 
 
     void Awake()
@@ -45,11 +39,12 @@ public class GameFrontendManager : MonoBehaviour, Interfaces.IFrontend
 
     void Start()
     {
+        if (energyPacketVisualizer == null) energyPacketVisualizer = FindObjectOfType<EnergyPacketVisualizer>();
         if (cameraController == null) cameraController = FindObjectOfType<CameraController>();
         InputManager.Instance.OnButtonN += () => SpawnManuallyOnHoveredFrame(NodeDTO.RIPPLE, EnergyType.BLUE);
         InputManager.Instance.OnButtonG += () => SpawnManuallyOnHoveredFrame(NodeDTO.GENERATOR, EnergyType.BLUE);
         InputManager.Instance.OnButtonX += () => DeleteNodeManually();
-        
+
         // InputManager.Instance.OnButton1 += () => SpawnOnHoveredFrame(nodePrefab);
         // InputManager.Instance.OnButton2 += () => SpawnOnHoveredFrame(nodePrefab);
         // InputManager.Instance.OnButton3 += () => SpawnOnHoveredFrame(nodePrefab);
@@ -130,18 +125,13 @@ public class GameFrontendManager : MonoBehaviour, Interfaces.IFrontend
     public void SpawnConduit(NodeVisual a, NodeVisual b)
     {
         if (a == null || b == null || a == b) return;
-
-        // Avoid duplicate conduits between the same nodes
-        foreach (var c in energyNetworkManager.presentConduits)
+        // GUID? connectionID;
+        if (backend.LinkNodes(a.backendID, b.backendID, out GUID? connectionID))
         {
-            if ((c.nodeVisualA == a && c.nodeVisualB == b) || (c.nodeVisualA == b && c.nodeVisualB == a))
-                return; // Already connected
+            GameObject conduitObj = Instantiate(conduitPrefab, Vector3.zero, Quaternion.identity);
+            ConduitVisual conduitVisual = conduitObj.GetComponent<ConduitVisual>();
+            conduitVisual.Initialize(a, b);
         }
-
-        GameObject conduitObj = Instantiate(conduitPrefab, Vector3.zero, Quaternion.identity);
-        Conduit conduit = conduitObj.GetComponent<Conduit>();
-        conduit.Initialize(a, b);
-        energyNetworkManager.AddConduit(conduit);
     }
 
 
@@ -171,7 +161,7 @@ public class GameFrontendManager : MonoBehaviour, Interfaces.IFrontend
 
     public void SpawnEnergyPacket(GUID guid)
     {
-        throw new NotImplementedException();
+        energyPacketVisualizer.SpawnEnergyPacket(guid, backend);
     }
 
     public bool AddTimeSlice(int sliceNum)

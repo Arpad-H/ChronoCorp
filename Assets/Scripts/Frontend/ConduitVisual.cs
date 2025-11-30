@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.Serialization;
 
 [RequireComponent(typeof(LineRenderer))]
-public class Conduit : MonoBehaviour
+public class ConduitVisual : MonoBehaviour
 {
     
     public int id;

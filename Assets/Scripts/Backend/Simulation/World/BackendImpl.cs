@@ -1,6 +1,7 @@
 ﻿using Backend.Simulation.Energy;
 using Interfaces;
 using JetBrains.Annotations;
+using NodeBase;
 using UnityEditor;
 using UnityEngine;
 
@@ -10,7 +11,7 @@ namespace Backend.Simulation.World
     {
         public readonly IFrontend FrontendCallback;
         private SimulationStorage _storage;
-        
+
         public BackendImpl(IFrontend frontend)
         {
             FrontendCallback = frontend;
@@ -46,19 +47,34 @@ namespace Backend.Simulation.World
             return _storage.unlink(connectionId);
         }
 
-        public float GetEnergyPacketProgress(GUID packet, out GUID? connectionID)
+        public float GetEnergyPacketProgress(GUID packet, out AbstractNodeInstance sourceNode,
+            out AbstractNodeInstance targetNode) //TODO had to change it to know the source adn target
         {
-
             var foundPacket = _storage.energyPackets[packet];
             if (foundPacket != null)
             {
-                connectionID = foundPacket.currentStep().connection.guid;
+                sourceNode = foundPacket.currentStep().connection.node1;
+                targetNode = foundPacket.currentStep().connection.node2;
                 return foundPacket.progressOnEdge;
             }
 
-            connectionID = null;
+            sourceNode = null;
+            targetNode = null;
             return -1;
         }
+        // public float GetEnergyPacketProgress(GUID packet, out GUID? connectionID)
+//         {
+//
+//             var foundPacket = _storage.energyPackets[packet];
+//             if (foundPacket != null)
+//             {
+//                 connectionID = foundPacket.currentStep().connection.guid;
+//                 return foundPacket.progressOnEdge;
+//             }
+//
+//             connectionID = null;
+//             return -1;
+//         }
 
         public void tick(long tickCount)
         {

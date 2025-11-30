@@ -20,7 +20,7 @@ public class NodeVisual : MonoBehaviour
     public const float COLLAPSE_TIME_LIMIT = 5f;
 
     // References for the simulation
-    public List<Conduit> connectedConduits = new List<Conduit>();
+    public List<ConduitVisual> connectedConduits = new List<ConduitVisual>();
 
     private SpriteRenderer spriteRenderer;
 

@@ -6,7 +6,7 @@ public class EnergyNetworkManager : MonoBehaviour
     //TODO gets replaced by backend link later
  
     public List<NodeVisual> presentNodes = new List<NodeVisual>();
-    public List<Conduit> presentConduits = new List<Conduit>();
+    public List<ConduitVisual> presentConduits = new List<ConduitVisual>();
 
     void Start()
     {
@@ -23,9 +23,9 @@ public class EnergyNetworkManager : MonoBehaviour
         // TODO
     }
 
-    public void AddConduit(Conduit conduit)
+    public void AddConduit(ConduitVisual conduitVisual)
     {
-        presentConduits.Add(conduit);
+        presentConduits.Add(conduitVisual);
     }
 
     public void AddNode(NodeVisual nodeVisual)
