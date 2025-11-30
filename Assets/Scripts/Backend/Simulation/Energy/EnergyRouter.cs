@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using Backend.Simulation.World;
 using NodeBase;
+using UnityEditor;
 
-namespace Lukas.Simulation.Energy
+namespace Backend.Simulation.Energy
 {
     public class EnergyRouter
     {
@@ -30,10 +32,9 @@ namespace Lukas.Simulation.Energy
             var startRipple = potentialConnection.node2;
 
             var alreadyVisitedNodes = new Dictionary<AbstractNodeInstance, NodeWithConnections>();
-            var alreadyVisitedConnections =
-                new Dictionary<AbstractNodeInstance, Connection<AbstractNodeInstance, AbstractNodeInstance>>();
+            var alreadyVisitedConnections = new Dictionary<AbstractNodeInstance, Connection>();
 
-            BfsFromRipple(startRipple, alreadyVisitedConnections, alreadyVisitedNodes);
+            BfsFromRipple((TimeRippleInstance) startRipple, alreadyVisitedConnections, alreadyVisitedNodes);
 
             var generatorToRippleConnection = output.Connection;
             if (generatorToRippleConnection == null) return routesForOutput;
@@ -41,7 +42,7 @@ namespace Lukas.Simulation.Energy
             var firstRoute = new EnergyRoute();
             var firstStep =
                 new EnergyStep(
-                    (Connection<AbstractNodeInstance, AbstractNodeInstance>)(object)generatorToRippleConnection,
+                    generatorToRippleConnection,
                     false);
             firstRoute.addStep(firstStep);
             routesForOutput.addRoute(startRipple, firstRoute);
@@ -75,7 +76,7 @@ namespace Lukas.Simulation.Energy
 
             void BfsFromRipple(
                 TimeRippleInstance start,
-                IDictionary<AbstractNodeInstance, Connection<AbstractNodeInstance, AbstractNodeInstance>>
+                IDictionary<AbstractNodeInstance, Connection>
                     alreadyVisitedConnections,
                 IDictionary<AbstractNodeInstance, NodeWithConnections> alreadyVisitedNodes)
             {
@@ -111,7 +112,7 @@ namespace Lukas.Simulation.Energy
         private const int TickCooldownOutputs = 100;
 
         // For one output try to spawn a new packet via cooldown.
-        public static void tick(int currentTick, Output output, List<EnergyPacket> packetsSpawnedThisTick)
+        public static void tick(long currentTick, Output output, SimulationStorage storage)
         {
             output.RouteStorage ??= EnergyRouter.createEnergyRoute(output);
 
@@ -121,14 +122,14 @@ namespace Lukas.Simulation.Energy
             if (currentTick - last < TickCooldownOutputs) return;
 
             var nextRoute =
-                output.RouteStorage.orderedListOfRoutes[
-                    output.targetIndex++ % output.RouteStorage.savedRoutes.Count];
+                output.RouteStorage.orderedListOfRoutes[output.targetIndex++ % output.RouteStorage.savedRoutes.Count];
             var stepsInRoute = nextRoute.steps.Count;
             var startStep = nextRoute.steps[0];
             var endStep = nextRoute.steps[stepsInRoute];
 
-            var newEnergyPacket = new EnergyPacket(ChooseEnergyType(endStep.getEnd()), startStep.getStart() as EnergyPacketSpawner, endStep.getEnd(), nextRoute.steps);
-            packetsSpawnedThisTick.Add(newEnergyPacket);
+            var newEnergyPacket = new EnergyPacket(ChooseEnergyType(endStep.getEnd()),
+                startStep.getStart() as EnergyPacketSpawner, endStep.getEnd(), nextRoute.steps);
+            storage.registerEnergyPacket(newEnergyPacket);
             output.lastGenerationTick = currentTick;
         }
 
@@ -148,20 +149,22 @@ namespace Lukas.Simulation.Energy
 
         private int _currentEdgeIndex;
 
-        private bool _delivered;
-
-        // Units traveled along the edge
-        private float _progressOnEdge;
+        public bool Delivered;
         private int _travelledOnEdge;
+        public GUID Guid { get; }
 
         public EnergyPacket(EnergyType energyType, EnergyPacketSpawner source, AbstractNodeInstance destination,
             List<EnergyStep> steps)
         {
+            Guid = GUID.Generate();
             EnergyType = energyType;
             Source = source;
             Destination = destination;
             Steps = steps;
         }
+
+        // Units traveled along the edge
+        public float progressOnEdge { get; set; }
 
         public EnergyType EnergyType { get; }
 
@@ -169,21 +172,20 @@ namespace Lukas.Simulation.Energy
         public AbstractNodeInstance Destination { get; set; }
         private List<EnergyStep> Steps { get; }
 
-
-        public void tick()
+        public void tick(long tick)
         {
-            if (_delivered) return;
+            if (Delivered) return;
             _travelledOnEdge += PacketTravelSpeedPerTick;
-            _progressOnEdge = _travelledOnEdge / currentStep().connection.length;
-            if (!(_progressOnEdge >= 1.0)) return;
+            progressOnEdge = _travelledOnEdge / currentStep().connection.length;
+            if (!(progressOnEdge >= 1.0)) return;
 
-            _progressOnEdge = 0;
+            progressOnEdge = 0;
             _travelledOnEdge = 0;
             _currentEdgeIndex++;
-            if (_currentEdgeIndex >= Steps.Count) _delivered = true;
+            if (_currentEdgeIndex >= Steps.Count) Delivered = true;
         }
 
-        private EnergyStep currentStep()
+        public EnergyStep currentStep()
         {
             return Steps[_currentEdgeIndex];
         }
@@ -218,13 +220,13 @@ namespace Lukas.Simulation.Energy
 
     public class EnergyStep
     {
-        public EnergyStep(Connection<AbstractNodeInstance, AbstractNodeInstance> connection, bool reverseDirection)
+        public EnergyStep(Connection connection, bool reverseDirection)
         {
             this.connection = connection;
             this.reverseDirection = reverseDirection;
         }
 
-        public Connection<AbstractNodeInstance, AbstractNodeInstance> connection { get; }
+        public Connection connection { get; }
 
         // true -> 1 to 2 else 2 to 1
         public bool reverseDirection { get; }
