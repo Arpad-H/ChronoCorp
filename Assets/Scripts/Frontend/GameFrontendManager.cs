@@ -59,7 +59,7 @@ public class GameFrontendManager : MonoBehaviour, Interfaces.IFrontend
 
     void FixedUpdate()
     {
-        backend.tick(fixedTickCount);
+        backend.tick(fixedTickCount, this);
         fixedTickCount++;
     }
 

@@ -91,9 +91,9 @@ namespace Backend.Simulation.World
 //             return -1;
 //         }
 
-        public void tick(long tickCount)
+        public void tick(long tickCount, IFrontend frontend)
         {
-            _storage.tick(tickCount);
+            _storage.tick(tickCount, frontend);
         }
 
         private TimeSlice byLayerNum(int layerNum)

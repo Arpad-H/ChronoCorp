@@ -49,7 +49,7 @@ namespace Backend.Simulation.World
             }
         }
 
-        public void tick(long tickCount)
+        public void tick(long tickCount, IFrontend frontend)
         {
             foreach (var timeSlice in timeSlices)
             {
@@ -58,7 +58,7 @@ namespace Backend.Simulation.World
 
             foreach (var packet in energyPackets.Values)
             {
-                packet.tick(tickCount);
+                packet.tick(tickCount, frontend);
                 if (packet.Delivered)
                 {
                     //TODO: Call packet delivered event for frontend -> Removes packet in frontend

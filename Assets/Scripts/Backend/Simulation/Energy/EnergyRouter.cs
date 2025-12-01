@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Backend.Simulation.World;
+using Interfaces;
 using NodeBase;
 using UnityEditor;
 using UnityEngine;
@@ -175,7 +176,7 @@ namespace Backend.Simulation.Energy
         public AbstractNodeInstance Destination { get; set; }
         private List<EnergyStep> Steps { get; }
 
-        public void tick(long tick)
+        public void tick(long tick, IFrontend frontend)
         {
             if (Delivered) return;
             _travelledOnEdge += PacketTravelSpeedPerTick;

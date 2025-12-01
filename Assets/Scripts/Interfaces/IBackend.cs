@@ -51,7 +51,7 @@ namespace Interfaces
         /**
          * Called on FixedUpdate by the frontend to trigger a simulation step on the backend.
          */
-        void tick(long tickCount);
+        void tick(long tickCount, IFrontend caller);
 
         // TimeLayer GetTimeLayer(int layerNum); //change time layer to whatever applies
     }
