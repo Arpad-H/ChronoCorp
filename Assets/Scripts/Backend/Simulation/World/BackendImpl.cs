@@ -39,12 +39,22 @@ namespace Backend.Simulation.World
         public bool LinkNodes(GUID backendIdA, GUID backendIdB, out GUID? connectionID)
         {
             connectionID = _storage.link(backendIdA, backendIdB);
+            if (connectionID != null)
+            {
+                _storage.recalculatePaths((GUID)connectionID);
+            }
             return connectionID != null;
         }
 
         public bool UnlinkNodes(GUID connectionId)
         {
-            return _storage.unlink(connectionId);
+            if (_storage.unlink(connectionId))
+            {
+                _storage.recalculatePaths(connectionId);
+                return true;
+            }
+
+            return false;
         }
 
         public float GetEnergyPacketProgress(GUID packet, out AbstractNodeInstance sourceNode,
@@ -53,8 +63,8 @@ namespace Backend.Simulation.World
             var foundPacket = _storage.energyPackets[packet];
             if (foundPacket != null)
             {
-                sourceNode = foundPacket.currentStep().connection.node1;
-                targetNode = foundPacket.currentStep().connection.node2;
+                sourceNode = foundPacket.currentStep().getStart();
+                targetNode = foundPacket.currentStep().getEnd();
                 return foundPacket.progressOnEdge;
             }
 

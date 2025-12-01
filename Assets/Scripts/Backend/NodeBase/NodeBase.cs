@@ -34,7 +34,7 @@ namespace NodeBase
         public GeneratorInstance(Vector2 pos, int amountInitialOutputs) : base(pos, NodeType.GENERATOR)
         {
             AvailableOutputs = new List<Output>(amountInitialOutputs);
-            for (var i = 0; i < AvailableOutputs.Count; i++) AvailableOutputs[i] = new Output();
+            for (var i = 0; i < amountInitialOutputs; i++) AvailableOutputs.Add(new Output());
         }
 
         [CanBeNull]

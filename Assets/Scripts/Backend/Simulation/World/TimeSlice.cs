@@ -34,6 +34,21 @@ namespace Backend.Simulation.World
             Debug.Log("Created new energy packet "+energyPacket.Guid);
         }
 
+        public void recalculatePaths(GUID connectionId)
+        {
+            //TODO: For now we just recalculate all paths! 
+            foreach (var abstractNodeInstance in guidToNodesMapping.Values)
+            {
+                if (abstractNodeInstance is GeneratorInstance generatorInstance)
+                {
+                    foreach (var outputRouteStorage in EnergyRouter.createEnergyRoutes(generatorInstance))
+                    {
+                        outputRouteStorage.Key.RouteStorage = outputRouteStorage.Value;
+                    }
+                }
+            }
+        }
+
         public void tick(long tickCount)
         {
             foreach (var timeSlice in timeSlices)
@@ -48,6 +63,7 @@ namespace Backend.Simulation.World
                 {
                     //TODO: Call packet delivered event for frontend -> Removes packet in frontend
                     //TODO: Consume packet on destination node
+                    _frontendCallback.ConsumeEnergyPacket(packet.Guid);
                     energyPackets.Remove(packet.Guid);
                     Debug.Log("Energy packet "+packet.Guid+" delivered.");
                 }
@@ -98,11 +114,14 @@ namespace Backend.Simulation.World
             {
                 if (generator.alreadyConnectedTo(anyNode as AbstractNodeInstance))
                 {
+                    Debug.Log("Generator "+generator.guid+" already connected to node "+(anyNode as AbstractNodeInstance).guid);
                     return null;
                 }
                 var foundOutput = generator.findFreeOutput();
                 if (foundOutput == null)
                 {
+                    Debug.Log("Generator "+generator.guid+" has no free output!");
+
                     return null;
                 }
                 var rippleConnection = new Connection(node1, node2);

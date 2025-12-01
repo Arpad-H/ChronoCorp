@@ -164,6 +164,11 @@ public class GameFrontendManager : MonoBehaviour, Interfaces.IFrontend
         energyPacketVisualizer.SpawnEnergyPacket(guid, backend);
     }
 
+    public void ConsumeEnergyPacket(GUID guid)
+    {
+        //TODO
+    }
+
     public bool AddTimeSlice(int sliceNum)
     {
         throw new NotImplementedException();

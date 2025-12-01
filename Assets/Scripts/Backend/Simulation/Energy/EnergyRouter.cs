@@ -2,6 +2,7 @@
 using Backend.Simulation.World;
 using NodeBase;
 using UnityEditor;
+using UnityEngine;
 
 namespace Backend.Simulation.Energy
 {
@@ -121,11 +122,13 @@ namespace Backend.Simulation.Energy
 
             if (currentTick - last < TickCooldownOutputs) return;
 
-            var nextRoute =
-                output.RouteStorage.orderedListOfRoutes[output.targetIndex++ % output.RouteStorage.savedRoutes.Count];
+            var nextIndex = output.targetIndex++ % output.RouteStorage.savedRoutes.Count;
+            var nextRoute = output.RouteStorage.orderedListOfRoutes[nextIndex];
+            
             var stepsInRoute = nextRoute.steps.Count;
+            if(stepsInRoute == 0) return;
             var startStep = nextRoute.steps[0];
-            var endStep = nextRoute.steps[stepsInRoute];
+            var endStep = nextRoute.steps[stepsInRoute - 1];
 
             var newEnergyPacket = new EnergyPacket(ChooseEnergyType(endStep.getEnd()),
                 startStep.getStart() as EnergyPacketSpawner, endStep.getEnd(), nextRoute.steps);
@@ -145,12 +148,12 @@ namespace Backend.Simulation.Energy
 
     public class EnergyPacket
     {
-        private const int PacketTravelSpeedPerTick = 1;
+        private const float PacketTravelSpeedPerTick = 0.01f;
 
         private int _currentEdgeIndex;
 
         public bool Delivered;
-        private int _travelledOnEdge;
+        private float _travelledOnEdge;
         public GUID Guid { get; }
 
         public EnergyPacket(EnergyType energyType, EnergyPacketSpawner source, AbstractNodeInstance destination,
