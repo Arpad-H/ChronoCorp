@@ -2,6 +2,7 @@
 using Backend.Simulation.World;
 using NodeBase;
 using UnityEditor;
+using UnityEngine;
 
 namespace Backend.Simulation.Energy
 {
@@ -147,12 +148,12 @@ namespace Backend.Simulation.Energy
 
     public class EnergyPacket
     {
-        private const int PacketTravelSpeedPerTick = 1;
+        private const float PacketTravelSpeedPerTick = 0.01f;
 
         private int _currentEdgeIndex;
 
         public bool Delivered;
-        private int _travelledOnEdge;
+        private float _travelledOnEdge;
         public GUID Guid { get; }
 
         public EnergyPacket(EnergyType energyType, EnergyPacketSpawner source, AbstractNodeInstance destination,
