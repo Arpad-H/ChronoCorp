@@ -34,6 +34,21 @@ namespace Backend.Simulation.World
             Debug.Log("Created new energy packet "+energyPacket.Guid);
         }
 
+        public void recalculatePaths(GUID connectionId)
+        {
+            //TODO: For now we just recalculate all paths! 
+            foreach (var abstractNodeInstance in guidToNodesMapping.Values)
+            {
+                if (abstractNodeInstance is GeneratorInstance generatorInstance)
+                {
+                    foreach (var outputRouteStorage in EnergyRouter.createEnergyRoutes(generatorInstance))
+                    {
+                        outputRouteStorage.Key.RouteStorage = outputRouteStorage.Value;
+                    }
+                }
+            }
+        }
+
         public void tick(long tickCount)
         {
             foreach (var timeSlice in timeSlices)

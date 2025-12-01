@@ -39,12 +39,22 @@ namespace Backend.Simulation.World
         public bool LinkNodes(GUID backendIdA, GUID backendIdB, out GUID? connectionID)
         {
             connectionID = _storage.link(backendIdA, backendIdB);
+            if (connectionID != null)
+            {
+                _storage.recalculatePaths((GUID)connectionID);
+            }
             return connectionID != null;
         }
 
         public bool UnlinkNodes(GUID connectionId)
         {
-            return _storage.unlink(connectionId);
+            if (_storage.unlink(connectionId))
+            {
+                _storage.recalculatePaths(connectionId);
+                return true;
+            }
+
+            return false;
         }
 
         public float GetEnergyPacketProgress(GUID packet, out AbstractNodeInstance sourceNode,
