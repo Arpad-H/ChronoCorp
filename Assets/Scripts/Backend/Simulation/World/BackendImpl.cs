@@ -57,19 +57,24 @@ namespace Backend.Simulation.World
             return false;
         }
 
-        public float GetEnergyPacketProgress(GUID packet, out AbstractNodeInstance sourceNode,
-            out AbstractNodeInstance targetNode) //TODO had to change it to know the source adn target
+        public float GetEnergyPacketProgress(GUID packet, out Vector3? sourcePos, out Vector3? targetPos) //TODO had to change it to know the source adn target
         {
             var foundPacket = _storage.energyPackets[packet];
             if (foundPacket != null)
             {
-                sourceNode = foundPacket.currentStep().getStart();
-                targetNode = foundPacket.currentStep().getEnd();
+                var sourceNode = foundPacket.currentStep().getStart();
+                var targetNode = foundPacket.currentStep().getEnd();
+
+                var timeSliceSource = byObjectGuid(sourceNode.guid);
+                var timeSliceTarget = byObjectGuid(targetNode.guid);
+
+                sourcePos = new Vector3(sourceNode.Pos.x, sourceNode.Pos.y, timeSliceSource.SliceNumber);
+                targetPos = new Vector3(targetNode.Pos.x, targetNode.Pos.y, timeSliceTarget.SliceNumber);
                 return foundPacket.progressOnEdge;
             }
 
-            sourceNode = null;
-            targetNode = null;
+            sourcePos = null;
+            targetPos = null;
             return -1;
         }
         // public float GetEnergyPacketProgress(GUID packet, out GUID? connectionID)

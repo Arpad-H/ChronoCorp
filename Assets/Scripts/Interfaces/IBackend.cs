@@ -40,12 +40,13 @@ namespace Interfaces
         bool UnlinkNodes(GUID connectionId);
         
         /**
-         * Returns the progress between 0-1 on the current edge and the current edge of the packet.
+         * Returns the progress between 0-1 on the current edge and the current edge of the packet defined by starting and end pos.
+         * The z coordinates are referring to time slices. 0 -> Time Slice T, 1 -> Time Slice T-1
          * If the energy packet does not exist returns -1 and null;
          *
          * This function is called per FixedUpdate on a Frontend Energy Packet Game Object. Between frames interpolation might be needed
          */
-        float GetEnergyPacketProgress(GUID packetID, out AbstractNodeInstance sourceNode, out AbstractNodeInstance targetNode);//todo had to change it to know the source adn target
+        float GetEnergyPacketProgress(GUID packetID, out Vector3? startPos, out Vector3? endPos);
 
         /**
          * Called on FixedUpdate by the frontend to trigger a simulation step on the backend.
