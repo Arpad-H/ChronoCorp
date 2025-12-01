@@ -19,7 +19,7 @@ namespace Backend.Simulation.World
         {
             _frontendCallback = frontendCallback;
             //timeSlices[0] = new TimeSlice(this);
-            timeSlices.Add( new TimeSlice(this)); //prevents out of bounds since starts of with count 0
+            timeSlices.Add( new TimeSlice(this, 0)); //prevents out of bounds since starts of with count 0
         }
 
         public bool isNodeKnown(GUID guid)
@@ -168,10 +168,12 @@ namespace Backend.Simulation.World
         private const int TOLERANCE = 1;
         private readonly SpatialHashGrid spatialHashGrid = new(1);
         private readonly SimulationStorage _simulationStorage;
+        public readonly int SliceNumber;
 
-        public TimeSlice(SimulationStorage simulationStorage)
+        public TimeSlice(SimulationStorage simulationStorage, int sliceNumber)
         {
             _simulationStorage = simulationStorage;
+            SliceNumber = sliceNumber;
         }
 
         public GUID? spawnGenerator(Vector2 pos, int amountInitialOutputs)
