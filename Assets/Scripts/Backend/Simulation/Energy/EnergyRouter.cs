@@ -187,6 +187,7 @@ namespace Backend.Simulation.Energy
             _travelledOnEdge = 0;
             _currentEdgeIndex++;
             if (_currentEdgeIndex >= Steps.Count) Delivered = true;
+            else frontend.SpawnEnergyPacket(Guid);
         }
 
         public EnergyStep currentStep()
