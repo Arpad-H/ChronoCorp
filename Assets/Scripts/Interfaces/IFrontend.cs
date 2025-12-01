@@ -13,7 +13,6 @@ namespace Interfaces
         bool PlaceNodeVisual(AbstractNodeInstance node, int layerNum, Vector2 planePos);
         
         void SpawnEnergyPacket(GUID guid);
-        void ConsumeEnergyPacket(GUID guid);
 
         bool AddTimeSlice(int sliceNum);
         //ui healthbar etc later

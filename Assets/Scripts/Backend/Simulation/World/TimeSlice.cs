@@ -63,7 +63,6 @@ namespace Backend.Simulation.World
                 {
                     //TODO: Call packet delivered event for frontend -> Removes packet in frontend
                     //TODO: Consume packet on destination node
-                    _frontendCallback.ConsumeEnergyPacket(packet.Guid);
                     energyPackets.Remove(packet.Guid);
                     Debug.Log("Energy packet "+packet.Guid+" delivered.");
                 }
