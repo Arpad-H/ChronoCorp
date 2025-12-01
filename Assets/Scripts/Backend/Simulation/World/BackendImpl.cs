@@ -53,8 +53,8 @@ namespace Backend.Simulation.World
             var foundPacket = _storage.energyPackets[packet];
             if (foundPacket != null)
             {
-                sourceNode = foundPacket.currentStep().connection.node1;
-                targetNode = foundPacket.currentStep().connection.node2;
+                sourceNode = foundPacket.currentStep().getStart();
+                targetNode = foundPacket.currentStep().getEnd();
                 return foundPacket.progressOnEdge;
             }
 
