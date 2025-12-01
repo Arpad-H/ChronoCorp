@@ -27,7 +27,7 @@ public IBackend backend; //TODO giga dirty. fix backend reference later
         if (progress <0)
         {
             if (progress >= 1f) EnergyPacketVisualizer.Instance.ReleaseItem(this);
-            var startPos = targetNode.Pos;
+            var startPos = sourceNode.Pos;
             var endPos = targetNode.Pos;
             transform.position = Vector3.Lerp(startPos, endPos, progress);
         }
