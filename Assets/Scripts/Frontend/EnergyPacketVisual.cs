@@ -19,8 +19,8 @@ public IBackend backend; //TODO giga dirty. fix backend reference later
 
     private void LateUpdate()
     {
-        AbstractNodeInstance sourceNode;
-        AbstractNodeInstance targetNode;
+        Vector3? sourceNode;
+        Vector3? targetNode;
         progress = backend.GetEnergyPacketProgress(guid,out sourceNode, out targetNode);
         
         //lerp between conduit.nodeA and conduit.nodeB based on progress
