@@ -16,6 +16,7 @@ namespace Backend.Simulation.World
         {
             FrontendCallback = frontend;
             _storage = new SimulationStorage(FrontendCallback);
+            _storage.onPacketDeleted += guid => FrontendCallback.DeleteEnergyPacket(guid);
         }
 
         public GUID? PlaceNode(NodeDTO nodeType, int LayerNum, Vector2 planePos)

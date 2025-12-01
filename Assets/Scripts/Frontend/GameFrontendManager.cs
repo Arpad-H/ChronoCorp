@@ -12,14 +12,17 @@ using NodeType = NodeBase.NodeType;
 
 public class GameFrontendManager : MonoBehaviour, Interfaces.IFrontend
 {
-    public static GameFrontendManager Instance; // Singleton
+    public static GameFrontendManager Instance; 
     public CameraController cameraController;
     private EnergyPacketVisualizer energyPacketVisualizer;
     private IBackend backend; // Link to backend
+    
     [Header("Asset References")] public GameObject nodePrefab;
     public GameObject generatorPrefab;
     public GameObject conduitPrefab;
 
+    public CoordinatePlane layer0 ; //TODO temp hardcode
+    private Dictionary<int, CoordinatePlane> layerToCoordinatePlane = new Dictionary<int, CoordinatePlane>();
 
     private long fixedTickCount = 0;
 
@@ -39,6 +42,7 @@ public class GameFrontendManager : MonoBehaviour, Interfaces.IFrontend
 
     void Start()
     {
+        
         if (energyPacketVisualizer == null) energyPacketVisualizer = FindObjectOfType<EnergyPacketVisualizer>();
         if (cameraController == null) cameraController = FindObjectOfType<CameraController>();
         InputManager.Instance.OnButtonN += () => SpawnManuallyOnHoveredFrame(NodeDTO.RIPPLE, EnergyType.BLUE);
@@ -163,9 +167,22 @@ public class GameFrontendManager : MonoBehaviour, Interfaces.IFrontend
     {
         energyPacketVisualizer.SpawnEnergyPacket(guid, backend);
     }
+    public void DeleteEnergyPacket(GUID guid)
+    {
+       energyPacketVisualizer.DeleteEnergyPacket(guid);
+    }
 
     public bool AddTimeSlice(int sliceNum)
     {
         throw new NotImplementedException();
+    }
+
+    public CoordinatePlane GetCoordinatePlane( int startPosLayer)
+    {
+        if (layer0 == null)
+        {
+            layer0 = GameObject.Find("SpiralFrame_0").GetComponent<CoordinatePlane>();
+        }
+        return layer0;
     }
 }

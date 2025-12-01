@@ -1,4 +1,5 @@
-﻿using Interfaces;
+﻿using System.Collections.Generic;
+using Interfaces;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Pool;
@@ -10,6 +11,8 @@ public class EnergyPacketVisualizer : MonoBehaviour
     public GameObject prefab;
     [FormerlySerializedAs("conduit")] public ConduitVisual conduitVisual;
     private ObjectPool<EnergyPacketVisual> pool;
+    
+    private Dictionary<GUID,EnergyPacketVisual> ePVisuals = new();
 
     private void Awake()
     {
@@ -40,6 +43,8 @@ public class EnergyPacketVisualizer : MonoBehaviour
         ePVisual.guid = guid;
         ePVisual.backend = backend;
         ePVisual.SetConduit(conduitVisual);
+        ePVisuals.Add(guid,ePVisual);
+     
     }
 
     private EnergyPacketVisual CreateItem()
@@ -67,5 +72,13 @@ public class EnergyPacketVisualizer : MonoBehaviour
     public void ReleaseItem(EnergyPacketVisual ePVisual)
     {
         pool.Release(ePVisual);
+    }
+
+    public void DeleteEnergyPacket(GUID guid)
+    {
+        if (!ePVisuals.ContainsKey(guid)) return;
+        EnergyPacketVisual ePVisual = ePVisuals[guid];
+        ReleaseItem(ePVisual);
+        ePVisuals.Remove(guid);
     }
 }

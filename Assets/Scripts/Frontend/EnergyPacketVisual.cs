@@ -7,10 +7,14 @@ using UnityEngine;
 public class EnergyPacketVisual : MonoBehaviour
 {
     public ConduitVisual conduit;
-    public GUID guid{get; set;}
+
+    public GUID guid { get; set; }
+
     //private readonly float speed = 0.2f;
-    private float progress;
-public IBackend backend; //TODO giga dirty. fix backend reference later
+    public float progress;
+
+    public IBackend backend; //TODO giga dirty. fix backend reference later
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private void Start()
     {
@@ -21,13 +25,23 @@ public IBackend backend; //TODO giga dirty. fix backend reference later
     {
         Vector3? sourceNode;
         Vector3? targetNode;
-        progress = backend.GetEnergyPacketProgress(guid,out sourceNode, out targetNode);
+        progress = backend.GetEnergyPacketProgress(guid, out sourceNode, out targetNode);
+        if (sourceNode == null || targetNode == null) return;
         
         //lerp between conduit.nodeA and conduit.nodeB based on progress
-            if (progress >= 1f) EnergyPacketVisualizer.Instance.ReleaseItem(this);
-            var startPos = sourceNode.Pos;
-            var endPos = targetNode.Pos;
-            transform.position = Vector3.Lerp(startPos, endPos, progress);
+        if (progress >= 1f) EnergyPacketVisualizer.Instance.ReleaseItem(this);
+        Vector2 startPos, endPos = Vector2.zero;
+        startPos.x = sourceNode.Value.x;
+        startPos.y = sourceNode.Value.y;
+        endPos.x = targetNode.Value.x;
+        endPos.y = targetNode.Value.y;
+        int startPosLayer = (int)sourceNode.Value.z;
+        int endPosLayer = (int)targetNode.Value.z;
+        CoordinatePlane startPlane = GameFrontendManager.Instance.GetCoordinatePlane( startPosLayer);
+        CoordinatePlane endPlane = GameFrontendManager.Instance.GetCoordinatePlane( endPosLayer);
+        Vector3 worldStartPos = startPlane.GridToWorldPosition(startPos);
+        Vector3 worldEndPos = endPlane.GridToWorldPosition(endPos);
+       transform.position = Vector3.Lerp(worldStartPos, worldEndPos, progress);
     }
 
     public void SetConduit(ConduitVisual conduitVisual)

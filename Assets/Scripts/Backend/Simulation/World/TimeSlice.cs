@@ -1,20 +1,23 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Backend.Simulation.Energy;
 using Interfaces;
 using NodeBase;
 using UnityEditor;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Backend.Simulation.World
 {
     public class SimulationStorage
     {
+        public event Action<GUID> onPacketDeleted;
         private readonly IFrontend _frontendCallback;
         public Dictionary<GUID, Connection> guidToConnections = new();
         public Dictionary<GUID, AbstractNodeInstance> guidToNodesMapping = new();
         public Dictionary<GUID, EnergyPacket> energyPackets = new();
         public readonly List<TimeSlice> timeSlices = new();
-        
+        private readonly List<GUID> _removeBuffer = new List<GUID>(128); //buffer to avoid modifying collection during iteration
         public SimulationStorage(IFrontend frontendCallback)
         {
             _frontendCallback = frontendCallback;
@@ -55,18 +58,25 @@ namespace Backend.Simulation.World
             {
                 timeSlice.tick(tickCount);
             }
+            
+            _removeBuffer.Clear();
 
-            foreach (var packet in energyPackets.Values)
+            foreach (var kvp in energyPackets) 
             {
+                var packet = kvp.Value;
                 packet.tick(tickCount, frontend);
+
                 if (packet.Delivered)
                 {
-                    //TODO: Call packet delivered event for frontend -> Removes packet in frontend
-                    //TODO: Consume packet on destination node
-                    energyPackets.Remove(packet.Guid);
-                    Debug.Log("Energy packet "+packet.Guid+" delivered.");
+                    _removeBuffer.Add(kvp.Key);
+                    onPacketDeleted?.Invoke(kvp.Key);
+                    Debug.Log("Energy packet " + kvp.Key + " delivered.");
                 }
             }
+
+            // Remove after loop to avoid modifying collection during iteration. was causing errors
+            for (int i = 0; i < _removeBuffer.Count; i++)
+                energyPackets.Remove(_removeBuffer[i]);
         }
         
         public GUID? link(GUID idNode1, GUID idNode2)

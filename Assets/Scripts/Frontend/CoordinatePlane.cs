@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Interfaces;
 using NodeBase;
@@ -41,6 +42,7 @@ public class CoordinatePlane : MonoBehaviour
         maxY = minY + numY * cellHeight;
     }
 
+  
     void Update()
     {
         if (showGrid) frameMesh.GetComponent<MeshRenderer>().material = mGrid;
@@ -121,52 +123,10 @@ public class CoordinatePlane : MonoBehaviour
             0.5f
         );
     }
-
-    // private void DrawGridLines()
-    // {
-    //     if (frameMesh == null) return;
-    //
-    //     GameObject gridParent = new GameObject("DebugGrid");
-    //     gridParent.transform.parent = nodeContainer;
-    //     gridParent.transform.localPosition = Vector3.zero;
-    //     float zOffset = -0.51f;
-    //
-    //     // Vertical lines
-    //     for (int x = 0; x <= numX; x++)
-    //     {
-    //         GameObject lineObj = new GameObject("VLine_" + x);
-    //         lineObj.transform.parent = gridParent.transform;
-    //         LineRenderer lr = lineObj.AddComponent<LineRenderer>();
-    //         lr.positionCount = 2;
-    //         lr.startWidth = 0.04f;
-    //         lr.endWidth = 0.04f;
-    //         lr.useWorldSpace = false;
-    //         lr.material = new Material(Shader.Find("Sprites/Default"));
-    //         lr.startColor = lr.endColor = Color.black;
-    //
-    //         Vector3 start = new Vector3(minX + x * cellWidth, minY, zOffset);
-    //         Vector3 end = new Vector3(minX + x * cellWidth, maxY, zOffset);
-    //         lr.SetPosition(0, start);
-    //         lr.SetPosition(1, end);
-    //     }
-    //
-    //     // Horizontal lines
-    //     for (int y = 0; y <= numY; y++)
-    //     {
-    //         GameObject lineObj = new GameObject("HLine_" + y);
-    //         lineObj.transform.parent = gridParent.transform;
-    //         LineRenderer lr = lineObj.AddComponent<LineRenderer>();
-    //         lr.positionCount = 2;
-    //         lr.startWidth = 0.04f;
-    //         lr.endWidth = 0.04f;
-    //         lr.useWorldSpace = false;
-    //         lr.material = new Material(Shader.Find("Sprites/Default"));
-    //         lr.startColor = lr.endColor = Color.black;
-    //
-    //         Vector3 start = new Vector3(minX, minY + y * cellHeight, zOffset);
-    //         Vector3 end = new Vector3(maxX, minY + y * cellHeight, zOffset);
-    //         lr.SetPosition(0, start);
-    //         lr.SetPosition(1, end);
-    //     }
-    // }
+    
+    public Vector3 GridToWorldPosition(Vector2 endPos)
+    {
+        Vector3 localPos = ToPlaneLocal(endPos);
+        return nodeContainer.TransformPoint(localPos);
+    }
 }
