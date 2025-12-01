@@ -98,11 +98,14 @@ namespace Backend.Simulation.World
             {
                 if (generator.alreadyConnectedTo(anyNode as AbstractNodeInstance))
                 {
+                    Debug.Log("Generator "+generator.guid+" already connected to node "+(anyNode as AbstractNodeInstance).guid);
                     return null;
                 }
                 var foundOutput = generator.findFreeOutput();
                 if (foundOutput == null)
                 {
+                    Debug.Log("Generator "+generator.guid+" has no free output!");
+
                     return null;
                 }
                 var rippleConnection = new Connection(node1, node2);
