@@ -24,13 +24,10 @@ public IBackend backend; //TODO giga dirty. fix backend reference later
         progress = backend.GetEnergyPacketProgress(guid,out sourceNode, out targetNode);
         
         //lerp between conduit.nodeA and conduit.nodeB based on progress
-        if (progress <0)
-        {
             if (progress >= 1f) EnergyPacketVisualizer.Instance.ReleaseItem(this);
             var startPos = sourceNode.Pos;
             var endPos = targetNode.Pos;
             transform.position = Vector3.Lerp(startPos, endPos, progress);
-        }
     }
 
     public void SetConduit(ConduitVisual conduitVisual)
