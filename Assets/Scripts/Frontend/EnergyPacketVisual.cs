@@ -41,7 +41,7 @@ public class EnergyPacketVisual : MonoBehaviour
         CoordinatePlane endPlane = GameFrontendManager.Instance.GetCoordinatePlane( endPosLayer);
         Vector3 worldStartPos = startPlane.GridToWorldPosition(startPos);
         Vector3 worldEndPos = endPlane.GridToWorldPosition(endPos);
-       transform.position = Vector3.Lerp(worldStartPos, worldEndPos, progress);
+       transform.position = Vector3.Lerp(worldStartPos, worldEndPos, progress) + new Vector3(0,0, -0.2f); // Slightly in front
     }
 
     public void SetConduit(ConduitVisual conduitVisual)

@@ -58,7 +58,7 @@ public class NodeVisual : MonoBehaviour
 
     public Vector3 GetAttachPosition()
     {
-       return transform.position;
+       return transform.position + new Vector3(0,0, -0.1f); // Slightly in front
     }
 
 }
