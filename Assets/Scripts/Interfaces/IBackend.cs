@@ -18,7 +18,7 @@ namespace Interfaces
          *
          * The returned GUID is a reference to the backend node object. Can be used to interact with the object (delete, link).
          */
-        GUID? PlaceNode(NodeDTO nodeType, int LayerNum, Vector2 planePos);
+        GUID? PlaceNode(NodeDTO nodeType, int LayerNum, Vector2 planePos, EnergyType? energyType);
         
         /**
          * Takes a node backend id to delete a node.
