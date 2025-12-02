@@ -23,6 +23,10 @@ public class EnergyPacketVisual : MonoBehaviour
 
     private void LateUpdate()
     {
+        if (backend == null)
+        {
+            return;
+        }
         Vector3? sourceNode;
         Vector3? targetNode;
         progress = backend.GetEnergyPacketProgress(guid, out sourceNode, out targetNode);
