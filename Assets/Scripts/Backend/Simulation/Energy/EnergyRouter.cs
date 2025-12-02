@@ -16,13 +16,18 @@ namespace Backend.Simulation.Energy
         {
             var result = new Dictionary<Output, OutputRouteStorage>();
 
-            foreach (var output in generator.AvailableOutputs) result[output] = createEnergyRoute(output);
+            Debug.Log("Creating energy routes for " + generator.guid);
+
+            foreach (var output in generator.AvailableOutputs)
+            {
+                result[output] = createEnergyRoute(output);
+            }
 
             return result;
         }
 
         /**
-         * Creates an output storage for one output based on bsf.
+         * Creates an output storage for one output based on bfs.
          */
         public static OutputRouteStorage createEnergyRoute(Output output)
         {
@@ -36,28 +41,39 @@ namespace Backend.Simulation.Energy
             var alreadyVisitedNodes = new Dictionary<AbstractNodeInstance, NodeWithConnections>();
             var alreadyVisitedConnections = new Dictionary<AbstractNodeInstance, Connection>();
 
-            BfsFromRipple((TimeRippleInstance) startRipple, alreadyVisitedConnections, alreadyVisitedNodes);
+            BfsFromRipple((TimeRippleInstance)startRipple, alreadyVisitedConnections, alreadyVisitedNodes);
 
             var generatorToRippleConnection = output.Connection;
             if (generatorToRippleConnection == null) return routesForOutput;
 
+            // Erste Route: Generator -> startRipple
             var firstRoute = new EnergyRoute();
-            var firstStep =
-                new EnergyStep(
-                    generatorToRippleConnection,
-                    false);
+
+            // Richtung der ersten Kante korrekt bestimmen:
+            // Wenn node1 == startRipple, dann kommt der Generator von node2 -> node1,
+            // also muss reverseDirection = true sein, damit Start = node2 (Generatorseite) ist.
+            var firstStepReverse =
+                generatorToRippleConnection.node1 == startRipple;
+            var firstStep = new EnergyStep(
+                generatorToRippleConnection,
+                firstStepReverse
+            );
+
             firstRoute.addStep(firstStep);
             routesForOutput.addRoute(startRipple, firstRoute);
 
+            // Für alle anderen Knoten den Pfad Generator -> startRipple -> ... -> Node aufbauen
             foreach (var kv in alreadyVisitedConnections)
             {
                 var nodeTargetOfConnection = kv.Key;
                 if (ReferenceEquals(nodeTargetOfConnection, startRipple)) continue;
 
+                // Temporäre Liste der Schritte von startRipple bis zum Zielknoten
+                // (wird zunächst rückwärts aufgebaut)
+                var tempSteps = new List<EnergyStep>();
 
-                var route = new EnergyRoute();
                 var currentNodeInTraversal = nodeTargetOfConnection;
-                while (nodeTargetOfConnection != null && !ReferenceEquals(currentNodeInTraversal, startRipple))
+                while (currentNodeInTraversal != null && !ReferenceEquals(currentNodeInTraversal, startRipple))
                 {
                     if (!alreadyVisitedConnections.TryGetValue(currentNodeInTraversal, out var edge))
                         break;
@@ -66,9 +82,28 @@ namespace Backend.Simulation.Energy
                     var directionReversed = edge.node1 != from;
 
                     var step = new EnergyStep(edge, directionReversed);
-                    route.addStep(step);
+                    tempSteps.Add(step);
 
-                    currentNodeInTraversal = (AbstractNodeInstance)from;
+                    currentNodeInTraversal = from as AbstractNodeInstance;
+                }
+
+                // Wenn wir nicht sauber beim Start-Ripple angekommen sind, Pfad verwerfen
+                if (!ReferenceEquals(currentNodeInTraversal, startRipple))
+                    continue;
+
+                // Route endgültig in richtiger Reihenfolge aufbauen:
+                // 1. Generator -> startRipple
+                // 2. startRipple -> ... -> nodeTargetOfConnection
+                var route = new EnergyRoute();
+
+                // Schritt vom Generator zum Start-Ripple immer zuerst
+                route.addStep(firstStep);
+
+                // tempSteps sind rückwärts (von Target zurück zu startRipple) aufgebaut,
+                // also umgedreht anhängen, damit wir von startRipple nach außen laufen.
+                for (int i = tempSteps.Count - 1; i >= 0; i--)
+                {
+                    route.addStep(tempSteps[i]);
                 }
 
                 routesForOutput.addRoute(nodeTargetOfConnection, route);
@@ -78,13 +113,12 @@ namespace Backend.Simulation.Energy
 
             void BfsFromRipple(
                 TimeRippleInstance start,
-                IDictionary<AbstractNodeInstance, Connection>
-                    alreadyVisitedConnections,
-                IDictionary<AbstractNodeInstance, NodeWithConnections> alreadyVisitedNodes)
+                IDictionary<AbstractNodeInstance, Connection> alreadyVisitedConnectionsInner,
+                IDictionary<AbstractNodeInstance, NodeWithConnections> alreadyVisitedNodesInner)
             {
                 var queue = new Queue<NodeWithConnections>();
                 queue.Enqueue(start);
-                alreadyVisitedNodes[start] = null;
+                alreadyVisitedNodesInner[start] = null;
 
                 while (queue.Count > 0)
                 {
@@ -97,10 +131,11 @@ namespace Backend.Simulation.Energy
                             : nextConnection.node2;
                         if (potentialNextStop is not NodeWithConnections nextStopNode) continue;
 
-                        if (!alreadyVisitedNodes.ContainsKey(potentialNextStop))
+                        if (!alreadyVisitedNodesInner.ContainsKey(potentialNextStop))
                         {
-                            alreadyVisitedNodes[potentialNextStop] = nextStopNode;
-                            alreadyVisitedConnections[potentialNextStop] = nextConnection;
+                            // WICHTIG: Vorgänger speichern, nicht den Knoten selbst
+                            alreadyVisitedNodesInner[potentialNextStop] = nextRipple;
+                            alreadyVisitedConnectionsInner[potentialNextStop] = nextConnection;
                             queue.Enqueue(nextStopNode);
                         }
                     }
@@ -111,7 +146,7 @@ namespace Backend.Simulation.Energy
 
     public class EnergyScheduler
     {
-        private const int TickCooldownOutputs = 100;
+        private const int TickCooldownOutputs = 400;
 
         // For one output try to spawn a new packet via cooldown.
         public static void tick(long currentTick, Output output, SimulationStorage storage)
@@ -125,14 +160,19 @@ namespace Backend.Simulation.Energy
 
             var nextIndex = output.targetIndex++ % output.RouteStorage.savedRoutes.Count;
             var nextRoute = output.RouteStorage.orderedListOfRoutes[nextIndex];
-            
+
             var stepsInRoute = nextRoute.steps.Count;
-            if(stepsInRoute == 0) return;
+            if (stepsInRoute == 0) return;
             var startStep = nextRoute.steps[0];
             var endStep = nextRoute.steps[stepsInRoute - 1];
 
-            var newEnergyPacket = new EnergyPacket(ChooseEnergyType(endStep.getEnd()),
-                startStep.getStart() as EnergyPacketSpawner, endStep.getEnd(), nextRoute.steps);
+            var newEnergyPacket = new EnergyPacket(
+                ChooseEnergyType(endStep.getEnd()),
+                startStep.getStart() as EnergyPacketSpawner,
+                endStep.getEnd(),
+                nextRoute.steps
+            );
+
             storage.registerEnergyPacket(newEnergyPacket);
             output.lastGenerationTick = currentTick;
         }
@@ -149,7 +189,7 @@ namespace Backend.Simulation.Energy
 
     public class EnergyPacket
     {
-        private const float PacketTravelSpeedPerTick = 0.01f;
+        private const float PacketTravelSpeedPerTick = 0.1f;
 
         private int _currentEdgeIndex;
 
@@ -157,7 +197,10 @@ namespace Backend.Simulation.Energy
         private float _travelledOnEdge;
         public GUID Guid { get; }
 
-        public EnergyPacket(EnergyType energyType, EnergyPacketSpawner source, AbstractNodeInstance destination,
+        public EnergyPacket(
+            EnergyType energyType,
+            EnergyPacketSpawner source,
+            AbstractNodeInstance destination,
             List<EnergyStep> steps)
         {
             Guid = GUID.Generate();
@@ -181,13 +224,21 @@ namespace Backend.Simulation.Energy
             if (Delivered) return;
             _travelledOnEdge += PacketTravelSpeedPerTick;
             progressOnEdge = _travelledOnEdge / currentStep().connection.length;
-            if (!(progressOnEdge >= 1.0)) return;
+            if (progressOnEdge < 1.0f) return;
 
             progressOnEdge = 0;
             _travelledOnEdge = 0;
             _currentEdgeIndex++;
-            if (_currentEdgeIndex >= Steps.Count) Delivered = true;
-            else frontend.SpawnEnergyPacket(Guid);
+            if (_currentEdgeIndex >= Steps.Count)
+            {
+                Debug.Log("Delivered at target");
+                Delivered = true;
+            }
+            else
+            {
+                Debug.Log("Relaying to next one");
+                frontend.SpawnEnergyPacket(Guid);
+            }
         }
 
         public EnergyStep currentStep()
