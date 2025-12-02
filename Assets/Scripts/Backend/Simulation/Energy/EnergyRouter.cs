@@ -146,7 +146,7 @@ namespace Backend.Simulation.Energy
 
     public class EnergyScheduler
     {
-        private const int TickCooldownOutputs = 400;
+        private const int TickCooldownOutputs = 100;
 
         // For one output try to spawn a new packet via cooldown.
         public static void tick(long currentTick, Output output, SimulationStorage storage)
