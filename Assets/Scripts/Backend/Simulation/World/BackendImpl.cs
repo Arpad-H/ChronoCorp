@@ -60,6 +60,13 @@ namespace Backend.Simulation.World
 
         public float GetEnergyPacketProgress(GUID packet, out Vector3? sourcePos, out Vector3? targetPos) //TODO had to change it to know the source adn target
         {
+            if (!_storage.energyPackets.ContainsKey(packet))
+            {
+                sourcePos = null;
+                targetPos = null;
+                
+                return -1;
+            }
             var foundPacket = _storage.energyPackets[packet];
             if (foundPacket != null)
             {
