@@ -31,6 +31,10 @@ public class EnergyPacketVisual : MonoBehaviour
         Vector3? targetNode;
         progress = backend.GetEnergyPacketProgress(guid, out sourceNode, out targetNode);
         if (sourceNode == null || targetNode == null) return;
+        if (Mathf.Approximately(progress, -1))
+        {
+            return;
+        }
         
         //lerp between conduit.nodeA and conduit.nodeB based on progress
         if (progress >= 1f) EnergyPacketVisualizer.Instance.ReleaseItem(this);
