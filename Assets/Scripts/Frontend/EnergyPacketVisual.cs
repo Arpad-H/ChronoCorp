@@ -37,7 +37,6 @@ public class EnergyPacketVisual : MonoBehaviour
         }
         
         //lerp between conduit.nodeA and conduit.nodeB based on progress
-        if (progress >= 1f) EnergyPacketVisualizer.Instance.ReleaseItem(this);
         Vector2 startPos, endPos = Vector2.zero;
         startPos.x = sourceNode.Value.x;
         startPos.y = sourceNode.Value.y;

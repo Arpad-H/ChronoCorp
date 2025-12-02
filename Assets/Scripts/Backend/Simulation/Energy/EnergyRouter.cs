@@ -237,7 +237,6 @@ namespace Backend.Simulation.Energy
             else
             {
                 Debug.Log("Relaying to next one");
-                frontend.SpawnEnergyPacket(Guid);
             }
         }
 
