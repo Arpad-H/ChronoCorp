@@ -46,14 +46,13 @@ public class GameFrontendManager : MonoBehaviour, Interfaces.IFrontend
         if (cameraController == null) cameraController = FindObjectOfType<CameraController>();
         InputManager.Instance.OnButtonN += () => SpawnManuallyOnHoveredFrame(NodeDTO.RIPPLE, EnergyType.BLUE);
         InputManager.Instance.OnButtonG += () => SpawnManuallyOnHoveredFrame(NodeDTO.GENERATOR, EnergyType.BLUE);
-        InputManager.Instance.OnButtonX += () => DeleteNodeManually();
-
         InputManager.Instance.OnButton1 += () => SpawnManuallyOnHoveredFrame(NodeDTO.RIPPLE, EnergyType.GREEN);
         InputManager.Instance.OnButton2 += () => SpawnManuallyOnHoveredFrame(NodeDTO.GENERATOR,EnergyType.GREEN);
         InputManager.Instance.OnButton3 += () => SpawnManuallyOnHoveredFrame(NodeDTO.RIPPLE, EnergyType.RED);
         InputManager.Instance.OnButton4 += () => SpawnManuallyOnHoveredFrame(NodeDTO.GENERATOR, EnergyType.RED);
-        InputManager.Instance.OnButton5 += () => SpawnManuallyOnHoveredFrame(NodeDTO.RIPPLE, EnergyType.ORANGE);
-        InputManager.Instance.OnButton6 += () => SpawnManuallyOnHoveredFrame(NodeDTO.GENERATOR, EnergyType.ORANGE);
+        InputManager.Instance.OnButton5 += () => SpawnManuallyOnHoveredFrame(NodeDTO.RIPPLE, EnergyType.YELLOW);
+        InputManager.Instance.OnButton6 += () => SpawnManuallyOnHoveredFrame(NodeDTO.GENERATOR, EnergyType.YELLOW);
+        InputManager.Instance.OnButtonX += () => DeleteNodeManually();
     }
 
     void Update()
@@ -118,23 +117,18 @@ public class GameFrontendManager : MonoBehaviour, Interfaces.IFrontend
         cameraController.RaycastForFirst(out rh); //maybe replace with single ray with custom layer?
 
         NodeVisual node = rh.transform.GetComponentInParent<NodeVisual>();
-        if (node == null) return;
+        if (!node) return;
         if (backend.DeleteNode(node.backendID))
         {
             Destroy(node.gameObject);
         }
     }
 
-    public void SpawnConduit(NodeVisual a, NodeVisual b)
+    public bool isValidConduit(NodeVisual a, NodeVisual b)
     {
-        if (a == null || b == null || a == b) return;
-        // GUID? connectionID;
-        if (backend.LinkNodes(a.backendID, b.backendID, out GUID? connectionID))
-        {
-            GameObject conduitObj = Instantiate(conduitPrefab, Vector3.zero, Quaternion.identity);
-            ConduitVisual conduitVisual = conduitObj.GetComponent<ConduitVisual>();
-            conduitVisual.Initialize(a, b);
-        }
+        if (!a || !b || a == b) return false;
+
+        return backend.LinkNodes(a.backendID, b.backendID, out GUID? connectionID);
     }
 
 
@@ -179,7 +173,7 @@ public class GameFrontendManager : MonoBehaviour, Interfaces.IFrontend
 
     public CoordinatePlane GetCoordinatePlane( int startPosLayer)
     {
-        if (layer0 == null)
+        if (!layer0)
         {
             layer0 = GameObject.Find("SpiralFrame_0").GetComponent<CoordinatePlane>();
         }

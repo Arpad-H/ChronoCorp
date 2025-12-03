@@ -209,9 +209,23 @@ namespace NodeBase
     {
         // Wildcard energy Type. Everytime a node would accept all energy types -> We use white
         WHITE,
-        ORANGE,
+        YELLOW,
         RED,
         BLUE,
         GREEN
+    }
+    public static class EnergyTypeExtensions
+    {
+        public static Color ToColor(this EnergyType t)
+        {
+            return t switch
+            {
+                EnergyType.GREEN  => Color.green,
+                EnergyType.RED    => Color.red,
+                EnergyType.BLUE   => Color.blue,
+                EnergyType.YELLOW => Color.yellow,
+                EnergyType.WHITE  => Color.white
+            };
+        }
     }
 }

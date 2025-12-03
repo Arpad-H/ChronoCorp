@@ -39,7 +39,7 @@ public class NodeVisual : MonoBehaviour
 
   private void OnMouseDown()
     {
-        InputManager.Instance.StartDrag(this);
+        ConduitVisualizer.Instance.StartDrag(this);
     }
 
     private void OnMouseEnter()
@@ -56,28 +56,10 @@ public class NodeVisual : MonoBehaviour
     {
         return transform.position;
     }
-    public void SetEnergyType(EnergyType energyType)
+    public void SetEnergyType(EnergyType newEnergyType)
     {
-        Color color = Color.white;
-        switch (energyType)
-        {
-            case (EnergyType.BLUE):
-                color = Color.blue;
-                break;
-            case (EnergyType.RED):
-                color = Color.red;
-                break;
-            case (EnergyType.GREEN):
-                color = Color.green;
-                break;
-            case (EnergyType.ORANGE):
-                color = new Color(1f, 0.5f, 0f); // Orange
-                break;
-            default:
-                color = Color.white;
-                break;
-        }
-        this.energyType = energyType;
+        Color color = newEnergyType.ToColor();
+        energyType = newEnergyType;
         spriteRenderer.color = color;
     }
 

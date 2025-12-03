@@ -10,6 +10,7 @@ public enum CameraMode
 
 public class CameraController : MonoBehaviour
 {
+    
     public CamShowcase camShowcase;
     public float zoomSpeed = 3f;
     public Camera cam;

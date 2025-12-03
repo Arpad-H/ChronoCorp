@@ -29,15 +29,7 @@ public class EnergyPacketVisualizer : MonoBehaviour
         );
     }
 
-    private void Update()
-    {
-        // Press Space to spawn one pooled object 
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            var ePVisual = pool.Get();
-            ePVisual.SetConduit(conduitVisual);
-        }
-    }
+   
     public void SpawnEnergyPacket(GUID guid,IBackend backend,EnergyType energyType) //TODO giga dirty. fix backend reference later
     {
         EnergyPacketVisual ePVisual = pool.Get();
