@@ -60,6 +60,7 @@ public class ConduitVisualizer : MonoBehaviour
 
     public void ReleaseItem(ConduitVisual conduitVisual)
     {
+        conduitVisual.Reset();
         pool.Release(conduitVisual);
     }
 
@@ -70,6 +71,7 @@ public class ConduitVisualizer : MonoBehaviour
         // ReleaseItem(conduitVisual);
         // conduitVisuals.Remove(guid);
     }
+    
     public void StartDrag(NodeVisual nodeVisual)
     {
         if (previewConduitVisual) return; // Already dragging
@@ -93,13 +95,15 @@ public class ConduitVisualizer : MonoBehaviour
             }
         }
         ReleaseItem(previewConduitVisual);
+        previewConduitVisual = null;
     }
 
     private void CompleteConduit(NodeVisual endNodeVisual)
     {
-        if (GameFrontendManager.Instance.isValidConduit(previewConduitVisual.nodeVisualA, endNodeVisual))
+        GUID? conduitBackendID = GameFrontendManager.Instance.isValidConduit(previewConduitVisual.nodeVisualA, endNodeVisual);
+        if (conduitBackendID != null)
         {
-            previewConduitVisual.FinalizeConduit(endNodeVisual);
+            previewConduitVisual.FinalizeConduit(endNodeVisual,conduitBackendID.Value);
             conduitVisuals.AddLast(previewConduitVisual);
             previewConduitVisual = null;
             return;

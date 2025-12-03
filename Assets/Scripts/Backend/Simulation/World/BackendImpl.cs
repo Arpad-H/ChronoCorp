@@ -42,14 +42,14 @@ namespace Backend.Simulation.World
             return timeSlice?.removeNode(nodeBackendId) ?? false;
         }
 
-        public bool LinkNodes(GUID backendIdA, GUID backendIdB, out GUID? connectionID)
+        public GUID? LinkNodes(GUID backendIdA, GUID backendIdB)
         {
-            connectionID = _storage.link(backendIdA, backendIdB);
+            GUID? connectionID = _storage.link(backendIdA, backendIdB);
             if (connectionID != null)
             {
                 _storage.recalculatePaths((GUID)connectionID);
             }
-            return connectionID != null;
+            return connectionID;
         }
 
         public bool UnlinkNodes(GUID connectionId)

@@ -31,7 +31,7 @@ namespace Interfaces
          * Returns true and a connection uid if the nodes could be connected.
          * Otherwise, returns false and null.
          */
-        bool LinkNodes(GUID backendIdA, GUID backendIdB, out GUID? connectionID);
+        GUID? LinkNodes(GUID backendIdA, GUID backendIdB);
         
         /**
          * Takes a connection id (NOT A NODE ID) to remove the connection and unlink the nodes that are connected.

@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using NodeBase;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -15,6 +16,7 @@ public class ConduitVisual : MonoBehaviour
     [FormerlySerializedAs("nodeB")] public NodeVisual nodeVisualB;
     private Vector3 dragPosition;
     public LineRenderer lineRenderer;
+    private GUID backendID;
 
     void Awake()
     {
@@ -30,15 +32,11 @@ public class ConduitVisual : MonoBehaviour
         nodeVisualA = nodeVisual;
         lineRenderer.SetPosition(0, nodeVisual.GetAttachPosition());
     }
-    public void UpdateDragPosition(Vector3 position)
+    public void FinalizeConduit(NodeVisual nodeVisual,GUID newBackendID)
     {
-        dragPosition = position;
-        lineRenderer.SetPosition(1, dragPosition);
-    }
-    public void FinalizeConduit(NodeVisual nodeVisual)
-    {
+        backendID = newBackendID;
         nodeVisualB = nodeVisual;
-        lineRenderer.SetPosition(1, nodeVisual.GetAttachPosition());
+        SetPreviewPosition(nodeVisual.GetAttachPosition());
         SetConduitEnergyType();
     }
 

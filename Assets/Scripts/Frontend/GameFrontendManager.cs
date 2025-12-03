@@ -124,11 +124,10 @@ public class GameFrontendManager : MonoBehaviour, Interfaces.IFrontend
         }
     }
 
-    public bool isValidConduit(NodeVisual a, NodeVisual b)
+    public GUID? isValidConduit(NodeVisual a, NodeVisual b)
     {
-        if (!a || !b || a == b) return false;
-
-        return backend.LinkNodes(a.backendID, b.backendID, out GUID? connectionID);
+        if (!a || !b || a == b) return null;
+        return backend.LinkNodes(a.backendID, b.backendID);
     }
 
 
