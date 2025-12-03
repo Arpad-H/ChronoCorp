@@ -95,6 +95,13 @@ namespace Backend.Simulation.World
             }
             if (node1 is NodeWithConnections ripple1 && node2 is NodeWithConnections ripple2)
             {
+                var eType1 = ((TimeRippleInstance)ripple1).EnergyType;
+                var eType2 = ((TimeRippleInstance)ripple2).EnergyType;
+                
+                if (!eType1.Equals(EnergyType.WHITE) && !eType2.Equals(EnergyType.WHITE) && !eType1.Equals(eType2))
+                {
+                    return null;
+                }
                 
                 if (ripple1.HasDirectConnectionTo(ripple2 as AbstractNodeInstance))
                 {
