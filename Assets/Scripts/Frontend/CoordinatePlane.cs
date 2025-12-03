@@ -11,7 +11,8 @@ public class CoordinatePlane : MonoBehaviour
     public Transform nodeContainer; // unscaled coordinate space
     public Material mGrid;
     public Material mNormal;
-
+    public GameObject nodePrefab;
+    public GameObject generatorPrefab;
     [Header("Grid Settings")]
     // public int gridWidth = 10;
     // public int gridHeight = 10; //currently determined by frameMesh scale
@@ -67,16 +68,18 @@ public class CoordinatePlane : MonoBehaviour
     /// <summary>
     /// Instantiates a node inside the nodeContainer at plane coordinates.
     /// </summary>
-    public bool PlaceNode(GameObject node, Vector3 planePos, out GameObject obj)
+    public bool PlaceNode(NodeDTO nodeDTO, Vector3 planePos, out GameObject obj, EnergyType energyType)
     {
         obj = null;
         Vector3 localPos = ToPlaneLocal(planePos);
         // if (! _backend.PlaceNode(prefab,layerNum, new Vector2(localPos.x,localPos.y))) return false;
 
-
-        obj = null;
+        bool isSource = nodeDTO == NodeDTO.GENERATOR;
+        GameObject node = nodeDTO == NodeDTO.RIPPLE ? nodePrefab : generatorPrefab;
         if (!IsWithinBounds(localPos) || IsPlaceOccupied(localPos)) return false;
         obj = Instantiate(node, nodeContainer);
+        NodeVisual nv = obj.GetComponent<NodeVisual>();
+        if (nv && !isSource) nv.SetEnergyType(energyType);
         obj.transform.localPosition = localPos;
         nodes.Add(obj);
         return true;

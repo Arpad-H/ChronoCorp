@@ -9,17 +9,39 @@ public class EnergyPacketVisual : MonoBehaviour
     public ConduitVisual conduit;
 
     public GUID guid { get; set; }
-
+    private Color energyType;
     //private readonly float speed = 0.2f;
     public float progress;
 
     public IBackend backend; //TODO giga dirty. fix backend reference later
-
+    public SpriteRenderer sprite;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private void Start()
     {
+       if(!sprite) sprite = GetComponent<SpriteRenderer>();
     }
-
+    public void SetEnergyType(EnergyType energyType)
+    {
+        switch (energyType)
+        {
+            case (EnergyType.BLUE) :
+                this.energyType = Color.blue;
+                break;
+            case (EnergyType.RED) :
+                this.energyType = Color.red;
+                break;
+            case (EnergyType.GREEN) :
+                this.energyType = Color.green;
+                break;
+            case (EnergyType.ORANGE) :
+                this.energyType = new Color(1f, 0.5f, 0f); // Orange
+                break;
+            default:
+                this.energyType = Color.white;
+                break;  
+        }
+       sprite.color = this.energyType;
+    }
 
     private void LateUpdate()
     {
@@ -48,7 +70,7 @@ public class EnergyPacketVisual : MonoBehaviour
         CoordinatePlane endPlane = GameFrontendManager.Instance.GetCoordinatePlane( endPosLayer);
         Vector3 worldStartPos = startPlane.GridToWorldPosition(startPos);
         Vector3 worldEndPos = endPlane.GridToWorldPosition(endPos);
-       transform.position = Vector3.Lerp(worldStartPos, worldEndPos, progress) + new Vector3(0,0, -0.2f); // Slightly in front
+       transform.position = Vector3.Lerp(worldStartPos, worldEndPos, progress) + new Vector3(0, 0.1f,0); // Slightly in front
     }
 
     public void SetConduit(ConduitVisual conduitVisual)
@@ -60,7 +82,7 @@ public class EnergyPacketVisual : MonoBehaviour
     public void Reset()
     {
         conduit = null;
-        backend = null;
+        energyType = Color.white;
         progress = 0f;
     }
 }

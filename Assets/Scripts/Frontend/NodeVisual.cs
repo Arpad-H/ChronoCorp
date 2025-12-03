@@ -1,6 +1,7 @@
 // Node.cs
 using UnityEngine;
 using System.Collections.Generic;
+using NodeBase;
 using UnityEditor;
 
 public class NodeVisual : MonoBehaviour
@@ -8,12 +9,13 @@ public class NodeVisual : MonoBehaviour
     [Header("Node Properties")]
     public GUID backendID { get; set; }
 
+    public EnergyType energyType;
     public bool isSource; // Is it an energy source or a Time Ripple?
     public float energySupply = 0f; // Energy generated (if source)
     public float energyDemand = 0f; // Energy consumed (if ripple)
     public float nodeScale = 0.75f; // Scale of the node (not overfill the grid)
-
-    [Header("Simulation State")]
+    public SpriteRenderer spriteRenderer;
+    
     
     public float currentEnergy = 0f; // Current energy buffer
     public float collapseTimer = 0f;
@@ -22,7 +24,7 @@ public class NodeVisual : MonoBehaviour
     // References for the simulation
     public List<ConduitVisual> connectedConduits = new List<ConduitVisual>();
 
-    private SpriteRenderer spriteRenderer;
+   
 
     void Awake()
     {
@@ -31,15 +33,9 @@ public class NodeVisual : MonoBehaviour
 
     void Start()
     {
-        UpdateColor();
         transform.localScale = Vector3.one * nodeScale;         // Adjust scale to not overcrowd the grid
     }
     
-
-    public void UpdateColor()
-    {
-        spriteRenderer.color = isSource ? Color.red : Color.cyan;
-    }
 
   private void OnMouseDown()
     {
@@ -58,7 +54,31 @@ public class NodeVisual : MonoBehaviour
 
     public Vector3 GetAttachPosition()
     {
-       return transform.position + new Vector3(0,0, -0.1f); // Slightly in front
+        return transform.position;
+    }
+    public void SetEnergyType(EnergyType energyType)
+    {
+        Color color = Color.white;
+        switch (energyType)
+        {
+            case (EnergyType.BLUE):
+                color = Color.blue;
+                break;
+            case (EnergyType.RED):
+                color = Color.red;
+                break;
+            case (EnergyType.GREEN):
+                color = Color.green;
+                break;
+            case (EnergyType.ORANGE):
+                color = new Color(1f, 0.5f, 0f); // Orange
+                break;
+            default:
+                color = Color.white;
+                break;
+        }
+        this.energyType = energyType;
+        spriteRenderer.color = color;
     }
 
 }

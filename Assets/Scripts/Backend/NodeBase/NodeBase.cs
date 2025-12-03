@@ -209,6 +209,7 @@ namespace NodeBase
     {
         // Wildcard energy Type. Everytime a node would accept all energy types -> We use white
         WHITE,
+        ORANGE,
         RED,
         BLUE,
         GREEN

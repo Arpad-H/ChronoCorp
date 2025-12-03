@@ -1,6 +1,7 @@
 // Conduit.cs
 
 using System;
+using NodeBase;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -41,18 +42,36 @@ public class ConduitVisual : MonoBehaviour
         dragPosition = position;
         lineRenderer.SetPosition(1, dragPosition);
     }
-    public void FinalizeConduit(NodeVisual nodeVisual)
+    private void FinalizeConduit(NodeVisual nodeVisual)
     {
         nodeVisualB = nodeVisual;
         lineRenderer.SetPosition(1, nodeVisual.GetAttachPosition());
+        SetConduitEnergyType();
     }
 
-    void Update()
+    private void SetConduitEnergyType()
     {
-        // if (nodeA != null && nodeB != null)
-        // {
-        //     lineRenderer.SetPosition(0, nodeA.transform.position);
-        //     lineRenderer.SetPosition(1, nodeB.transform.position);
-        // }
+        Color color;
+        EnergyType energyType = nodeVisualA.energyType == EnergyType.WHITE ? nodeVisualB.energyType :nodeVisualA.energyType;
+        switch (energyType)
+        {
+            case (EnergyType.BLUE) :
+                color = Color.blue;
+                break;
+            case (EnergyType.RED) :
+                color = Color.red;
+                break;
+            case (EnergyType.GREEN) :
+                color = Color.green;
+                break;
+            case (EnergyType.ORANGE) :
+                color = new Color(1f, 0.5f, 0f); // Orange
+                break;
+            default:
+                color = Color.white;
+                break;  
+        }
+        lineRenderer.startColor = color;
+        lineRenderer.endColor = color;
     }
 }

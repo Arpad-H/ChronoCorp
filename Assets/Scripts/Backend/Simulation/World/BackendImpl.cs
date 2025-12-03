@@ -19,17 +19,17 @@ namespace Backend.Simulation.World
             _storage.onPacketDeleted += guid => FrontendCallback.DeleteEnergyPacket(guid);
         }
 
-        public GUID? PlaceNode(NodeDTO nodeType, int LayerNum, Vector2 planePos, EnergyType? energyType)
+        public GUID? PlaceNode(NodeDTO nodeType, int LayerNum, Vector2 planePos, EnergyType? et)
         {
             var timeSlice = byLayerNum(LayerNum);
 
             GUID? guid = null;
-            energyType = EnergyType.WHITE;
+            EnergyType energyType =  et ?? EnergyType.WHITE;
 
             if (nodeType.Equals(NodeDTO.GENERATOR)) guid = timeSlice.spawnGenerator(planePos, 1);
             if (nodeType.Equals(NodeDTO.RIPPLE))
             {
-                guid = timeSlice.spawnRipple(planePos);
+                guid = timeSlice.spawnRipple(planePos,energyType);
                 if(guid != null) energyType = ((TimeRippleInstance)_storage.guidToNodesMapping[(GUID) guid]).EnergyType;
             }
 

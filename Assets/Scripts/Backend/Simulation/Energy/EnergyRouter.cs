@@ -41,7 +41,7 @@ namespace Backend.Simulation.Energy
             var alreadyVisitedNodes = new Dictionary<AbstractNodeInstance, NodeWithConnections>();
             var alreadyVisitedConnections = new Dictionary<AbstractNodeInstance, Connection>();
 
-            BfsFromRipple((TimeRippleInstance)startRipple, alreadyVisitedConnections, alreadyVisitedNodes);
+            BfsFromRipple((TimeRippleInstance)startRipple, alreadyVisitedConnections, alreadyVisitedNodes);//TODO connecting a generator to a node works but not when initiating the connection from the node
 
             var generatorToRippleConnection = output.Connection;
             if (generatorToRippleConnection == null) return routesForOutput;

@@ -68,12 +68,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4d1c1b6f5ece774583d275f72804c46, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Node
-  id: 0
+  energyType: {r: 0, g: 0, b: 0, a: 0}
   isSource: 0
   energySupply: 0
   energyDemand: 0
+  nodeScale: 0.75
+  spriteRenderer: {fileID: -5221408241510210698}
   currentEnergy: 0
   collapseTimer: 0
+  connectedConduits: []
 --- !u!212 &-5221408241510210698
 SpriteRenderer:
   m_ObjectHideFlags: 0

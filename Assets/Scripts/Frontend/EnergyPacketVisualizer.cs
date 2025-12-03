@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Interfaces;
+using NodeBase;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Pool;
@@ -11,7 +12,7 @@ public class EnergyPacketVisualizer : MonoBehaviour
     public GameObject prefab;
     [FormerlySerializedAs("conduit")] public ConduitVisual conduitVisual;
     private ObjectPool<EnergyPacketVisual> pool;
-    
+ 
     private Dictionary<GUID,EnergyPacketVisual> ePVisuals = new();
 
     private void Awake()
@@ -37,12 +38,13 @@ public class EnergyPacketVisualizer : MonoBehaviour
             ePVisual.SetConduit(conduitVisual);
         }
     }
-    public void SpawnEnergyPacket(GUID guid,IBackend backend) //TODO giga dirty. fix backend reference later
+    public void SpawnEnergyPacket(GUID guid,IBackend backend,EnergyType energyType) //TODO giga dirty. fix backend reference later
     {
         EnergyPacketVisual ePVisual = pool.Get();
         ePVisual.guid = guid;
         ePVisual.backend = backend;
         ePVisual.SetConduit(conduitVisual);
+        ePVisual.SetEnergyType(energyType);
         ePVisuals.Add(guid,ePVisual);
      
     }
@@ -81,4 +83,5 @@ public class EnergyPacketVisualizer : MonoBehaviour
         ReleaseItem(ePVisual);
         ePVisuals.Remove(guid);
     }
+   
 }

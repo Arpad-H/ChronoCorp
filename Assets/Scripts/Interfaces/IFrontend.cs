@@ -12,7 +12,7 @@ namespace Interfaces
         void GameOver(string reason);
         bool PlaceNodeVisual(AbstractNodeInstance node, int layerNum, Vector2 planePos, EnergyType energyType);
         
-        void SpawnEnergyPacket(GUID guid);
+        void SpawnEnergyPacket(GUID guid,EnergyType energyType);
         void DeleteEnergyPacket(GUID guid);
 
         bool AddTimeSlice(int sliceNum);

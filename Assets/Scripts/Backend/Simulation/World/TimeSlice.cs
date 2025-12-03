@@ -33,7 +33,7 @@ namespace Backend.Simulation.World
         public void registerEnergyPacket(EnergyPacket energyPacket)
         {
             energyPackets[energyPacket.Guid] = energyPacket;
-            _frontendCallback.SpawnEnergyPacket(energyPacket.Guid);
+            _frontendCallback.SpawnEnergyPacket(energyPacket.Guid,energyPacket.EnergyType);
             Debug.Log("Created new energy packet "+energyPacket.Guid);
         }
 
@@ -195,10 +195,10 @@ namespace Backend.Simulation.World
             return newNode.guid;
         }
 
-        public GUID? spawnRipple(Vector2 pos)
+        public GUID? spawnRipple(Vector2 pos, EnergyType energyType)
         {
             if (spatialHashGrid.HasNodeNear(pos, TOLERANCE)) return null;
-            var newNode = new TimeRippleInstance(pos, random());
+            var newNode = new TimeRippleInstance(pos, energyType);
             spatialHashGrid.Add(newNode);
             _simulationStorage.guidToNodesMapping.Add(newNode.guid, newNode);
             Debug.Log("Created ripple "+newNode.guid+" at "+pos);

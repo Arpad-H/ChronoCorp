@@ -17,8 +17,7 @@ public class GameFrontendManager : MonoBehaviour, Interfaces.IFrontend
     private EnergyPacketVisualizer energyPacketVisualizer;
     private IBackend backend; // Link to backend
     
-    [Header("Asset References")] public GameObject nodePrefab;
-    public GameObject generatorPrefab;
+    [Header("Asset References")] 
     public GameObject conduitPrefab;
 
     public CoordinatePlane layer0 ; //TODO temp hardcode
@@ -49,12 +48,12 @@ public class GameFrontendManager : MonoBehaviour, Interfaces.IFrontend
         InputManager.Instance.OnButtonG += () => SpawnManuallyOnHoveredFrame(NodeDTO.GENERATOR, EnergyType.BLUE);
         InputManager.Instance.OnButtonX += () => DeleteNodeManually();
 
-        // InputManager.Instance.OnButton1 += () => SpawnOnHoveredFrame(nodePrefab);
-        // InputManager.Instance.OnButton2 += () => SpawnOnHoveredFrame(nodePrefab);
-        // InputManager.Instance.OnButton3 += () => SpawnOnHoveredFrame(nodePrefab);
-        // InputManager.Instance.OnButton4 += () => SpawnOnHoveredFrame(nodePrefab);
-        // InputManager.Instance.OnButton5 += () => SpawnOnHoveredFrame(nodePrefab);
-        // InputManager.Instance.OnButton6 += () => SpawnOnHoveredFrame(nodePrefab);
+        InputManager.Instance.OnButton1 += () => SpawnManuallyOnHoveredFrame(NodeDTO.RIPPLE, EnergyType.GREEN);
+        InputManager.Instance.OnButton2 += () => SpawnManuallyOnHoveredFrame(NodeDTO.GENERATOR,EnergyType.GREEN);
+        InputManager.Instance.OnButton3 += () => SpawnManuallyOnHoveredFrame(NodeDTO.RIPPLE, EnergyType.RED);
+        InputManager.Instance.OnButton4 += () => SpawnManuallyOnHoveredFrame(NodeDTO.GENERATOR, EnergyType.RED);
+        InputManager.Instance.OnButton5 += () => SpawnManuallyOnHoveredFrame(NodeDTO.RIPPLE, EnergyType.ORANGE);
+        InputManager.Instance.OnButton6 += () => SpawnManuallyOnHoveredFrame(NodeDTO.GENERATOR, EnergyType.ORANGE);
     }
 
     void Update()
@@ -74,18 +73,18 @@ public class GameFrontendManager : MonoBehaviour, Interfaces.IFrontend
         cameraController.RaycastForFirst(out rh); //maybe replace with single ray with custom layer?
 
         CoordinatePlane frame = rh.transform.GetComponentInParent<CoordinatePlane>();
-        if (frame == null) return false; // Not hovering over a frame
+        if (!frame) return false; // Not hovering over a frame
         int frameNum = frame.layerNum;
         Vector3 hitPoint = rh.point;
 
         Vector3 spawnPos = frame.WorldToLocal(hitPoint);
         Vector2 localCoordinates = frame.SnapToGrid(spawnPos);
 
-        GUID? nodeBackendID = backend.PlaceNode(nodeType, frameNum, localCoordinates);
+        GUID? nodeBackendID = backend.PlaceNode(nodeType, frameNum, localCoordinates, energyType);
         if (nodeBackendID != null)
         {
-            GameObject node = nodeType == NodeDTO.RIPPLE ? nodePrefab : generatorPrefab;
-            frame.PlaceNode(node, spawnPos, out GameObject newNode);
+            
+            frame.PlaceNode(nodeType, spawnPos, out GameObject newNode, energyType);
             newNode.GetComponent<NodeVisual>().backendID = nodeBackendID.Value;
             return true;
         }
@@ -94,7 +93,7 @@ public class GameFrontendManager : MonoBehaviour, Interfaces.IFrontend
         return false;
     }
 
-    private bool SpawnOnHoveredFrame(GameObject gameObject, EnergyType energyType)
+    private bool SpawnOnHoveredFrame(NodeDTO nodeDto, EnergyType energyType)
     {
         RaycastHit rh;
         cameraController.RaycastForFirst(out rh); //maybe replace with single ray with custom layer?
@@ -106,7 +105,7 @@ public class GameFrontendManager : MonoBehaviour, Interfaces.IFrontend
         if (frame != null)
         {
             Vector3 spawnPos = frame.WorldToLocal(hitPoint);
-            if (frame.PlaceNode(gameObject, spawnPos, out GameObject newNode)) return true;
+            if (frame.PlaceNode(nodeDto, spawnPos, out GameObject newNode,energyType)) return true;
         }
 
 
@@ -146,16 +145,17 @@ public class GameFrontendManager : MonoBehaviour, Interfaces.IFrontend
         UIManager.Instance.ShowGameOver(reason);
     }
 
-    public bool PlaceNodeVisual(AbstractNodeInstance node, int layerNum, Vector2 planePos)
+
+    public bool PlaceNodeVisual(AbstractNodeInstance node, int layerNum, Vector2 planePos, EnergyType energyType)
     {
         switch (node.NodeType.getShape())
         {
             case (Shape.CIRCLE):
-                if (SpawnOnHoveredFrame(nodePrefab, EnergyType.BLUE)) return true;
+                if (SpawnOnHoveredFrame(NodeDTO.RIPPLE, energyType)) return true;
                 return false; //TODO change energy type based on color
 
             case (Shape.SQUARE):
-                if (SpawnOnHoveredFrame(generatorPrefab, EnergyType.BLUE)) return true;
+                if (SpawnOnHoveredFrame(NodeDTO.GENERATOR, energyType)) return true;
                 return false; //TODO change energy type based on color
         }
 
@@ -163,9 +163,9 @@ public class GameFrontendManager : MonoBehaviour, Interfaces.IFrontend
     }
 
 
-    public void SpawnEnergyPacket(GUID guid)
+    public void SpawnEnergyPacket(GUID guid,EnergyType energyType)
     {
-        energyPacketVisualizer.SpawnEnergyPacket(guid, backend);
+        energyPacketVisualizer.SpawnEnergyPacket(guid, backend,energyType);
     }
     public void DeleteEnergyPacket(GUID guid)
     {
