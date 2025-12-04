@@ -82,10 +82,10 @@ public class ConduitVisual : MonoBehaviour
         lineRenderer.SetPositions(path.ToArray());
        
         spline.Clear();
-        if (!nodeVisualA.isSource)
-        {
-           path.Reverse();
-        }
+        // if (!nodeVisualA.isSource)
+        // {
+        //    path.Reverse();
+        // }
         for (int i = 0; i < path.Count; i++)
         {
             BezierKnot knot = new BezierKnot(path[i]);

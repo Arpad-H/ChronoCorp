@@ -14,7 +14,7 @@ public class EnergyPacketVisual : MonoBehaviour
     public String debugInfo;
     public String debugconduitID;
     //private readonly float speed = 0.2f;
-    public float progress;
+   
 
     public IBackend backend; //TODO giga dirty. fix backend reference later
 
@@ -45,12 +45,32 @@ public class EnergyPacketVisual : MonoBehaviour
         Vector3? sourceNode;
         Vector3? targetNode;
         GUID? conduitID;
-        progress = backend.GetEnergyPacketProgress(guid, out sourceNode, out targetNode, out conduitID);
+        float progress = backend.GetEnergyPacketProgress(guid, out sourceNode, out targetNode, out conduitID);
         if (conduitID.HasValue)
         {
             conduit = ConduitVisualizer.Instance.GetConduitVisual(conduitID.Value);
             splineAnimate.Container = conduit.splineContainer;
             debugconduitID = conduit.backendID.ToString();
+        }
+        
+        // determine direction
+        if (sourceNode.HasValue && targetNode.HasValue)
+        {
+            splineAnimate.Container = conduit.splineContainer;
+            Vector3 startPos = sourceNode.Value;
+            Spline spline = conduit.splineContainer.Splines[0];
+            Vector3 splineStartPos = spline[0].Position;
+            Vector3 splineEndPos = spline[spline.Count - 1].Position;
+            Vector3 endPos = splineEndPos - startPos;
+            
+            if (Vector3.Distance(startPos, splineStartPos) < 0.1f)
+            {
+              progress = 1- progress; // reverse direction
+            }
+            else if (Vector3.Distance(splineEndPos, endPos) < 0.1f)
+            {
+                progress =  progress; // normal direction
+            }
         }
         splineAnimate.NormalizedTime = progress;
         
@@ -82,6 +102,5 @@ public class EnergyPacketVisual : MonoBehaviour
     {
         conduit = null;
         energyType = EnergyType.WHITE;
-        progress = 0f;
     }
 }
