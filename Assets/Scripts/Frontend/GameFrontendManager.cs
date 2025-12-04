@@ -148,8 +148,11 @@ public class GameFrontendManager : MonoBehaviour, Interfaces.IFrontend
                 return false; //TODO change energy type based on color
 
             case (Shape.SQUARE):
-                if (SpawnOnHoveredFrame(NodeDTO.GENERATOR, energyType)) return true;
-                return false; //TODO change energy type based on color
+                if (SpawnOnHoveredFrame(NodeDTO.GENERATOR, energyType))
+                {
+                    return true;
+                }
+                return false; 
         }
 
         return false;

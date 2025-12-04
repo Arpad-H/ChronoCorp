@@ -46,8 +46,10 @@ namespace Interfaces
          *
          * This function is called per FixedUpdate on a Frontend Energy Packet Game Object. Between frames interpolation might be needed
          */
-        float GetEnergyPacketProgress(GUID packetID, out Vector3? startPos, out Vector3? endPos);
+        float GetEnergyPacketProgress(GUID packetID, out Vector3? startPos, out Vector3? endPos, out GUID? conduitID);
 
+        
+        
         /**
          * Called on FixedUpdate by the frontend to trigger a simulation step on the backend.
          */

@@ -6,21 +6,24 @@ using NodeBase;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Serialization;
+using UnityEngine.Splines;
 
 [RequireComponent(typeof(LineRenderer))]
 public class ConduitVisual : MonoBehaviour
 {
-    
-    public int id;
     [FormerlySerializedAs("nodeA")] public NodeVisual nodeVisualA;
     [FormerlySerializedAs("nodeB")] public NodeVisual nodeVisualB;
     private Vector3 dragPosition;
     public LineRenderer lineRenderer;
-    private GUID backendID;
+    public SplineContainer splineContainer;
+    private Spline spline;
+    public GUID backendID;
+    public String debugInfo;
 
     void Awake()
     {
-        id = GetInstanceID();
+        splineContainer = GetComponent<SplineContainer>();
+        spline = splineContainer.Splines[0];
         lineRenderer = GetComponent<LineRenderer>();
         lineRenderer.positionCount = 3;
         lineRenderer.startWidth = 0.1f;
@@ -76,10 +79,27 @@ public class ConduitVisual : MonoBehaviour
         }
 
         path.Add(B);
+        lineRenderer.SetPositions(path.ToArray());
+       
+        spline.Clear();
+        if (!nodeVisualA.isSource)
+        {
+           path.Reverse();
+        }
+        for (int i = 0; i < path.Count; i++)
+        {
+            BezierKnot knot = new BezierKnot(path[i]);
+            // Tangents zero = straight, sharp bends (no curvature)
+            knot.TangentIn = Vector3.zero;
+            knot.TangentOut = Vector3.zero;
+            spline.Add(knot);
+        }
 
-        lineRenderer.SetPosition(0, path[0]);
-        lineRenderer.SetPosition(1, path[1]);
-        lineRenderer.SetPosition(2, path[2]);
+    }
+
+    public void Update()
+    {
+        debugInfo = backendID.ToString();
     }
 
     public void Reset()

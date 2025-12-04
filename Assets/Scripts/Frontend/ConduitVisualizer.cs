@@ -10,8 +10,8 @@ public class ConduitVisualizer : MonoBehaviour
     public CameraController cameraController;
     public GameObject prefab;
     private ObjectPool<ConduitVisual> pool;
-    // private Dictionary<GUID,ConduitVisual> conduitVisuals = new();
-    private LinkedList<ConduitVisual> conduitVisuals = new();
+     private Dictionary<GUID,ConduitVisual> conduitVisuals = new();
+    //private LinkedList<ConduitVisual> conduitVisuals = new();
     ConduitVisual previewConduitVisual;
     private void Awake()
     {
@@ -104,7 +104,7 @@ public class ConduitVisualizer : MonoBehaviour
         if (conduitBackendID != null)
         {
             previewConduitVisual.FinalizeConduit(endNodeVisual,conduitBackendID.Value);
-            conduitVisuals.AddLast(previewConduitVisual);
+            conduitVisuals.Add(conduitBackendID.Value,previewConduitVisual);
             previewConduitVisual = null;
             return;
         }
@@ -125,5 +125,14 @@ public class ConduitVisualizer : MonoBehaviour
                 previewConduitVisual.SetPreviewPosition(lineEnd);
             }
         }
+    }
+
+    public ConduitVisual GetConduitVisual(GUID guid)
+    {
+        if (conduitVisuals.ContainsKey(guid))
+        {
+            return conduitVisuals[guid];
+        }
+        return null;
     }
 }

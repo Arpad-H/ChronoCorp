@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2529481489504881402}
   - component: {fileID: 1884306050439479725}
   - component: {fileID: 7443648789356886955}
+  - component: {fileID: 2781901633303892491}
   m_Layer: 0
   m_Name: Conduit
   m_TagString: Untagged
@@ -156,3 +157,43 @@ MonoBehaviour:
   nodeVisualA: {fileID: 0}
   nodeVisualB: {fileID: 0}
   lineRenderer: {fileID: 0}
+--- !u!114 &2781901633303892491
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6120440085130223727}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dab5c7d4c32e743048dfca98e2d5914f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Spline:
+    m_EditModeType: 1
+    m_Knots: []
+    m_MetaData: []
+    m_Closed: 0
+    m_IntData:
+      m_Data: []
+    m_FloatData:
+      m_Data: []
+    m_Float4Data:
+      m_Data: []
+    m_ObjectData:
+      m_Data: []
+  m_Splines:
+  - m_EditModeType: 1
+    m_Knots: []
+    m_MetaData: []
+    m_Closed: 0
+    m_IntData:
+      m_Data: []
+    m_FloatData:
+      m_Data: []
+    m_Float4Data:
+      m_Data: []
+    m_ObjectData:
+      m_Data: []
+  m_Knots:
+    m_KnotsLink: []

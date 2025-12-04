@@ -35,7 +35,15 @@ public class EnergyPacketVisualizer : MonoBehaviour
         EnergyPacketVisual ePVisual = pool.Get();
         ePVisual.guid = guid;
         ePVisual.backend = backend;
-        ePVisual.SetConduit(conduitVisual);
+       // GUID? conduitID = backend.GetRippleConnectionOfEnergyPacket(guid);
+       
+       // // if (conduitID.HasValue)
+       //  {
+       //     
+       //      ConduitVisual conduit = ConduitVisualizer.Instance.GetConduitVisual(conduitID);
+       //      ePVisual.SetConduit(conduit);
+       //  } 
+       
         ePVisual.SetEnergyType(energyType);
         ePVisuals.Add(guid,ePVisual);
      

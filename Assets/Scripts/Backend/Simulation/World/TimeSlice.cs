@@ -33,7 +33,8 @@ namespace Backend.Simulation.World
         public void registerEnergyPacket(EnergyPacket energyPacket)
         {
             energyPackets[energyPacket.Guid] = energyPacket;
-            _frontendCallback.SpawnEnergyPacket(energyPacket.Guid,energyPacket.EnergyType);
+            _frontendCallback.SpawnEnergyPacket(energyPacket.Guid,energyPacket.EnergyType); //inform frontend of new
+           
             Debug.Log("Created new energy packet "+energyPacket.Guid);
         }
 

@@ -63,13 +63,13 @@ namespace Backend.Simulation.World
             return false;
         }
 
-        public float GetEnergyPacketProgress(GUID packet, out Vector3? sourcePos, out Vector3? targetPos) //TODO had to change it to know the source adn target
+        public float GetEnergyPacketProgress(GUID packet, out Vector3? sourcePos, out Vector3? targetPos, out GUID? connectionID) 
         {
             if (!_storage.energyPackets.ContainsKey(packet))
             {
                 sourcePos = null;
                 targetPos = null;
-                
+                connectionID = null;
                 return -1;
             }
             var foundPacket = _storage.energyPackets[packet];
@@ -83,26 +83,25 @@ namespace Backend.Simulation.World
 
                 sourcePos = new Vector3(sourceNode.Pos.x, sourceNode.Pos.y, timeSliceSource.SliceNumber);
                 targetPos = new Vector3(targetNode.Pos.x, targetNode.Pos.y, timeSliceTarget.SliceNumber);
+                connectionID = foundPacket.currentStep().connection.guid;
                 return foundPacket.progressOnEdge;
             }
 
             sourcePos = null;
             targetPos = null;
+            connectionID = null;
             return -1;
         }
-        // public float GetEnergyPacketProgress(GUID packet, out GUID? connectionID)
-//         {
-//
-//             var foundPacket = _storage.energyPackets[packet];
-//             if (foundPacket != null)
-//             {
-//                 connectionID = foundPacket.currentStep().connection.guid;
-//                 return foundPacket.progressOnEdge;
-//             }
-//
-//             connectionID = null;
-//             return -1;
-//         }
+        // public GUID? GetRippleConnectionOfEnergyPacket(GUID packet)
+        // {
+        //     var foundPacket = _storage.energyPackets[packet];
+        //     if (foundPacket != null)
+        //     {
+        //    
+        //         return foundPacket.currentStep().connection.guid;
+        //     }
+        //     return null;
+        // }
 
         public void tick(long tickCount, IFrontend frontend)
         {
