@@ -59,6 +59,11 @@ namespace Interfaces
          * Called on FixedUpdate by the frontend to trigger a simulation step on the backend.
          */
         void tick(long tickCount, IFrontend caller);
+        
+        /**
+         * returns the amount of the specific NodesDTO in the inventory 
+         */
+        public int getAmountPlaceable(NodeDTO nodeDTO);
 
         // TimeLayer GetTimeLayer(int layerNum); //change time layer to whatever applies
     }
@@ -66,6 +71,7 @@ namespace Interfaces
     public enum NodeDTO //TODO NodeType got renamed to NodeDTO to prevent double naming with Backend.NodeType
     {
         GENERATOR,
-        RIPPLE
+        RIPPLE,
+        NORMALCONNECTION
     }
 }

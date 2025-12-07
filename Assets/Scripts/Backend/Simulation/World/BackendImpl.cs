@@ -112,6 +112,11 @@ namespace Backend.Simulation.World
             _storage.tick(tickCount, frontend);
         }
 
+        public int getAmountPlaceable(NodeDTO nodeDTO)
+        {
+            return _storage.inventory.getAmountPlaceable(nodeDTO);
+        }
+
         private TimeSlice byLayerNum(int layerNum)
         {
             return _storage.timeSlices[layerNum];

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Backend.Inv;
 using Backend.Simulation.Energy;
 using Interfaces;
 using NodeBase;
@@ -18,6 +19,7 @@ namespace Backend.Simulation.World
         public Dictionary<GUID, EnergyPacket> energyPackets = new();
         public Dictionary<GUID, Connection> guidToConnections = new();
         public Dictionary<GUID, AbstractNodeInstance> guidToNodesMapping = new();
+        public Inventory inventory = new();
 
 
         public SimulationStorage(IFrontend frontend)
@@ -79,7 +81,8 @@ namespace Backend.Simulation.World
 
         public GUID? link(GUID idNode1, GUID idNode2)
         {
-            if (!isNodeKnown(idNode1) || !isNodeKnown(idNode2)) return null;
+            bool canPlace = inventory.canPlaceNormalConnection();
+            if (!isNodeKnown(idNode1) || !isNodeKnown(idNode2) || !canPlace) return null;
 
             var node1 = guidToNodesMapping[idNode1];
             var node2 = guidToNodesMapping[idNode2];
@@ -95,6 +98,7 @@ namespace Backend.Simulation.World
 
                 if (ripple1.HasDirectConnectionTo(ripple2 as AbstractNodeInstance)) return null;
 
+                inventory.placeNormalConnection();
                 var rippleConnection = new Connection(ripple1 as AbstractNodeInstance, ripple2 as AbstractNodeInstance);
                 ripple1.getConnections().Add(rippleConnection);
                 ripple2.getConnections().Add(rippleConnection);
@@ -125,7 +129,8 @@ namespace Backend.Simulation.World
 
                     return null;
                 }
-
+                
+                inventory.placeNormalConnection();
                 var rippleConnection = new Connection(node1, node2);
                 foundOutput.Connection = rippleConnection;
                 anyNode.getConnections().Add(rippleConnection);
@@ -141,7 +146,8 @@ namespace Backend.Simulation.World
         {
             var foundConnection = guidToConnections[connectionId];
             if (foundConnection == null) return false;
-
+            
+            inventory.removeNormalConnection();
             var node1 = foundConnection.node1;
             var node2 = foundConnection.node2;
             unlinkFromConnection(node1, foundConnection);
@@ -184,7 +190,11 @@ namespace Backend.Simulation.World
 
         public GUID? spawnGenerator(Vector2 pos, int amountInitialOutputs)
         {
-            if (spatialHashGrid.HasNodeNear(pos, TOLERANCE)) return null;
+            bool canPlace = _simulationStorage.inventory.canPlaceGenerator();
+            
+            if (spatialHashGrid.HasNodeNear(pos, TOLERANCE) || !canPlace) return null;
+            
+            _simulationStorage.inventory.placeGenerator();
             var newNode = new GeneratorInstance(pos, amountInitialOutputs);
             spatialHashGrid.Add(newNode);
             _simulationStorage.guidToNodesMapping.Add(newNode.guid, newNode);
@@ -207,6 +217,7 @@ namespace Backend.Simulation.World
             if (_simulationStorage.guidToNodesMapping.TryGetValue(guid, out var nodeInstance))
                 if (spatialHashGrid.Remove(nodeInstance))
                 {
+                    if(nodeInstance is GeneratorInstance) _simulationStorage.inventory.removeGenerator();
                     _simulationStorage.guidToNodesMapping.Remove(guid);
                     Debug.Log("Removed node " + guid);
                     return true;
