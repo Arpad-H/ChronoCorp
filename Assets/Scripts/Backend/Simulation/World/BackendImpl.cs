@@ -9,7 +9,7 @@ namespace Backend.Simulation.World
     public class BackendImpl : IBackend
     {
         public readonly IFrontend FrontendCallback;
-        private SimulationStorage _storage;
+        private readonly SimulationStorage _storage;
 
         public BackendImpl(IFrontend frontend)
         {
@@ -90,6 +90,12 @@ namespace Backend.Simulation.World
             targetPos = null;
             connectionID = null;
             return -1;
+        }
+
+        public bool getValuesForStabilityMalusType(StabilityMalusType type, out int threshold)
+        {
+            threshold = _storage.StabilityBar.getActivationThreshold(type);
+            return _storage.StabilityBar.IsMalusActiveByType(type);
         }
         // public GUID? GetRippleConnectionOfEnergyPacket(GUID packet)
         // {

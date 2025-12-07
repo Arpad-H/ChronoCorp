@@ -15,6 +15,21 @@ namespace Interfaces
         void SpawnEnergyPacket(GUID guid,EnergyType energyType);
         void DeleteEnergyPacket(GUID guid);
 
+        /**
+         * Called by the backend whenever the value of the stability bar changes. Can be used to change UI accordingly
+         */
+        void OnStabilityBarUpdate(int minValue, int maxValue, int currentValue);
+
+        /**
+         * Called when a stability debuff effect is activated due to low stability
+         */
+        void OnActivateStabilityMalus(StabilityMalusType stabilityMalusType);
+
+        /**
+        * Called when a stability debuff effect is deactivated due to high stability
+        */
+        void OnDeactivateStabilityMalus(StabilityMalusType stabilityMalusType);
+
         bool AddTimeSlice(int sliceNum);
         //ui healthbar etc later
     }

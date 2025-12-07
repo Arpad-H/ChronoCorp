@@ -75,6 +75,8 @@ namespace Backend.Simulation.World
                 }
             }
 
+            StabilityBar.Tick(tickCount, this);
+
             // Remove after loop to avoid modifying collection during iteration. was causing errors
             for (int i = 0; i < _removeBuffer.Count; i++)
                 energyPackets.Remove(_removeBuffer[i]);

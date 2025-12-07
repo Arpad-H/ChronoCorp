@@ -48,8 +48,12 @@ namespace Interfaces
          */
         float GetEnergyPacketProgress(GUID packetID, out Vector3? startPos, out Vector3? endPos, out GUID? conduitID);
 
-        
-        
+        /**
+         * Asks the backend for the activation threshold value of a malus type.
+         * Returns true if the malus is currently active
+         */
+        bool getValuesForStabilityMalusType(StabilityMalusType type, out int threshold);
+
         /**
          * Called on FixedUpdate by the frontend to trigger a simulation step on the backend.
          */
