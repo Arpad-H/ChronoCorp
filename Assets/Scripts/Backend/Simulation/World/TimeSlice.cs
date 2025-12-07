@@ -11,8 +11,11 @@ namespace Backend.Simulation.World
 {
     public class SimulationStorage
     {
-        public event Action<GUID> onPacketDeleted;
-        private readonly IFrontend _frontendCallback;
+        private readonly List<GUID> _removeBuffer = new(128); //buffer to avoid modifying collection during iteration
+        public readonly IFrontend Frontend;
+        public readonly StabilityBar StabilityBar = new(1000, 0, 500);
+        public readonly List<TimeSlice> timeSlices = new();
+        public Dictionary<GUID, EnergyPacket> energyPackets = new();
         public Dictionary<GUID, Connection> guidToConnections = new();
         public Dictionary<GUID, AbstractNodeInstance> guidToNodesMapping = new();
         public Dictionary<GUID, EnergyPacket> energyPackets = new();
