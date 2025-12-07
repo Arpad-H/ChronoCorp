@@ -185,7 +185,7 @@ namespace Backend.Simulation.World
         }
     }
 
-    public class TimeSlice
+    public class TimeSlice : ITickable
     {
         private const int TOLERANCE = 1;
         private readonly SpatialHashGrid spatialHashGrid = new(1);
@@ -196,6 +196,12 @@ namespace Backend.Simulation.World
         {
             _simulationStorage = simulationStorage;
             SliceNumber = sliceNumber;
+        }
+
+        public void Tick(long tickCount, SimulationStorage storage)
+        {
+            foreach (var abstractNodeInstance in _simulationStorage.guidToNodesMapping.Values)
+                abstractNodeInstance.Tick(tickCount, _simulationStorage);
         }
 
         public GUID? spawnGenerator(Vector2 pos, int amountInitialOutputs)
