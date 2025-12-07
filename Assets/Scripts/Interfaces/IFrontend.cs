@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using Backend.Simulation.World;
 using NodeBase;
 using UnityEditor;
 using UnityEngine;
@@ -11,8 +11,8 @@ namespace Interfaces
         // void DeleteEnergyPackets( List<EnergyPacket> energyPackets); each packet asks for its pos isntead to make use of pooling
         void GameOver(string reason);
         bool PlaceNodeVisual(AbstractNodeInstance node, int layerNum, Vector2 planePos, EnergyType energyType);
-        
-        void SpawnEnergyPacket(GUID guid,EnergyType energyType);
+
+        void SpawnEnergyPacket(GUID guid, EnergyType energyType);
         void DeleteEnergyPacket(GUID guid);
 
         /**

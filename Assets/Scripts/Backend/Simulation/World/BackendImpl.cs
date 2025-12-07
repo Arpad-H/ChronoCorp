@@ -23,13 +23,13 @@ namespace Backend.Simulation.World
             var timeSlice = byLayerNum(LayerNum);
 
             GUID? guid = null;
-            EnergyType energyType =  et ?? EnergyType.WHITE;
+            var energyType = et ?? EnergyType.WHITE;
 
             if (nodeType.Equals(NodeDTO.GENERATOR)) guid = timeSlice.spawnGenerator(planePos, 1);
             if (nodeType.Equals(NodeDTO.RIPPLE))
             {
-                guid = timeSlice.spawnRipple(planePos,energyType);
-                if(guid != null) energyType = ((TimeRippleInstance)_storage.guidToNodesMapping[(GUID) guid]).EnergyType;
+                guid = timeSlice.spawnRipple(planePos, energyType);
+                if (guid != null) energyType = ((TimeRippleInstance)_storage.guidToNodesMapping[(GUID)guid]).EnergyType;
             }
 
             return guid;
@@ -43,11 +43,8 @@ namespace Backend.Simulation.World
 
         public GUID? LinkNodes(GUID backendIdA, GUID backendIdB)
         {
-            GUID? connectionID = _storage.link(backendIdA, backendIdB);
-            if (connectionID != null)
-            {
-                _storage.recalculatePaths((GUID)connectionID);
-            }
+            var connectionID = _storage.link(backendIdA, backendIdB);
+            if (connectionID != null) _storage.recalculatePaths((GUID)connectionID);
             return connectionID;
         }
 
@@ -62,7 +59,8 @@ namespace Backend.Simulation.World
             return false;
         }
 
-        public float GetEnergyPacketProgress(GUID packet, out Vector3? sourcePos, out Vector3? targetPos, out GUID? connectionID) 
+        public float GetEnergyPacketProgress(GUID packet, out Vector3? sourcePos, out Vector3? targetPos,
+            out GUID? connectionID)
         {
             if (!_storage.energyPackets.ContainsKey(packet))
             {
@@ -71,6 +69,7 @@ namespace Backend.Simulation.World
                 connectionID = null;
                 return -1;
             }
+
             var foundPacket = _storage.energyPackets[packet];
             if (foundPacket != null)
             {

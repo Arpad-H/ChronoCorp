@@ -18,15 +18,16 @@ namespace Backend.Simulation.World
         public Dictionary<GUID, EnergyPacket> energyPackets = new();
         public Dictionary<GUID, Connection> guidToConnections = new();
         public Dictionary<GUID, AbstractNodeInstance> guidToNodesMapping = new();
-        public Dictionary<GUID, EnergyPacket> energyPackets = new();
-        public readonly List<TimeSlice> timeSlices = new();
-        private readonly List<GUID> _removeBuffer = new List<GUID>(128); //buffer to avoid modifying collection during iteration
-        public SimulationStorage(IFrontend frontendCallback)
+
+
+        public SimulationStorage(IFrontend frontend)
         {
-            _frontendCallback = frontendCallback;
+            Frontend = frontend;
             //timeSlices[0] = new TimeSlice(this);
-            timeSlices.Add( new TimeSlice(this, 0)); //prevents out of bounds since starts of with count 0
+            timeSlices.Add(new TimeSlice(this, 0)); //prevents out of bounds since starts of with count 0
         }
+
+        public event Action<GUID> onPacketDeleted;
 
         public bool isNodeKnown(GUID guid)
         {
@@ -36,39 +37,30 @@ namespace Backend.Simulation.World
         public void registerEnergyPacket(EnergyPacket energyPacket)
         {
             energyPackets[energyPacket.Guid] = energyPacket;
-            _frontendCallback.SpawnEnergyPacket(energyPacket.Guid,energyPacket.EnergyType); //inform frontend of new
-           
-            Debug.Log("Created new energy packet "+energyPacket.Guid);
+            Frontend.SpawnEnergyPacket(energyPacket.Guid, energyPacket.EnergyType); //inform frontend of new
+
+            Debug.Log("Created new energy packet " + energyPacket.Guid);
         }
 
         public void recalculatePaths(GUID connectionId)
         {
             //TODO: For now we just recalculate all paths! 
             foreach (var abstractNodeInstance in guidToNodesMapping.Values)
-            {
                 if (abstractNodeInstance is GeneratorInstance generatorInstance)
-                {
                     foreach (var outputRouteStorage in EnergyRouter.createEnergyRoutes(generatorInstance))
-                    {
                         outputRouteStorage.Key.RouteStorage = outputRouteStorage.Value;
-                    }
-                }
-            }
         }
 
         public void tick(long tickCount, IFrontend frontend)
         {
-            foreach (var timeSlice in timeSlices)
-            {
-                timeSlice.tick(tickCount);
-            }
-            
+            foreach (var timeSlice in timeSlices) timeSlice.Tick(tickCount, this);
+
             _removeBuffer.Clear();
 
-            foreach (var kvp in energyPackets) 
+            foreach (var kvp in energyPackets)
             {
                 var packet = kvp.Value;
-                packet.tick(tickCount, frontend);
+                packet.Tick(tickCount, this);
 
                 if (packet.Delivered)
                 {
@@ -81,76 +73,64 @@ namespace Backend.Simulation.World
             StabilityBar.Tick(tickCount, this);
 
             // Remove after loop to avoid modifying collection during iteration. was causing errors
-            for (int i = 0; i < _removeBuffer.Count; i++)
+            for (var i = 0; i < _removeBuffer.Count; i++)
                 energyPackets.Remove(_removeBuffer[i]);
         }
-        
+
         public GUID? link(GUID idNode1, GUID idNode2)
         {
-            if (!isNodeKnown(idNode1) || !isNodeKnown(idNode2))
-            {
-                return null;
-            }
+            if (!isNodeKnown(idNode1) || !isNodeKnown(idNode2)) return null;
 
             var node1 = guidToNodesMapping[idNode1];
             var node2 = guidToNodesMapping[idNode2];
 
-            if (node1 is GeneratorInstance generator1 && node2 is GeneratorInstance generator2)
-            {
-                return null;
-            }
+            if (node1 is GeneratorInstance generator1 && node2 is GeneratorInstance generator2) return null;
             if (node1 is NodeWithConnections ripple1 && node2 is NodeWithConnections ripple2)
             {
                 var eType1 = ((TimeRippleInstance)ripple1).EnergyType;
                 var eType2 = ((TimeRippleInstance)ripple2).EnergyType;
-                
-                if (!eType1.Equals(EnergyType.WHITE) && !eType2.Equals(EnergyType.WHITE) && !eType1.Equals(eType2))
-                {
-                    return null;
-                }
-                
-                if (ripple1.HasDirectConnectionTo(ripple2 as AbstractNodeInstance))
-                {
-                    return null;
-                }
-                
+
+                if (!eType1.Equals(EnergyType.WHITE) && !eType2.Equals(EnergyType.WHITE) &&
+                    !eType1.Equals(eType2)) return null;
+
+                if (ripple1.HasDirectConnectionTo(ripple2 as AbstractNodeInstance)) return null;
+
                 var rippleConnection = new Connection(ripple1 as AbstractNodeInstance, ripple2 as AbstractNodeInstance);
                 ripple1.getConnections().Add(rippleConnection);
                 ripple2.getConnections().Add(rippleConnection);
                 guidToConnections[rippleConnection.guid] = rippleConnection;
-                Debug.Log("Linked node "+node1.guid+" and "+node2.guid);
+                Debug.Log("Linked node " + node1.guid + " and " + node2.guid);
                 return rippleConnection.guid;
             }
 
             if (node1 is GeneratorInstance gen1 && node2 is NodeWithConnections anyNode2)
-            {
                 return linkGeneratorAndNonGenerator(gen1, anyNode2);
-            }
-            
+
             if (node2 is GeneratorInstance gen2 && node1 is NodeWithConnections anyNode1)
-            {
                 return linkGeneratorAndNonGenerator(gen2, anyNode1);
-            }
 
             GUID? linkGeneratorAndNonGenerator(GeneratorInstance generator, NodeWithConnections anyNode)
             {
                 if (generator.alreadyConnectedTo(anyNode as AbstractNodeInstance))
                 {
-                    Debug.Log("Generator "+generator.guid+" already connected to node "+(anyNode as AbstractNodeInstance).guid);
+                    Debug.Log("Generator " + generator.guid + " already connected to node " +
+                              (anyNode as AbstractNodeInstance).guid);
                     return null;
                 }
+
                 var foundOutput = generator.findFreeOutput();
                 if (foundOutput == null)
                 {
-                    Debug.Log("Generator "+generator.guid+" has no free output!");
+                    Debug.Log("Generator " + generator.guid + " has no free output!");
 
                     return null;
                 }
+
                 var rippleConnection = new Connection(node1, node2);
                 foundOutput.Connection = rippleConnection;
                 anyNode.getConnections().Add(rippleConnection);
                 guidToConnections[rippleConnection.guid] = rippleConnection;
-                Debug.Log("Linked generator "+generator.guid+" to node "+(anyNode as AbstractNodeInstance).guid);
+                Debug.Log("Linked generator " + generator.guid + " to node " + (anyNode as AbstractNodeInstance).guid);
                 return rippleConnection.guid;
             }
 
@@ -166,7 +146,7 @@ namespace Backend.Simulation.World
             var node2 = foundConnection.node2;
             unlinkFromConnection(node1, foundConnection);
             unlinkFromConnection(node2, foundConnection);
-            Debug.Log("Unlinked "+node1.guid+" and "+node2.guid);
+            Debug.Log("Unlinked " + node1.guid + " and " + node2.guid);
             return true;
 
             void unlinkFromConnection(AbstractNodeInstance anyNode, Connection connection)
@@ -178,9 +158,7 @@ namespace Backend.Simulation.World
                 }
 
                 if (anyNode is NodeWithConnections anyNodeWithConnections)
-                {
                     anyNodeWithConnections.getConnections().Remove(connection);
-                }
             }
         }
     }
@@ -188,9 +166,9 @@ namespace Backend.Simulation.World
     public class TimeSlice : ITickable
     {
         private const int TOLERANCE = 1;
-        private readonly SpatialHashGrid spatialHashGrid = new(1);
         private readonly SimulationStorage _simulationStorage;
         public readonly int SliceNumber;
+        private readonly SpatialHashGrid spatialHashGrid = new(1);
 
         public TimeSlice(SimulationStorage simulationStorage, int sliceNumber)
         {
@@ -210,7 +188,7 @@ namespace Backend.Simulation.World
             var newNode = new GeneratorInstance(pos, amountInitialOutputs);
             spatialHashGrid.Add(newNode);
             _simulationStorage.guidToNodesMapping.Add(newNode.guid, newNode);
-            Debug.Log("Created generator "+newNode.guid+" at "+pos);
+            Debug.Log("Created generator " + newNode.guid + " at " + pos);
             return newNode.guid;
         }
 
@@ -220,7 +198,7 @@ namespace Backend.Simulation.World
             var newNode = new TimeRippleInstance(pos, energyType);
             spatialHashGrid.Add(newNode);
             _simulationStorage.guidToNodesMapping.Add(newNode.guid, newNode);
-            Debug.Log("Created ripple "+newNode.guid+" at "+pos);
+            Debug.Log("Created ripple " + newNode.guid + " at " + pos);
             return newNode.guid;
         }
 
@@ -230,7 +208,7 @@ namespace Backend.Simulation.World
                 if (spatialHashGrid.Remove(nodeInstance))
                 {
                     _simulationStorage.guidToNodesMapping.Remove(guid);
-                    Debug.Log("Removed node "+guid);
+                    Debug.Log("Removed node " + guid);
                     return true;
                 }
 

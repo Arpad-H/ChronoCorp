@@ -36,16 +36,14 @@ namespace NodeBase
             for (var i = 0; i < amountInitialOutputs; i++) AvailableOutputs.Add(new Output());
         }
 
+        public List<Output> AvailableOutputs { get; }
+
         [CanBeNull]
         public Output findFreeOutput()
         {
             foreach (var availableOutput in AvailableOutputs)
-            {
                 if (availableOutput.Connection == null)
-                {
                     return availableOutput;
-                }
-            }
 
             return null;
         }
@@ -53,12 +51,8 @@ namespace NodeBase
         public Output findOutputWithConnection(Connection connection)
         {
             foreach (var availableOutput in AvailableOutputs)
-            {
                 if (availableOutput.Connection == connection)
-                {
                     return availableOutput;
-                }
-            }
 
             return null;
         }
@@ -66,12 +60,8 @@ namespace NodeBase
         public bool alreadyConnectedTo(AbstractNodeInstance anyNode)
         {
             foreach (var availableOutput in AvailableOutputs)
-            {
                 if (availableOutput.Connection?.isPartOfConnection(anyNode) ?? false)
-                {
                     return true;
-                }
-            }
 
             return false;
         }
@@ -104,19 +94,18 @@ namespace NodeBase
 
         public override void Tick(long tickCount, SimulationStorage storage)
         {
-            
         }
     }
 
     public interface NodeWithConnections
     {
         public List<Connection> getConnections();
+
         public bool HasDirectConnectionTo(AbstractNodeInstance anyNode)
         {
             foreach (var connection in getConnections())
-            {
-                if(connection.isPartOfConnection(anyNode)) return true;
-            }
+                if (connection.isPartOfConnection(anyNode))
+                    return true;
 
             return false;
         }
@@ -147,13 +136,13 @@ namespace NodeBase
         public static NodeType GENERATOR = new(Shape.CIRCLE);
         public static NodeType TIME_RIPPLE = new(Shape.SQUARE);
 
+        private readonly Shape Shape; //  private Shape Shape { get; } only allows internal access
+
         public NodeType(Shape shape)
         {
             Shape = shape;
         }
 
-        private Shape Shape; //  private Shape Shape { get; } only allows internal access
-        
         public Shape getShape()
         {
             return Shape;
@@ -174,17 +163,17 @@ namespace NodeBase
             length = direction.magnitude;
         }
 
-        public bool isPartOfConnection(AbstractNodeInstance anyNode)
-        {
-            return  anyNode == node1 || anyNode == node2;
-        }
-
         public GUID guid { get; }
 
         public AbstractNodeInstance node1 { get; }
         public AbstractNodeInstance node2 { get; }
 
         public float length { get; }
+
+        public bool isPartOfConnection(AbstractNodeInstance anyNode)
+        {
+            return anyNode == node1 || anyNode == node2;
+        }
     }
 
     /**
@@ -209,17 +198,18 @@ namespace NodeBase
         BLUE,
         GREEN
     }
+
     public static class EnergyTypeExtensions
     {
         public static Color ToColor(this EnergyType t)
         {
             return t switch
             {
-                EnergyType.GREEN  => Color.green,
-                EnergyType.RED    => Color.red,
-                EnergyType.BLUE   => Color.blue,
+                EnergyType.GREEN => Color.green,
+                EnergyType.RED => Color.red,
+                EnergyType.BLUE => Color.blue,
                 EnergyType.YELLOW => Color.yellow,
-                EnergyType.WHITE  => Color.white
+                EnergyType.WHITE => Color.white
             };
         }
     }

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Backend.Simulation.World;
-using Interfaces;
 using NodeBase;
 using UnityEditor;
 using UnityEngine;
@@ -18,10 +17,7 @@ namespace Backend.Simulation.Energy
 
             Debug.Log("Creating energy routes for " + generator.guid);
 
-            foreach (var output in generator.AvailableOutputs)
-            {
-                result[output] = createEnergyRoute(output);
-            }
+            foreach (var output in generator.AvailableOutputs) result[output] = createEnergyRoute(output);
 
             return result;
         }
@@ -36,7 +32,9 @@ namespace Backend.Simulation.Energy
             var potentialConnection = output.Connection;
             if (potentialConnection == null) return routesForOutput;
 
-            var startRipple = potentialConnection.node1 is TimeRippleInstance ? potentialConnection.node1 : potentialConnection.node2;
+            var startRipple = potentialConnection.node1 is TimeRippleInstance
+                ? potentialConnection.node1
+                : potentialConnection.node2;
 
             var alreadyVisitedNodes = new Dictionary<AbstractNodeInstance, NodeWithConnections>();
             var alreadyVisitedConnections = new Dictionary<AbstractNodeInstance, Connection>();
@@ -101,10 +99,7 @@ namespace Backend.Simulation.Energy
 
                 // tempSteps sind rückwärts (von Target zurück zu startRipple) aufgebaut,
                 // also umgedreht anhängen, damit wir von startRipple nach außen laufen.
-                for (int i = tempSteps.Count - 1; i >= 0; i--)
-                {
-                    route.addStep(tempSteps[i]);
-                }
+                for (var i = tempSteps.Count - 1; i >= 0; i--) route.addStep(tempSteps[i]);
 
                 routesForOutput.addRoute(nodeTargetOfConnection, route);
             }
@@ -192,10 +187,9 @@ namespace Backend.Simulation.Energy
         private const float PacketTravelSpeedPerTick = 0.1f;
 
         private int _currentEdgeIndex;
+        private float _travelledOnEdge;
 
         public bool Delivered;
-        private float _travelledOnEdge;
-        public GUID Guid { get; }
 
         public EnergyPacket(
             EnergyType energyType,
@@ -209,6 +203,8 @@ namespace Backend.Simulation.Energy
             Destination = destination;
             Steps = steps;
         }
+
+        public GUID Guid { get; }
 
         // Units traveled along the edge
         public float progressOnEdge { get; set; }
