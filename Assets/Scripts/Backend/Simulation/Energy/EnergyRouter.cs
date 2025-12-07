@@ -187,7 +187,7 @@ namespace Backend.Simulation.Energy
         }
     }
 
-    public class EnergyPacket
+    public class EnergyPacket : ITickable
     {
         private const float PacketTravelSpeedPerTick = 0.1f;
 
@@ -219,7 +219,7 @@ namespace Backend.Simulation.Energy
         public AbstractNodeInstance Destination { get; set; }
         private List<EnergyStep> Steps { get; }
 
-        public void tick(long tick, IFrontend frontend)
+        public void Tick(long tick, SimulationStorage storage)
         {
             if (Delivered) return;
             _travelledOnEdge += PacketTravelSpeedPerTick;

@@ -10,7 +10,7 @@ namespace NodeBase
     /**
      * Abstract parent class of node instances
      */
-    public abstract class AbstractNodeInstance
+    public abstract class AbstractNodeInstance : ITickable
     {
         protected AbstractNodeInstance(Vector2 pos, NodeType nodeType)
         {
@@ -22,8 +22,7 @@ namespace NodeBase
         public GUID guid { get; }
         public Vector2 Pos { get; set; }
         public NodeType NodeType { get; }
-
-        public abstract void tick(long tickCount, SimulationStorage storage);
+        public abstract void Tick(long tickCount, SimulationStorage storage);
     }
 
     /**
@@ -77,13 +76,9 @@ namespace NodeBase
             return false;
         }
 
-        public List<Output> AvailableOutputs { get; }
-        public override void tick(long tickCount, SimulationStorage storage)
+        public override void Tick(long tickCount, SimulationStorage storage)
         {
-            foreach (var availableOutput in AvailableOutputs)
-            {
-                EnergyScheduler.tick(tickCount, availableOutput, storage);
-            }
+            foreach (var availableOutput in AvailableOutputs) EnergyScheduler.tick(tickCount, availableOutput, storage);
         }
     }
 
@@ -107,7 +102,7 @@ namespace NodeBase
             return Connections;
         }
 
-        public override void tick(long tickCount, SimulationStorage storage)
+        public override void Tick(long tickCount, SimulationStorage storage)
         {
             
         }
