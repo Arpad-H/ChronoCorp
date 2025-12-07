@@ -242,14 +242,6 @@ namespace Backend.Simulation.World
             return _simulationStorage.isNodeKnown(guid);
         }
 
-        public void tick(long tickCount)
-        {
-            foreach (var abstractNodeInstance in _simulationStorage.guidToNodesMapping.Values)
-            {
-                abstractNodeInstance.tick(tickCount, _simulationStorage);
-            }
-        }
-
         private EnergyType random()
         {
             var values = (EnergyType[])EnergyType.GetValues(typeof(EnergyType));
