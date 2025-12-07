@@ -1,6 +1,7 @@
 using System;
 using Interfaces;
 using NodeBase;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Splines;
@@ -13,6 +14,7 @@ public class EnergyPacketVisual : MonoBehaviour
     private EnergyType energyType;
     public String debugInfo;
     public String debugconduitID;
+   
     //private readonly float speed = 0.2f;
    
 
@@ -57,19 +59,28 @@ public class EnergyPacketVisual : MonoBehaviour
         if (sourceNode.HasValue && targetNode.HasValue)
         {
             splineAnimate.Container = conduit.splineContainer;
-            Vector3 startPos = sourceNode.Value;
+            Vector2 startPos;
+             startPos.x = sourceNode.Value.x; // position in local grid space 0-width-1,0-height-1,layer
+             startPos.y = sourceNode.Value.y; // position in local grid space 0-width-1,0-height-1,layer
+         int layer = (int)sourceNode.Value.z;
+            
             Spline spline = conduit.splineContainer.Splines[0];
             Vector3 splineStartPos = spline[0].Position;
-            Vector3 splineEndPos = spline[spline.Count - 1].Position;
-            Vector3 endPos = splineEndPos - startPos;
+          
             
-            if (Vector3.Distance(startPos, splineStartPos) < 0.1f)
+            CoordinatePlane startPlane = GameFrontendManager.Instance.GetCoordinatePlane(layer);
+            
+            
+            Vector3 localSplineStartPos = startPlane.WorldToLocal(splineStartPos);
+            Vector2 localCoordinates = startPlane.SnapToGrid(localSplineStartPos);
+            
+            if (Vector3.Distance(localCoordinates, startPos) < 1f)
             {
-              progress = 1- progress; // reverse direction
+              progress =  progress;
             }
-            else if (Vector3.Distance(splineEndPos, endPos) < 0.1f)
+            else 
             {
-                progress =  progress; // normal direction
+                progress = 1- progress; 
             }
         }
         splineAnimate.NormalizedTime = progress;
@@ -96,6 +107,11 @@ public class EnergyPacketVisual : MonoBehaviour
         // Vector3 worldEndPos = endPlane.GridToWorldPosition(endPos);
         // transform.position =
         //     Vector3.Lerp(worldStartPos, worldEndPos, progress) + new Vector3(0, 0.1f, 0); // Slightly in front
+    }
+
+    public void  OnDrawGizmos()
+    {
+        
     }
 
     public void Reset()

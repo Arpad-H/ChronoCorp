@@ -1,4 +1,6 @@
 // Node.cs
+
+using System;
 using UnityEngine;
 using System.Collections.Generic;
 using NodeBase;
@@ -8,6 +10,8 @@ public class NodeVisual : MonoBehaviour
 {
     [Header("Node Properties")]
     public GUID backendID { get; set; }
+
+    public String DebugbackendID;
 
     public EnergyType energyType;
     public bool isSource; // Is it an energy source or a Time Ripple?
@@ -63,4 +67,8 @@ public class NodeVisual : MonoBehaviour
         spriteRenderer.color = color;
     }
 
+    private void Update()
+    {
+        DebugbackendID = backendID.ToString();
+    }
 }
