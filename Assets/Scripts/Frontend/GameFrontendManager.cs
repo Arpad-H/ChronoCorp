@@ -1,53 +1,49 @@
 // GameManager.cs
 
 using System;
-using UnityEngine;
 using System.Collections.Generic;
 using Backend.Simulation.World;
 using Interfaces;
 using NodeBase;
 using UnityEditor;
-using NodeType = NodeBase.NodeType;
+using UnityEngine;
 
-
-public class GameFrontendManager : MonoBehaviour, Interfaces.IFrontend
+public class GameFrontendManager : MonoBehaviour, IFrontend
 {
-    public static GameFrontendManager Instance; 
+    public static GameFrontendManager Instance;
     public CameraController cameraController;
-    private EnergyPacketVisualizer energyPacketVisualizer;
-    private IBackend backend; // Link to backend
-    
-    [Header("Asset References")] 
-    public GameObject conduitPrefab;
 
-    public CoordinatePlane layer0 ; //TODO temp hardcode
-    private Dictionary<int, CoordinatePlane> layerToCoordinatePlane = new Dictionary<int, CoordinatePlane>();
+    [Header("Asset References")] public GameObject conduitPrefab;
 
-    private long fixedTickCount = 0;
+    public CoordinatePlane layer0; //TODO temp hardcode
 
     //TODO Layer Management via backend
     [Header("Layer Management")] public float layerDuplicationTime = 60f;
-    private float layerTimer = 0f;
 
     public float layerZSpacing = 15f; // How far apart to space layers
+    private IBackend backend; // Link to backend
+    private EnergyPacketVisualizer energyPacketVisualizer;
+
+    private long fixedTickCount;
+    private float layerTimer = 0f;
+    private Dictionary<int, CoordinatePlane> layerToCoordinatePlane = new();
 
 
-    void Awake()
+    private void Awake()
     {
         backend = new BackendImpl(this);
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
     }
 
-    void Start()
+    private void Start()
     {
-        
         if (energyPacketVisualizer == null) energyPacketVisualizer = FindObjectOfType<EnergyPacketVisualizer>();
         if (cameraController == null) cameraController = FindObjectOfType<CameraController>();
         InputManager.Instance.OnButtonN += () => SpawnManuallyOnHoveredFrame(NodeDTO.RIPPLE, EnergyType.BLUE);
         InputManager.Instance.OnButtonG += () => SpawnManuallyOnHoveredFrame(NodeDTO.GENERATOR, EnergyType.BLUE);
         InputManager.Instance.OnButton1 += () => SpawnManuallyOnHoveredFrame(NodeDTO.RIPPLE, EnergyType.GREEN);
-        InputManager.Instance.OnButton2 += () => SpawnManuallyOnHoveredFrame(NodeDTO.GENERATOR,EnergyType.GREEN);
+        InputManager.Instance.OnButton2 += () => SpawnManuallyOnHoveredFrame(NodeDTO.GENERATOR, EnergyType.GREEN);
         InputManager.Instance.OnButton3 += () => SpawnManuallyOnHoveredFrame(NodeDTO.RIPPLE, EnergyType.RED);
         InputManager.Instance.OnButton4 += () => SpawnManuallyOnHoveredFrame(NodeDTO.GENERATOR, EnergyType.RED);
         InputManager.Instance.OnButton5 += () => SpawnManuallyOnHoveredFrame(NodeDTO.RIPPLE, EnergyType.YELLOW);
@@ -55,14 +51,56 @@ public class GameFrontendManager : MonoBehaviour, Interfaces.IFrontend
         InputManager.Instance.OnButtonX += () => DeleteNodeManually();
     }
 
-    void Update()
+    private void Update()
     {
     }
 
-    void FixedUpdate()
+    private void FixedUpdate()
     {
+        Debug.Log(fixedTickCount);
         backend.tick(fixedTickCount, this);
         fixedTickCount++;
+    }
+
+
+    public void GameOver(string reason)
+    {
+        Time.timeScale = 0f; // Pause game
+        Debug.LogError($"GAME OVER: {reason}");
+        UIManager.Instance.ShowGameOver(reason);
+    }
+
+    public bool PlaceNodeVisual(NodeDTO nodeDto, int layerNum, Vector2 cellPos, EnergyType energyType)
+    {
+        throw new NotImplementedException("Please implement accordingly!");
+    }
+
+
+    public void SpawnEnergyPacket(GUID guid, EnergyType energyType)
+    {
+        energyPacketVisualizer.SpawnEnergyPacket(guid, backend, energyType);
+    }
+
+    public void DeleteEnergyPacket(GUID guid)
+    {
+        energyPacketVisualizer.DeleteEnergyPacket(guid);
+    }
+
+    public void OnStabilityBarUpdate(int minValue, int maxValue, int currentValue)
+    {
+    }
+
+    public void OnActivateStabilityMalus(StabilityMalusType stabilityMalusType)
+    {
+    }
+
+    public void OnDeactivateStabilityMalus(StabilityMalusType stabilityMalusType)
+    {
+    }
+
+    public bool AddTimeSlice(int sliceNum)
+    {
+        throw new NotImplementedException();
     }
 
     //when a button is pressed to spawn a node
@@ -71,20 +109,19 @@ public class GameFrontendManager : MonoBehaviour, Interfaces.IFrontend
         RaycastHit rh;
         cameraController.RaycastForFirst(out rh); //maybe replace with single ray with custom layer?
 
-        CoordinatePlane frame = rh.transform.GetComponentInParent<CoordinatePlane>();
+        var frame = rh.transform.GetComponentInParent<CoordinatePlane>();
         if (!frame) return false; // Not hovering over a frame
-        int frameNum = frame.layerNum;
-        Vector3 hitPoint = rh.point;
+        var frameNum = frame.layerNum;
+        var hitPoint = rh.point;
 
-        Vector3 spawnPos = frame.WorldToLocal(hitPoint);
+        var spawnPos = frame.WorldToLocal(hitPoint);
         Vector2 localCoordinates = frame.SnapToGrid(spawnPos);
 
-        GUID? nodeBackendID = backend.PlaceNode(nodeType, frameNum, localCoordinates, energyType);
+        var nodeBackendID = backend.PlaceNode(nodeType, frameNum, localCoordinates, energyType);
         if (nodeBackendID != null)
         {
-            
-            frame.PlaceNode(nodeType, spawnPos, out GameObject newNode, energyType);
-            newNode.GetComponent<NodeVisual>().backendID = nodeBackendID.Value;
+            frame.PlaceNode(nodeType, spawnPos, out var newNode, energyType);
+          newNode.GetComponent<NodeVisual>().backendID = nodeBackendID.Value;
             return true;
         }
 
@@ -97,14 +134,14 @@ public class GameFrontendManager : MonoBehaviour, Interfaces.IFrontend
         RaycastHit rh;
         cameraController.RaycastForFirst(out rh); //maybe replace with single ray with custom layer?
 
-        CoordinatePlane frame = rh.transform.GetComponentInParent<CoordinatePlane>();
+        var frame = rh.transform.GetComponentInParent<CoordinatePlane>();
         if (frame == null) return false; // Not hovering over a frame
 
-        Vector3 hitPoint = rh.point;
+        var hitPoint = rh.point;
         if (frame != null)
         {
-            Vector3 spawnPos = frame.WorldToLocal(hitPoint);
-            if (frame.PlaceNode(nodeDto, spawnPos, out GameObject newNode,energyType)) return true;
+            var spawnPos = frame.WorldToLocal(hitPoint);
+            if (frame.PlaceNode(nodeDto, spawnPos, out var newNode, energyType)) return true;
         }
 
 
@@ -116,12 +153,9 @@ public class GameFrontendManager : MonoBehaviour, Interfaces.IFrontend
         RaycastHit rh;
         cameraController.RaycastForFirst(out rh); //maybe replace with single ray with custom layer?
 
-        NodeVisual node = rh.transform.GetComponentInParent<NodeVisual>();
+        var node = rh.transform.GetComponentInParent<NodeVisual>();
         if (!node) return;
-        if (backend.DeleteNode(node.backendID))
-        {
-            Destroy(node.gameObject);
-        }
+        if (backend.DeleteNode(node.backendID)) Destroy(node.gameObject);
     }
 
     public GUID? isValidConduit(NodeVisual a, NodeVisual b)
@@ -130,55 +164,9 @@ public class GameFrontendManager : MonoBehaviour, Interfaces.IFrontend
         return backend.LinkNodes(a.backendID, b.backendID);
     }
 
-
-    public void GameOver(string reason)
+    public CoordinatePlane GetCoordinatePlane(int startPosLayer)
     {
-        Time.timeScale = 0f; // Pause game
-        Debug.LogError($"GAME OVER: {reason}");
-        UIManager.Instance.ShowGameOver(reason);
-    }
-
-
-    public bool PlaceNodeVisual(AbstractNodeInstance node, int layerNum, Vector2 planePos, EnergyType energyType)
-    {
-        switch (node.NodeType.getShape())
-        {
-            case (Shape.CIRCLE):
-                if (SpawnOnHoveredFrame(NodeDTO.RIPPLE, energyType)) return true;
-                return false; //TODO change energy type based on color
-
-            case (Shape.SQUARE):
-                if (SpawnOnHoveredFrame(NodeDTO.GENERATOR, energyType))
-                {
-                    return true;
-                }
-                return false; 
-        }
-
-        return false;
-    }
-
-
-    public void SpawnEnergyPacket(GUID guid,EnergyType energyType)
-    {
-        energyPacketVisualizer.SpawnEnergyPacket(guid, backend,energyType);
-    }
-    public void DeleteEnergyPacket(GUID guid)
-    {
-       energyPacketVisualizer.DeleteEnergyPacket(guid);
-    }
-
-    public bool AddTimeSlice(int sliceNum)
-    {
-        throw new NotImplementedException();
-    }
-
-    public CoordinatePlane GetCoordinatePlane( int startPosLayer)
-    {
-        if (!layer0)
-        {
-            layer0 = GameObject.Find("SpiralFrame_0").GetComponent<CoordinatePlane>();
-        }
+        if (!layer0) layer0 = GameObject.Find("SpiralFrame_0").GetComponent<CoordinatePlane>();
         return layer0;
     }
 }

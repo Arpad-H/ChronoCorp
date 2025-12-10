@@ -1,21 +1,16 @@
-using System;
 using System.Collections.Generic;
-using UnityEngine;
 using Interfaces;
 
 namespace Backend.Inv
 {
     public class Inventory
     {
-        public Dictionary<NodeDTO, int> nodesAvailable = new Dictionary<NodeDTO, int>();
+        public Dictionary<NodeDTO, int> nodesAvailable = new();
 
 
         public Inventory()
         {
-            foreach (NodeDTO key in InventoryConfig.startConf.Keys)
-            {
-                nodesAvailable.Add(key, InventoryConfig.startConf[key]);
-            }
+            foreach (var key in InventoryConfig.startConf.Keys) nodesAvailable.Add(key, InventoryConfig.startConf[key]);
         }
 
         private void place(NodeDTO node)
@@ -31,17 +26,16 @@ namespace Backend.Inv
 
         public int getAmountPlaceable(NodeDTO nodeDTO)
         {
-            if (nodesAvailable.ContainsKey(nodeDTO))
-            {
-                return nodesAvailable[nodeDTO];
-            }
+            if (nodesAvailable.ContainsKey(nodeDTO)) return nodesAvailable[nodeDTO];
 
             return 0;
         }
+
         public bool canPlaceNormalConnection()
         {
             return nodesAvailable[NodeDTO.NORMALCONNECTION] > 0;
         }
+
         public bool placeNormalConnection()
         {
             if (canPlaceNormalConnection())
@@ -79,14 +73,14 @@ namespace Backend.Inv
             return nodesAvailable[NodeDTO.GENERATOR] > 0;
         }
     }
-    
+
     public static class InventoryConfig
-    
+
     {
-        public const int STARTNUMBER_OF_CONNECTIONS = Int32.MaxValue;
-        public const int STARTNUMBER_OF_GENERATORS = Int32.MaxValue;
-        
-        public static Dictionary<NodeDTO, int> startConf = new Dictionary<NodeDTO, int>
+        public const int STARTNUMBER_OF_CONNECTIONS = int.MaxValue;
+        public const int STARTNUMBER_OF_GENERATORS = int.MaxValue;
+
+        public static Dictionary<NodeDTO, int> startConf = new()
         {
             [NodeDTO.NORMALCONNECTION] = STARTNUMBER_OF_CONNECTIONS,
             [NodeDTO.GENERATOR] = STARTNUMBER_OF_GENERATORS

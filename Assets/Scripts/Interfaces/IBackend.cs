@@ -59,9 +59,9 @@ namespace Interfaces
          * Called on FixedUpdate by the frontend to trigger a simulation step on the backend.
          */
         void tick(long tickCount, IFrontend caller);
-        
+
         /**
-         * returns the amount of the specific NodesDTO in the inventory 
+         * returns the amount of the specific NodesDTO in the inventory
          */
         public int getAmountPlaceable(NodeDTO nodeDTO);
 

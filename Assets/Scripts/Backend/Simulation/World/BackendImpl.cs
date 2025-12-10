@@ -8,8 +8,8 @@ namespace Backend.Simulation.World
 {
     public class BackendImpl : IBackend
     {
-        public readonly IFrontend FrontendCallback;
         private readonly SimulationStorage _storage;
+        public readonly IFrontend FrontendCallback;
 
         public BackendImpl(IFrontend frontend)
         {
@@ -28,8 +28,8 @@ namespace Backend.Simulation.World
             if (nodeType.Equals(NodeDTO.GENERATOR)) guid = timeSlice.spawnGenerator(planePos, 1);
             if (nodeType.Equals(NodeDTO.RIPPLE))
             {
-                guid = timeSlice.spawnRipple(planePos, energyType);
-                if (guid != null) energyType = ((TimeRippleInstance)_storage.guidToNodesMapping[(GUID)guid]).EnergyType;
+                guid = timeSlice.spawnRipple(planePos, energyType, out var newTimeRippleInstance);
+                if (newTimeRippleInstance != null) energyType = newTimeRippleInstance.EnergyType;
             }
 
             return guid;

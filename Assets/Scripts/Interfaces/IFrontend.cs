@@ -10,7 +10,11 @@ namespace Interfaces
         // void UpdateEnergyPackets( List<EnergyPacket> energyPackets);
         // void DeleteEnergyPackets( List<EnergyPacket> energyPackets); each packet asks for its pos isntead to make use of pooling
         void GameOver(string reason);
-        bool PlaceNodeVisual(AbstractNodeInstance node, int layerNum, Vector2 planePos, EnergyType energyType);
+        
+        /**
+         * Tells the frontend about a node that was spawned by the backend at backend cellPos.
+         */
+        bool PlaceNodeVisual(NodeDTO nodeDto, int layerNum, Vector2 cellPos, EnergyType energyType);
 
         void SpawnEnergyPacket(GUID guid, EnergyType energyType);
         void DeleteEnergyPacket(GUID guid);

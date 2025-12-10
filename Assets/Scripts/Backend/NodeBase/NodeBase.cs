@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Backend.Simulation.Energy;
 using Backend.Simulation.World;
+using Interfaces;
 using JetBrains.Annotations;
 using UnityEditor;
 using UnityEngine;
@@ -133,20 +134,19 @@ namespace NodeBase
      */
     public class NodeType
     {
-        public static NodeType GENERATOR = new(Shape.CIRCLE);
-        public static NodeType TIME_RIPPLE = new(Shape.SQUARE);
+        public static NodeType GENERATOR = new(Shape.CIRCLE, NodeDTO.GENERATOR);
+        public static NodeType TIME_RIPPLE = new(Shape.SQUARE, NodeDTO.RIPPLE);
 
-        private readonly Shape Shape; //  private Shape Shape { get; } only allows internal access
+        public readonly Shape Shape; //  private Shape Shape { get; } only allows internal access
+        public readonly NodeDTO NodeDTO;
 
-        public NodeType(Shape shape)
+        public NodeType(Shape shape, NodeDTO nodeDTO)
         {
             Shape = shape;
+            NodeDTO = nodeDTO;
         }
-
-        public Shape getShape()
-        {
-            return Shape;
-        }
+        
+        
     }
 
     /**

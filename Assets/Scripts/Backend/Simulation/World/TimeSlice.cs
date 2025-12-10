@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Backend.Inv;
 using Backend.Simulation.Energy;
 using Interfaces;
 using NodeBase;
 using UnityEditor;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 namespace Backend.Simulation.World
 {
@@ -14,12 +14,16 @@ namespace Backend.Simulation.World
     {
         private readonly List<GUID> _removeBuffer = new(128); //buffer to avoid modifying collection during iteration
         public readonly IFrontend Frontend;
+
+        public readonly uint simulationSeed = 2930473240;
         public readonly StabilityBar StabilityBar = new(1000, 0, 500);
         public readonly List<TimeSlice> timeSlices = new();
         public Dictionary<GUID, EnergyPacket> energyPackets = new();
+        public Dictionary<EnergyType, int> energyTypesAvailableInSimulation = new();
         public Dictionary<GUID, Connection> guidToConnections = new();
         public Dictionary<GUID, AbstractNodeInstance> guidToNodesMapping = new();
         public Inventory inventory = new();
+        public Dictionary<NodeType, List<AbstractNodeInstance>> nodeTypeToNodesMapping = new();
 
 
         public SimulationStorage(IFrontend frontend)
@@ -27,6 +31,39 @@ namespace Backend.Simulation.World
             Frontend = frontend;
             //timeSlices[0] = new TimeSlice(this);
             timeSlices.Add(new TimeSlice(this, 0)); //prevents out of bounds since starts of with count 0
+            foreach (var energyType in Enum.GetValues(typeof(EnergyType)).Cast<EnergyType>())
+            {
+                energyTypesAvailableInSimulation[energyType] = 0;
+            }
+        }
+
+        public uint getTickSeed(long tickCount)
+        {
+            return (uint)(simulationSeed % tickCount + tickCount);
+        }
+
+        public int getAmountOutputsPlaced()
+        {
+            if (!nodeTypeToNodesMapping.TryGetValue(NodeType.GENERATOR, out var value))
+            {
+                return 0;
+            }
+            return value?.Sum(instance => ((GeneratorInstance)instance).AvailableOutputs.Count) ?? 0;
+        }
+
+        public int getAmountDifferentEnergyTypesInSimulation()
+        {
+            return energyTypesAvailableInSimulation.Count;
+        }
+
+        public HashSet<EnergyType> getEnergyTypesInSimulation()
+        {
+            return energyTypesAvailableInSimulation.Keys.ToHashSet();
+        }
+
+        public int getAmountOutputsTotal()
+        {
+            return getAmountOutputsPlaced() + inventory.nodesAvailable[NodeDTO.GENERATOR];
         }
 
         public event Action<GUID> onPacketDeleted;
@@ -81,7 +118,7 @@ namespace Backend.Simulation.World
 
         public GUID? link(GUID idNode1, GUID idNode2)
         {
-            bool canPlace = inventory.canPlaceNormalConnection();
+            var canPlace = inventory.canPlaceNormalConnection();
             if (!isNodeKnown(idNode1) || !isNodeKnown(idNode2) || !canPlace) return null;
 
             var node1 = guidToNodesMapping[idNode1];
@@ -129,7 +166,7 @@ namespace Backend.Simulation.World
 
                     return null;
                 }
-                
+
                 inventory.placeNormalConnection();
                 var rippleConnection = new Connection(node1, node2);
                 foundOutput.Connection = rippleConnection;
@@ -146,7 +183,7 @@ namespace Backend.Simulation.World
         {
             var foundConnection = guidToConnections[connectionId];
             if (foundConnection == null) return false;
-            
+
             inventory.removeNormalConnection();
             var node1 = foundConnection.node1;
             var node2 = foundConnection.node2;
@@ -171,55 +208,62 @@ namespace Backend.Simulation.World
 
     public class TimeSlice : ITickable
     {
-        private const int TOLERANCE = 1;
+        private const int TOLERANCE = 0;
         private readonly SimulationStorage _simulationStorage;
         public readonly int SliceNumber;
-        private readonly SpatialHashGrid spatialHashGrid = new(1);
+        public readonly NodeSpawner NodeSpawner;
+        public readonly TimeSliceGrid TimeSliceGrid = new(20,20,1);
 
         public TimeSlice(SimulationStorage simulationStorage, int sliceNumber)
         {
             _simulationStorage = simulationStorage;
             SliceNumber = sliceNumber;
+            NodeSpawner = new(this);
         }
 
         public void Tick(long tickCount, SimulationStorage storage)
         {
             foreach (var abstractNodeInstance in _simulationStorage.guidToNodesMapping.Values)
                 abstractNodeInstance.Tick(tickCount, _simulationStorage);
+            NodeSpawner.Tick(tickCount, _simulationStorage);
         }
 
         public GUID? spawnGenerator(Vector2 pos, int amountInitialOutputs)
         {
-            bool canPlace = _simulationStorage.inventory.canPlaceGenerator();
-            
-            if (spatialHashGrid.HasNodeNear(pos, TOLERANCE) || !canPlace) return null;
-            
+            var canPlace = _simulationStorage.inventory.canPlaceGenerator();
+
+            if (TimeSliceGrid.HasNodeNear(pos, TOLERANCE) || !canPlace) return null;
+
             _simulationStorage.inventory.placeGenerator();
             var newNode = new GeneratorInstance(pos, amountInitialOutputs);
-            spatialHashGrid.Add(newNode);
-            _simulationStorage.guidToNodesMapping.Add(newNode.guid, newNode);
-            Debug.Log("Created generator " + newNode.guid + " at " + pos);
+            TimeSliceGrid.Add(newNode);
+
+            addNodeToMapping(newNode);
             return newNode.guid;
         }
 
-        public GUID? spawnRipple(Vector2 pos, EnergyType energyType)
+        public GUID? spawnRipple(Vector2 pos, EnergyType energyType, out TimeRippleInstance timeRippleInstance)
         {
-            if (spatialHashGrid.HasNodeNear(pos, TOLERANCE)) return null;
+            timeRippleInstance = null;
+            if (TimeSliceGrid.HasNodeNear(pos, TOLERANCE)) return null;
             var newNode = new TimeRippleInstance(pos, energyType);
-            spatialHashGrid.Add(newNode);
-            _simulationStorage.guidToNodesMapping.Add(newNode.guid, newNode);
-            Debug.Log("Created ripple " + newNode.guid + " at " + pos);
+            TimeSliceGrid.Add(newNode);
+            addNodeToMapping(newNode);
+            timeRippleInstance = newNode;
+            _simulationStorage.energyTypesAvailableInSimulation[energyType]++;
             return newNode.guid;
         }
 
         public bool removeNode(GUID guid)
         {
             if (_simulationStorage.guidToNodesMapping.TryGetValue(guid, out var nodeInstance))
-                if (spatialHashGrid.Remove(nodeInstance))
+                if (TimeSliceGrid.Remove(nodeInstance))
                 {
-                    if(nodeInstance is GeneratorInstance) _simulationStorage.inventory.removeGenerator();
-                    _simulationStorage.guidToNodesMapping.Remove(guid);
-                    Debug.Log("Removed node " + guid);
+                    if (nodeInstance is GeneratorInstance) _simulationStorage.inventory.removeGenerator();
+                    if (nodeInstance is TimeRippleInstance timeRippleInstance)
+                        _simulationStorage.energyTypesAvailableInSimulation[timeRippleInstance.EnergyType]--;
+                    removeNodeFromMapping(nodeInstance);
+
                     return true;
                 }
 
@@ -231,10 +275,22 @@ namespace Backend.Simulation.World
             return _simulationStorage.isNodeKnown(guid);
         }
 
-        private EnergyType random()
+        private void addNodeToMapping(AbstractNodeInstance newNode)
         {
-            var values = (EnergyType[])EnergyType.GetValues(typeof(EnergyType));
-            return values[Random.Range(0, values.Length)];
+            _simulationStorage.guidToNodesMapping.Add(newNode.guid, newNode);
+
+            if (!_simulationStorage.nodeTypeToNodesMapping.ContainsKey(newNode.NodeType))
+                _simulationStorage.nodeTypeToNodesMapping.Add(newNode.NodeType, new List<AbstractNodeInstance>());
+            _simulationStorage.nodeTypeToNodesMapping[newNode.NodeType].Add(newNode);
+            Debug.Log("Created node " + newNode.guid);
+        }
+
+        private void removeNodeFromMapping(AbstractNodeInstance newNode)
+        {
+            _simulationStorage.guidToNodesMapping.Remove(newNode.guid);
+            if (_simulationStorage.nodeTypeToNodesMapping.ContainsKey(newNode.NodeType))
+                _simulationStorage.nodeTypeToNodesMapping.Remove(newNode.NodeType);
+            Debug.Log("Removed node " + newNode.guid);
         }
     }
 
