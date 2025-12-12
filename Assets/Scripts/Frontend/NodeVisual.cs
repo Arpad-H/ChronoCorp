@@ -8,10 +8,15 @@ using UnityEditor;
 
 public class NodeVisual : MonoBehaviour
 {
-    [Header("Node Properties")]
-    public GUID backendID { get; set; }
+    [Header("Node Properties")] public GUID backendID { get; set; }
 
     public String DebugbackendID;
+
+    public GameObject greenGlowEffect;
+    public GameObject blueGlowEffect;
+    public GameObject redGlowEffect;
+    public GameObject yellowGlowEffect;
+    private GameObject currentGlowEffect;
 
     public EnergyType energyType;
     public bool isSource; // Is it an energy source or a Time Ripple?
@@ -19,8 +24,8 @@ public class NodeVisual : MonoBehaviour
     public float energyDemand = 0f; // Energy consumed (if ripple)
     public float nodeScale = 0.75f; // Scale of the node (not overfill the grid)
     public SpriteRenderer spriteRenderer;
-    
-    
+
+
     public float currentEnergy = 0f; // Current energy buffer
     public float collapseTimer = 0f;
     public const float COLLAPSE_TIME_LIMIT = 5f;
@@ -28,7 +33,6 @@ public class NodeVisual : MonoBehaviour
     // References for the simulation
     public List<ConduitVisual> connectedConduits = new List<ConduitVisual>();
 
-   
 
     void Awake()
     {
@@ -37,11 +41,11 @@ public class NodeVisual : MonoBehaviour
 
     void Start()
     {
-        transform.localScale = Vector3.one * nodeScale;         // Adjust scale to not overcrowd the grid
+        transform.localScale = Vector3.one * nodeScale; // Adjust scale to not overcrowd the grid
     }
-    
 
-  private void OnMouseDown()
+
+    private void OnMouseDown()
     {
         ConduitVisualizer.Instance.StartDrag(this);
     }
@@ -60,11 +64,42 @@ public class NodeVisual : MonoBehaviour
     {
         return transform.position;
     }
+
     public void SetEnergyType(EnergyType newEnergyType)
     {
-        Color color = newEnergyType.ToColor();
-        energyType = newEnergyType;
-        spriteRenderer.color = color;
+        if (!isSource)
+        {
+            Color color = newEnergyType.ToColor();
+            energyType = newEnergyType;
+            spriteRenderer.color = color;
+            return;
+        }
+
+
+        switch (newEnergyType)
+        {
+            case EnergyType.GREEN:
+                greenGlowEffect.SetActive(true);
+                currentGlowEffect.SetActive(false);
+                currentGlowEffect = greenGlowEffect;
+
+                break;
+            case EnergyType.BLUE:
+                greenGlowEffect.SetActive(true);
+                currentGlowEffect.SetActive(false);
+                currentGlowEffect = greenGlowEffect;
+                break;
+            case EnergyType.RED:
+                redGlowEffect.SetActive(true);
+                currentGlowEffect.SetActive(false);
+                currentGlowEffect = redGlowEffect;
+                break;
+            case EnergyType.YELLOW:
+                yellowGlowEffect.SetActive(true);
+                currentGlowEffect.SetActive(false);
+                currentGlowEffect = yellowGlowEffect;
+                break;
+        }
     }
 
     private void Update()

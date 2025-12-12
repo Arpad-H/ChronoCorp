@@ -1,6 +1,7 @@
 // UIManager.cs
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
@@ -9,6 +10,7 @@ public class UIManager : MonoBehaviour
     public TextMeshProUGUI statusText; // Assign from Hierarchy
     public GameObject gameOverPanel; // Create a simple Panel in your Canvas
     public TextMeshProUGUI gameOverText;
+    
 
     void Awake()
     {

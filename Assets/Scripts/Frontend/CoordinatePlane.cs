@@ -74,12 +74,12 @@ public class CoordinatePlane : MonoBehaviour
         Vector3 localPos = ToPlaneLocal(planePos);
         // if (! _backend.PlaceNode(prefab,layerNum, new Vector2(localPos.x,localPos.y))) return false;
 
-        bool isSource = nodeDTO == NodeDTO.GENERATOR;
+        
         GameObject node = nodeDTO == NodeDTO.RIPPLE ? nodePrefab : generatorPrefab;
         if (!IsWithinBounds(localPos) || IsPlaceOccupied(localPos)) return false;
         obj = Instantiate(node, nodeContainer);
         NodeVisual nv = obj.GetComponent<NodeVisual>();
-        if (nv && !isSource) nv.SetEnergyType(energyType);
+        if (nv) nv.SetEnergyType(energyType);
         obj.transform.localPosition = localPos;
         nodes.Add(obj);
         return true;
