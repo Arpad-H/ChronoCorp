@@ -17,16 +17,17 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
 
     public CoordinatePlane layer0; //TODO temp hardcode
 
-    //TODO Layer Management via backend
+   
     [Header("Layer Management")] public float layerDuplicationTime = 60f;
-
+ private Dictionary<int, CoordinatePlane> layerToCoordinatePlane = new();
+ 
     public float layerZSpacing = 15f; // How far apart to space layers
     private IBackend backend; // Link to backend
     private EnergyPacketVisualizer energyPacketVisualizer;
 
     private long fixedTickCount;
     private float layerTimer = 0f;
-    private Dictionary<int, CoordinatePlane> layerToCoordinatePlane = new();
+   
 
 
     private void Awake()
@@ -49,6 +50,10 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
         InputManager.Instance.OnButton5 += () => SpawnManuallyOnHoveredFrame(NodeDTO.RIPPLE, EnergyType.YELLOW);
         InputManager.Instance.OnButton6 += () => SpawnManuallyOnHoveredFrame(NodeDTO.GENERATOR, EnergyType.YELLOW);
         InputManager.Instance.OnButtonX += () => DeleteNodeManually();
+        
+        //get all existing layers in scene
+        var existingLayers = FindObjectsOfType<CoordinatePlane>();
+        foreach (var layer in existingLayers) layerToCoordinatePlane[layer.layerNum] = layer;
     }
 
     private void Update()
@@ -70,9 +75,12 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
         UIManager.Instance.ShowGameOver(reason);
     }
 
-    public bool PlaceNodeVisual(NodeDTO nodeDto, int layerNum, Vector2 cellPos, EnergyType energyType)
+    public bool PlaceNodeVisual(GUID id,NodeDTO nodeDto, int layerNum, Vector2 cellPos, EnergyType energyType)
     {
-        throw new NotImplementedException("Please implement accordingly!");
+        var frame = GetCoordinatePlane(layerNum);
+        frame.PlaceNode(nodeDto, cellPos, out var newNode, energyType);
+        newNode.GetComponent<NodeVisual>().backendID = id;
+        return true;
     }
 
 
@@ -100,7 +108,11 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
 
     public bool AddTimeSlice(int sliceNum)
     {
-        throw new NotImplementedException();
+        var newLayer = Instantiate(layer0, new Vector3(0, 0, sliceNum * layerZSpacing), Quaternion.identity);
+        newLayer.layerNum = sliceNum;
+        //TODO initialize layer properly
+        layerToCoordinatePlane[sliceNum] = newLayer;
+        return true;
     }
 
     //when a button is pressed to spawn a node
@@ -166,7 +178,8 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
 
     public CoordinatePlane GetCoordinatePlane(int startPosLayer)
     {
-        if (!layer0) layer0 = GameObject.Find("SpiralFrame_0").GetComponent<CoordinatePlane>();
-        return layer0;
+        return layerToCoordinatePlane.ContainsKey(startPosLayer)
+            ? layerToCoordinatePlane[startPosLayer]
+            : null ;
     }
 }

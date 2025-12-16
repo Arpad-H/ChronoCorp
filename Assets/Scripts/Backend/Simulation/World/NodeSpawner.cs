@@ -29,7 +29,7 @@ namespace Backend.Simulation.World
             {
                 _timeSlice.TimeSliceGrid.TryGetRandomEmptyCell(_random, out var cell);
                 _timeSlice.spawnRipple(cell, (EnergyType)energyTypeOfNewNode, out var newTimeRipple);
-                storage.Frontend.PlaceNodeVisual(newTimeRipple.NodeType.NodeDTO, _timeSlice.SliceNumber, cell, (EnergyType)energyTypeOfNewNode);
+                storage.Frontend.PlaceNodeVisual(newTimeRipple.guid,newTimeRipple.NodeType.NodeDTO, _timeSlice.SliceNumber, cell, (EnergyType)energyTypeOfNewNode);
                 Debug.Log("Auto generated new time ripple with "+energyTypeOfNewNode+" energy at "+cell);
                 lastSpawnTick = tickCount;
             }

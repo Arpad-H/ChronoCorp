@@ -14,7 +14,7 @@ namespace Interfaces
         /**
          * Tells the frontend about a node that was spawned by the backend at backend cellPos.
          */
-        bool PlaceNodeVisual(NodeDTO nodeDto, int layerNum, Vector2 cellPos, EnergyType energyType);
+        bool PlaceNodeVisual(GUID id,NodeDTO nodeDto, int layerNum, Vector2 cellPos, EnergyType energyType);
 
         void SpawnEnergyPacket(GUID guid, EnergyType energyType);
         void DeleteEnergyPacket(GUID guid);

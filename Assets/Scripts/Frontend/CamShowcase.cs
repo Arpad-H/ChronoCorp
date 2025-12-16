@@ -125,6 +125,7 @@ public class CamShowcase : MonoBehaviour
                     Quaternion rot = Quaternion.Euler(90f,0f,  i * angleStep);
 
                     GameObject frame = InstantiatePrefab(pos, rot,$"SpiralFrame_{i}");
+                    frame.layer = i;
                     frames.Add(frame);
                 }
                 break;
