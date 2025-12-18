@@ -154,11 +154,12 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
 
         var frame = rh.transform.GetComponentInParent<CoordinatePlane>();
         if (frame == null) return false; // Not hovering over a frame
-
+      
         var hitPoint = rh.point;
         if (frame != null)
         {
             var spawnPos = frame.WorldToLocal(hitPoint);
+            var nodeBackendID = backend.PlaceNode(nodeDto, frame.layerNum, spawnPos, energyType);
             if (frame.PlaceNode(nodeDto, spawnPos, out var newNode, energyType)) return true;
         }
 

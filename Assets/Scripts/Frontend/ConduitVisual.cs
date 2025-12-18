@@ -16,6 +16,8 @@ public class ConduitVisual : MonoBehaviour
     private Vector3 dragPosition;
     public LineRenderer lineRenderer;
     public SplineContainer splineContainer;
+    public SplineExtrude splineExtrudeRound;
+    public SplineExtrude splineExtrudesquare;
     private Spline spline;
     public GUID backendID;
     public String debugInfo;
@@ -68,7 +70,7 @@ public class ConduitVisual : MonoBehaviour
         List<Vector3> path = new List<Vector3>();
        
 
-        if (A.y - B.y < 0.1f && A.y - B.y > -0.1f)
+        if (A.y - B.y < 0.1f && A.y - B.y > -0.1f) //same time slice
         {
             path.Add(A);
             bool horizontalFirst = Mathf.Abs(A.x - B.x) > Mathf.Abs(A.y - B.y);
@@ -101,64 +103,64 @@ public class ConduitVisual : MonoBehaviour
         }
         else //different time slices
         {
-            path.Clear();
-            lineRenderer.positionCount = 4;
-            if (A.y < B.y)
-            {
-                path.Add(A);
-                path.Add(new Vector3(A.x, B.y + 1, A.z));
-                path.Add(new Vector3(B.x, B.y + 1, B.z));
-                path.Add(B);
-            }
-            else
-            {
-                path.Add(A);
-                path.Add(new Vector3(A.x, A.y + 1, A.z));
-                path.Add(new Vector3(B.x, A.y + 1, B.z));
-                path.Add(B);
-            }
-
-            spline.Clear();
-// BASE A – tangent must be flat!
-            Vector3 tangentA = (B - A);
-            tangentA.y = 0;
-            tangentA.Normalize();
-
-// BASE B – tangent must be flat!
-            Vector3 tangentB = (A - B);
-            tangentB.y = 0;
-            tangentB.Normalize();
-            float scale = Vector3.Distance(A, B) / 3f;
-            BezierKnot knotA = new BezierKnot(
-                A,
-                -tangentA * scale,
-                tangentA * scale,
-                Quaternion.LookRotation(tangentA, Vector3.up)
-            );
-
-            BezierKnot knotB = new BezierKnot(
-                B,
-                -tangentB * scale,
-                tangentB * scale,
-                Quaternion.LookRotation(tangentB, Vector3.up)
-            );
-            float arcHeight = 2f;
-            Vector3 mid = (A + B) * 0.5f;
-            mid.y += arcHeight;
-            
-            BezierKnot knotMid = new BezierKnot(
-                mid,
-                -tangentB * scale,
-                tangentB * scale,
-                Quaternion.LookRotation(tangentB, Vector3.up)
-            );
-
-
-                spline.Add(knotA);
-                spline.Add(knotMid);
-                spline.Add(knotB);
-                
-           
+//             path.Clear();
+//             lineRenderer.positionCount = 4;
+//             if (A.y < B.y)
+//             {
+//                 path.Add(A);
+//                 path.Add(new Vector3(A.x, B.y + 1, A.z));
+//                 path.Add(new Vector3(B.x, B.y + 1, B.z));
+//                 path.Add(B);
+//             }
+//             else
+//             {
+//                 path.Add(A);
+//                 path.Add(new Vector3(A.x, A.y + 1, A.z));
+//                 path.Add(new Vector3(B.x, A.y + 1, B.z));
+//                 path.Add(B);
+//             }
+//
+//             spline.Clear();
+// // BASE A – tangent must be flat!
+//             Vector3 tangentA = (B - A);
+//             tangentA.y = 0;
+//             tangentA.Normalize();
+//
+// // BASE B – tangent must be flat!
+//             Vector3 tangentB = (A - B);
+//             tangentB.y = 0;
+//             tangentB.Normalize();
+//             float scale = Vector3.Distance(A, B) / 3f;
+//             BezierKnot knotA = new BezierKnot(
+//                 A,
+//                 -tangentA * scale,
+//                 tangentA * scale,
+//                 Quaternion.LookRotation(tangentA, Vector3.up)
+//             );
+//
+//             BezierKnot knotB = new BezierKnot(
+//                 B,
+//                 -tangentB * scale,
+//                 tangentB * scale,
+//                 Quaternion.LookRotation(tangentB, Vector3.up)
+//             );
+//             float arcHeight = 2f;
+//             Vector3 mid = (A + B) * 0.5f;
+//             mid.y += arcHeight;
+//             
+//             BezierKnot knotMid = new BezierKnot(
+//                 mid,
+//                 -tangentB * scale,
+//                 tangentB * scale,
+//                 Quaternion.LookRotation(tangentB, Vector3.up)
+//             );
+//
+//
+//                 spline.Add(knotA);
+//                 spline.Add(knotMid);
+//                 spline.Add(knotB);
+//                 
+//            
         }
         lineRenderer.positionCount = path.Count;
         lineRenderer.SetPositions(path.ToArray());

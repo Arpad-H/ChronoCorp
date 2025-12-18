@@ -160,6 +160,8 @@ MonoBehaviour:
   nodeVisualB: {fileID: 0}
   lineRenderer: {fileID: 0}
   splineContainer: {fileID: 0}
+  splineExtrudeRound: {fileID: 0}
+  splineExtrudesquare: {fileID: 0}
   debugInfo: 
 --- !u!114 &2781901633303892491
 MonoBehaviour:
@@ -273,7 +275,7 @@ MonoBehaviour:
   m_UpdateColliders: 1
   m_Sides: 8
   m_SegmentsPerUnit: 4
-  m_Capped: 1
+  m_Capped: 0
   m_Radius: 0.25
   m_Range: {x: 0, y: 1}
   m_FlipNormals: 0

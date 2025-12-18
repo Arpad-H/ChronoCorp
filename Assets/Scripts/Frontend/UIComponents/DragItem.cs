@@ -12,6 +12,7 @@ public class DragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
     private RectTransform dragRect;
     public int count = 0;
     public TextMeshProUGUI countText;
+    public NodeDTO item;
     
     void Start()
     {
