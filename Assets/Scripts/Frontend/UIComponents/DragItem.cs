@@ -1,4 +1,5 @@
 using Interfaces;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -9,6 +10,18 @@ public class DragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
     public Canvas canvas;                 // drag your UI canvas here
     private Image dragIcon;
     private RectTransform dragRect;
+    public int count = 0;
+    public TextMeshProUGUI countText;
+    
+    void Start()
+    {
+        UpdateCountText();
+    }
+
+    private void UpdateCountText()
+    {
+       countText.text = count.ToString() ;
+    }
 
     public void OnBeginDrag(PointerEventData eventData)
     {

@@ -33,8 +33,8 @@ public class UISlide : MonoBehaviour
     {
         shown = !shown;
         target = shown
-            ? new Vector2(0, showHeight)
-            : new Vector2(0, hiddenHeight);
+            ? new Vector2(showHeight,0)
+            : new Vector2(hiddenHeight,0);
         buttonIcon.sprite = shown ? hideIcon : showIcon;
     }
 }

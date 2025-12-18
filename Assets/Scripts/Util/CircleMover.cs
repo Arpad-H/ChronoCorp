@@ -1,5 +1,5 @@
 using UnityEngine;
-
+//util to make something moves in a circle to test trails and such
 public class CircleMover : MonoBehaviour
 {
     public float radius = 5f;
