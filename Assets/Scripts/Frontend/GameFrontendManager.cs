@@ -78,9 +78,13 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
     public bool PlaceNodeVisual(GUID id,NodeDTO nodeDto, int layerNum, Vector2 cellPos, EnergyType energyType)
     {
         var frame = GetCoordinatePlane(layerNum);
-        frame.PlaceNode(nodeDto, cellPos, out var newNode, energyType);
-        newNode.GetComponent<NodeVisual>().backendID = id;
-        return true;
+        if (frame.PlaceNodeFromBackend(nodeDto, cellPos, out var newNode, energyType))
+        {
+            newNode.GetComponent<NodeVisual>().backendID = id;
+            return true;
+        }
+
+        return false;
     }
 
 
@@ -96,6 +100,8 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
 
     public void OnStabilityBarUpdate(int minValue, int maxValue, int currentValue)
     {
+        float percent = (float)(currentValue - minValue) / (maxValue - minValue);
+        layerToCoordinatePlane[0].UpdateStabilityBar(percent); //TODO only layer 0 for now
     }
 
     public void OnActivateStabilityMalus(StabilityMalusType stabilityMalusType)
@@ -181,5 +187,10 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
         return layerToCoordinatePlane.ContainsKey(startPosLayer)
             ? layerToCoordinatePlane[startPosLayer]
             : null ;
+    }
+    
+    public void TryDrop(NodeDTO nodeDTO)
+    {
+        SpawnOnHoveredFrame(nodeDTO, EnergyType.WHITE);
     }
 }

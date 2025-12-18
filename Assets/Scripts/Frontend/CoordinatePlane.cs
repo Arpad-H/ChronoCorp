@@ -4,6 +4,7 @@ using Interfaces;
 using NodeBase;
 using Unity.VisualScripting.Dependencies.NCalc;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CoordinatePlane : MonoBehaviour
 {
@@ -17,12 +18,15 @@ public class CoordinatePlane : MonoBehaviour
     // public int gridWidth = 10;
     // public int gridHeight = 10; //currently determined by frameMesh scale
     public int cellWidth = 1;
-
     public int cellHeight = 1;
     public bool showGrid = false;
     private int numX, numY; // Number of cells in each direction
     private float maxX, maxY, minX, minY; // Max/min bounds (avoid placing outside frame)
-
+    
+    [Header("Stabilitybar Settings")]
+    public Image stabilityBar;
+    
+    
     public int layerNum = 0; //changed when bakcend spawns layer
     private IBackend _backend;
 
@@ -84,6 +88,21 @@ public class CoordinatePlane : MonoBehaviour
         nodes.Add(obj);
         return true;
     }
+ public bool PlaceNodeFromBackend(NodeDTO nodeDTO, Vector2 planePos, out GameObject obj, EnergyType energyType)
+    {
+        obj = null;
+        Vector3 localPos = ToPlaneLocal(planePos);
+
+        
+        GameObject node = nodeDTO == NodeDTO.RIPPLE ? nodePrefab : generatorPrefab;
+        if (!IsWithinBounds(localPos) || IsPlaceOccupied(localPos)) return false;
+        obj = Instantiate(node, nodeContainer);
+        NodeVisual nv = obj.GetComponent<NodeVisual>();
+        if (nv) nv.SetEnergyType(energyType);
+        obj.transform.localPosition = localPos;
+        nodes.Add(obj);
+        return true;
+    }
 
     public Vector3 SnapToGrid(Vector3 position)
     {
@@ -131,5 +150,12 @@ public class CoordinatePlane : MonoBehaviour
     {
         Vector3 localPos = ToPlaneLocal(endPos);
         return nodeContainer.TransformPoint(localPos);
+    }
+    public void UpdateStabilityBar(float stabilityPercent)
+    {
+        if (stabilityBar)
+        {
+            stabilityBar.fillAmount = stabilityPercent;
+        }
     }
 }

@@ -7,15 +7,17 @@ namespace Interfaces
 {
     public interface IFrontend
     {
-        // void UpdateEnergyPackets( List<EnergyPacket> energyPackets);
-        // void DeleteEnergyPackets( List<EnergyPacket> energyPackets); each packet asks for its pos isntead to make use of pooling
+       
         void GameOver(string reason);
         
         /**
          * Tells the frontend about a node that was spawned by the backend at backend cellPos.
          */
         bool PlaceNodeVisual(GUID id,NodeDTO nodeDto, int layerNum, Vector2 cellPos, EnergyType energyType);
-
+        
+        /**
+         * Tells the frontend to spawn an energy packet visualizer for the packet with the given GUID and energy type.
+         */
         void SpawnEnergyPacket(GUID guid, EnergyType energyType);
         void DeleteEnergyPacket(GUID guid);
 

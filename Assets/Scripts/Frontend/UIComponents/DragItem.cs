@@ -1,0 +1,36 @@
+using Interfaces;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
+
+public class DragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+{
+    public Sprite iconImage;               // assign from inspector
+    public Canvas canvas;                 // drag your UI canvas here
+    private Image dragIcon;
+    private RectTransform dragRect;
+
+    public void OnBeginDrag(PointerEventData eventData)
+    {
+        dragIcon = new GameObject("DragIcon").AddComponent<Image>();
+        dragIcon.sprite = iconImage;
+        dragIcon.raycastTarget = false;
+        dragRect = dragIcon.GetComponent<RectTransform>();
+        dragRect.SetParent(canvas.transform, false);
+        dragRect.position = eventData.position;
+        dragRect.localScale = Vector3.one;
+}
+
+    public void OnDrag(PointerEventData eventData)
+    {
+        if (dragRect != null)
+            dragRect.position = eventData.position;
+    }
+
+    public void OnEndDrag(PointerEventData eventData)
+    {
+        if (dragIcon != null)
+            Destroy(dragIcon.gameObject);
+        GameFrontendManager.Instance.TryDrop(NodeDTO.GENERATOR);
+    }
+}

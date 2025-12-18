@@ -212,7 +212,7 @@ namespace Backend.Simulation.World
         private readonly SimulationStorage _simulationStorage;
         public readonly int SliceNumber;
         public readonly NodeSpawner NodeSpawner;
-        public readonly TimeSliceGrid TimeSliceGrid = new(20,20,1);
+        public readonly TimeSliceGrid TimeSliceGrid = new(16,9,1);
 
         public TimeSlice(SimulationStorage simulationStorage, int sliceNumber)
         {
