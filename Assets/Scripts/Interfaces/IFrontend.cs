@@ -37,6 +37,8 @@ namespace Interfaces
         void OnDeactivateStabilityMalus(StabilityMalusType stabilityMalusType);
 
         bool AddTimeSlice(int sliceNum);
+
+        void onNodeHealthChange(GUID id, int minValue, int maxValue, int currentValue);
         //ui healthbar etc later
     }
 }

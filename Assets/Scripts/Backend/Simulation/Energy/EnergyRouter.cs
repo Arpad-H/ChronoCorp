@@ -229,6 +229,16 @@ namespace Backend.Simulation.Energy
             {
                 Debug.Log("Delivered at target");
                 Delivered = true;
+
+                if (Destination is TimeRippleInstance timeRipple)
+                {
+                    timeRipple.currentStability += 1;
+                    if (timeRipple.currentStability > timeRipple.maxStability)
+                    {
+                        timeRipple.currentStability = timeRipple.maxStability;
+                    }
+                    storage.Frontend.onNodeHealthChange(timeRipple.guid, timeRipple.minStability, timeRipple.maxStability, timeRipple.currentStability);
+                }
             }
             else
             {

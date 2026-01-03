@@ -78,12 +78,21 @@ namespace NodeBase
  */
     public class TimeRippleInstance : AbstractNodeInstance, NodeWithConnections
     {
+        public const int ENERGY_DRAIN_TICKS = 50 * 5;
+        
         public List<Connection> Connections;
+        public int minStability {get; set;}
+        public int maxStability  {get; set;}
+        public int currentStability  {get; set;}
+        public long lastDrainTick {get; set;}
 
         public TimeRippleInstance(Vector2 pos, EnergyType energyType) : base(pos, NodeType.TIME_RIPPLE)
         {
             Connections = new List<Connection>();
             EnergyType = energyType;
+            minStability = 0;
+            maxStability = 100;
+            currentStability = maxStability;
         }
 
         public EnergyType EnergyType { get; set; }
@@ -95,6 +104,18 @@ namespace NodeBase
 
         public override void Tick(long tickCount, SimulationStorage storage)
         {
+            if (tickCount - lastDrainTick < ENERGY_DRAIN_TICKS)
+            {
+                return;
+            }
+
+            currentStability -= 1;
+            if (currentStability < minStability)
+            {
+                currentStability = minStability;
+            }
+            storage.Frontend.onNodeHealthChange(guid, minStability, maxStability, currentStability);
+            lastDrainTick = tickCount;
         }
     }
 
