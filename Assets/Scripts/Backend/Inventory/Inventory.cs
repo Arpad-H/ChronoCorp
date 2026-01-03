@@ -78,7 +78,7 @@ namespace Backend.Inv
 
     {
         public const int STARTNUMBER_OF_CONNECTIONS = int.MaxValue;
-        public const int STARTNUMBER_OF_GENERATORS = int.MaxValue;
+        public const int STARTNUMBER_OF_GENERATORS = 3;
 
         public static Dictionary<NodeDTO, int> startConf = new()
         {
