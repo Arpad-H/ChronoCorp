@@ -12,6 +12,7 @@ namespace Backend.Simulation.World
 {
     public class SimulationStorage
     {
+        public const int TICKS_PER_SECOND = 50;
         private readonly List<GUID> _removeBuffer = new(128); //buffer to avoid modifying collection during iteration
         public readonly IFrontend Frontend;
 
@@ -30,11 +31,7 @@ namespace Backend.Simulation.World
         {
             Frontend = frontend;
             //timeSlices[0] = new TimeSlice(this);
-            timeSlices.Add(new TimeSlice(this, 0)); //prevents out of bounds since starts of with count 0
-            foreach (var energyType in Enum.GetValues(typeof(EnergyType)).Cast<EnergyType>())
-            {
-                energyTypesAvailableInSimulation[energyType] = 0;
-            }
+            timeSlices.Add(new TimeSlice(this, 0, 0)); //prevents out of bounds since starts of with count 0
         }
 
         public uint getTickSeed(long tickCount)
@@ -114,12 +111,27 @@ namespace Backend.Simulation.World
             // Remove after loop to avoid modifying collection during iteration. was causing errors
             for (var i = 0; i < _removeBuffer.Count; i++)
                 energyPackets.Remove(_removeBuffer[i]);
+
+            if (tickCount == 3000)
+            {
+                timeSlices.Add(new TimeSlice(this, 1, 3000));
+                Frontend.AddTimeSlice(1);
+            }
         }
 
         public GUID? link(GUID idNode1, GUID idNode2)
         {
             var canPlace = inventory.canPlaceNormalConnection();
-            if (!isNodeKnown(idNode1) || !isNodeKnown(idNode2) || !canPlace) return null;
+            if (!canPlace)
+            {
+                Debug.Log("Inventory prevents placing normal connection");
+                return null;
+            }
+            if (!isNodeKnown(idNode1) || !isNodeKnown(idNode2) || !canPlace)
+            {
+                Debug.Log("Nodes not known to slice!");
+                return null;
+            }
 
             var node1 = guidToNodesMapping[idNode1];
             var node2 = guidToNodesMapping[idNode2];
@@ -211,18 +223,26 @@ namespace Backend.Simulation.World
         private const int TOLERANCE = 0;
         private readonly SimulationStorage _simulationStorage;
         public readonly int SliceNumber;
+        private readonly long _tickPastDiff;
         public readonly NodeSpawner NodeSpawner;
         public readonly TimeSliceGrid TimeSliceGrid = new(16,9,1);
 
-        public TimeSlice(SimulationStorage simulationStorage, int sliceNumber)
+        public TimeSlice(SimulationStorage simulationStorage, int sliceNumber, long tickPastDiff)
         {
             _simulationStorage = simulationStorage;
             SliceNumber = sliceNumber;
+            _tickPastDiff = tickPastDiff;
             NodeSpawner = new(this);
         }
 
         public void Tick(long tickCount, SimulationStorage storage)
         {
+            tickCount -= _tickPastDiff;
+            if (tickCount < 0)
+            {
+                tickCount = 0;
+            }
+            
             foreach (var abstractNodeInstance in _simulationStorage.guidToNodesMapping.Values)
                 abstractNodeInstance.Tick(tickCount, _simulationStorage);
             NodeSpawner.Tick(tickCount, _simulationStorage);
@@ -250,6 +270,12 @@ namespace Backend.Simulation.World
             TimeSliceGrid.Add(newNode);
             addNodeToMapping(newNode);
             timeRippleInstance = newNode;
+
+            if (!_simulationStorage.energyTypesAvailableInSimulation.ContainsKey(energyType))
+            {
+                _simulationStorage.energyTypesAvailableInSimulation[energyType] = 0;
+            }
+            
             _simulationStorage.energyTypesAvailableInSimulation[energyType]++;
             return newNode.guid;
         }
@@ -261,7 +287,16 @@ namespace Backend.Simulation.World
                 {
                     if (nodeInstance is GeneratorInstance) _simulationStorage.inventory.removeGenerator();
                     if (nodeInstance is TimeRippleInstance timeRippleInstance)
-                        _simulationStorage.energyTypesAvailableInSimulation[timeRippleInstance.EnergyType]--;
+                    {
+                        if (_simulationStorage.energyTypesAvailableInSimulation.ContainsKey(timeRippleInstance.EnergyType))
+                        {
+                            _simulationStorage.energyTypesAvailableInSimulation[timeRippleInstance.EnergyType]--;
+                            if (_simulationStorage.energyTypesAvailableInSimulation[timeRippleInstance.EnergyType] <= 0)
+                            {
+                                _simulationStorage.energyTypesAvailableInSimulation.Remove(timeRippleInstance.EnergyType);
+                            }
+                        }
+                    }
                     removeNodeFromMapping(nodeInstance);
 
                     return true;
