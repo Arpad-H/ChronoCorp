@@ -62,7 +62,6 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
 
     private void FixedUpdate()
     {
-        Debug.Log(fixedTickCount);
         backend.tick(fixedTickCount, this);
         fixedTickCount++;
     }
@@ -119,6 +118,11 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
         //TODO initialize layer properly
         layerToCoordinatePlane[sliceNum] = newLayer;
         return true;
+    }
+
+    public void onNodeHealthChange(GUID id, int minValue, int maxValue, int currentValue)
+    {
+        
     }
 
     //when a button is pressed to spawn a node
