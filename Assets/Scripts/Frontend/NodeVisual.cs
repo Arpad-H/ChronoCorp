@@ -17,7 +17,7 @@ public class NodeVisual : MonoBehaviour
     public GameObject blueGlowEffect;
     public GameObject redGlowEffect;
     public GameObject yellowGlowEffect;
-    private GameObject currentGlowEffect;
+    private GameObject currentGlowEffect ;
     
 
     public EnergyType energyType;
@@ -38,6 +38,7 @@ public class NodeVisual : MonoBehaviour
 
     void Awake()
     {
+        currentGlowEffect = greenGlowEffect;
        UpdateHealthBar(1f);
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
@@ -70,13 +71,13 @@ public class NodeVisual : MonoBehaviour
 
     public void SetEnergyType(EnergyType newEnergyType)
     {
-        if (!isSource)
-        {
-            Color color = newEnergyType.ToColor();
-            energyType = newEnergyType;
-            spriteRenderer.color = color;
-            return;
-        }
+        // if (!isSource)
+        // {
+        //     Color color = newEnergyType.ToColor();
+        //     energyType = newEnergyType;
+        //     spriteRenderer.color = color;
+        //     return;
+        // }
 
 
         switch (newEnergyType)
@@ -88,7 +89,7 @@ public class NodeVisual : MonoBehaviour
 
                 break;
             case EnergyType.BLUE:
-                greenGlowEffect.SetActive(true);
+                blueGlowEffect.SetActive(true);
                 currentGlowEffect.SetActive(false);
                 currentGlowEffect = greenGlowEffect;
                 break;

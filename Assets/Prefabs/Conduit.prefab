@@ -158,7 +158,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Conduit
   nodeVisualA: {fileID: 0}
   nodeVisualB: {fileID: 0}
-  lineRenderer: {fileID: 0}
   splineContainer: {fileID: 0}
   splineExtrudeRound: {fileID: 0}
   splineExtrudesquare: {fileID: 0}
@@ -234,7 +233,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: f1b24605d16ef0143b4ba6c6e18b89c7, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

@@ -14,7 +14,7 @@ public class ConduitVisual : MonoBehaviour
     [FormerlySerializedAs("nodeA")] public NodeVisual nodeVisualA;
     [FormerlySerializedAs("nodeB")] public NodeVisual nodeVisualB;
     private Vector3 dragPosition;
-    public LineRenderer lineRenderer;
+  //  public LineRenderer lineRenderer;
     public SplineContainer splineContainer;
     public SplineExtrude splineExtrudeRound;
     public SplineExtrude splineExtrudesquare;
@@ -26,16 +26,16 @@ public class ConduitVisual : MonoBehaviour
     {
         splineContainer = GetComponent<SplineContainer>();
         spline = splineContainer.Splines[0];
-        lineRenderer = GetComponent<LineRenderer>();
-        lineRenderer.positionCount = 3;
-        lineRenderer.startWidth = 0.1f;
-        lineRenderer.endWidth = 0.1f;
+        // lineRenderer = GetComponent<LineRenderer>();
+        // lineRenderer.positionCount = 3;
+        // lineRenderer.startWidth = 0.1f;
+        // lineRenderer.endWidth = 0.1f;
     }
 
     public void SetStartNode(NodeVisual nodeVisual)
     {
         nodeVisualA = nodeVisual;
-        lineRenderer.SetPosition(0, nodeVisual.GetAttachPosition());
+        // lineRenderer.SetPosition(0, nodeVisual.GetAttachPosition());
     }
 
     public void FinalizeConduit(NodeVisual nodeVisual, GUID newBackendID)
@@ -52,8 +52,8 @@ public class ConduitVisual : MonoBehaviour
             ? nodeVisualB.energyType
             : nodeVisualA.energyType;
         Color color = energyType.ToColor();
-        lineRenderer.startColor = color;
-        lineRenderer.endColor = color;
+        // lineRenderer.startColor = color;
+        // lineRenderer.endColor = color;
     }
 
     public void StartNewConduitAtNode(NodeVisual nodeVisual)
@@ -162,8 +162,8 @@ public class ConduitVisual : MonoBehaviour
 //                 
 //            
         }
-        lineRenderer.positionCount = path.Count;
-        lineRenderer.SetPositions(path.ToArray());
+        // lineRenderer.positionCount = path.Count;
+        // lineRenderer.SetPositions(path.ToArray());
     }
 
     Quaternion BuildStableRotation(Vector3 tangent)
@@ -189,8 +189,8 @@ public class ConduitVisual : MonoBehaviour
     {
         nodeVisualA = null;
         nodeVisualB = null;
-        lineRenderer.SetPosition(0, Vector3.zero);
-        lineRenderer.SetPosition(1, Vector3.zero);
-        lineRenderer.SetPosition(2, Vector3.zero);
+        // lineRenderer.SetPosition(0, Vector3.zero);
+        // lineRenderer.SetPosition(1, Vector3.zero);
+        // lineRenderer.SetPosition(2, Vector3.zero);
     }
 }

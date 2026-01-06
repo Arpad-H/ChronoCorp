@@ -139,6 +139,7 @@ MonoBehaviour:
   energyDemand: 0
   nodeScale: 0.75
   spriteRenderer: {fileID: -5221408241510210698}
+  hpBar: {fileID: 0}
   currentEnergy: 0
   collapseTimer: 0
   connectedConduits: []

@@ -10,7 +10,6 @@ public class EnergyPacketVisualizer : MonoBehaviour
 {
     public static EnergyPacketVisualizer Instance;
     public GameObject prefab;
-    [FormerlySerializedAs("conduit")] public ConduitVisual conduitVisual;
     private ObjectPool<EnergyPacketVisual> pool;
  
     private Dictionary<GUID,EnergyPacketVisual> ePVisuals = new();
