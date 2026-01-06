@@ -159,7 +159,7 @@ GameObject vfxPrefab;
     }
     public CoordinatePlane AddNewFrame()
     {
-        Instantiate(vfxPrefab);
+       // Instantiate(vfxPrefab);
        // StartCoroutine(DelaySpawn());
         Vector3 pos;
         CoordinatePlane frame = null;
