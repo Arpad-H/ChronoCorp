@@ -13,19 +13,18 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
     public static GameFrontendManager Instance;
     public CameraController cameraController;
 
-    
-    [Header("Layer Management")] 
-    public TemporalLayerStack temporalLayerStack;
+
+    [Header("Layer Management")] public TemporalLayerStack temporalLayerStack;
     public float layerDuplicationTime = 60f;
     private Dictionary<int, CoordinatePlane> layerToCoordinatePlane = new();
     private Dictionary<GUID, NodeVisual> nodeVisuals = new();
-    
+
     private IBackend backend; // Link to backend
     private EnergyPacketVisualizer energyPacketVisualizer;
 
     private long fixedTickCount;
-   
 
+    public StabilityBar stabilityBar;
 
     private void Awake()
     {
@@ -48,7 +47,7 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
         InputManager.Instance.OnButton5 += () => SpawnManuallyOnHoveredFrame(NodeDTO.RIPPLE, EnergyType.YELLOW);
         InputManager.Instance.OnButton6 += () => SpawnManuallyOnHoveredFrame(NodeDTO.GENERATOR, EnergyType.YELLOW);
         InputManager.Instance.OnButtonX += () => DeleteNodeManually();
-        
+
         //get all existing layers in scene
         var existingLayers = FindObjectsOfType<CoordinatePlane>();
         foreach (var layer in existingLayers) layerToCoordinatePlane[layer.layerNum] = layer;
@@ -72,7 +71,7 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
         UIManager.Instance.ShowGameOver(reason);
     }
 
-    public bool PlaceNodeVisual(GUID id,NodeDTO nodeDto, int layerNum, Vector2 cellPos, EnergyType energyType)
+    public bool PlaceNodeVisual(GUID id, NodeDTO nodeDto, int layerNum, Vector2 cellPos, EnergyType energyType)
     {
         var frame = GetCoordinatePlane(layerNum);
         NodeVisual nv = frame.PlaceNodeFromBackend(nodeDto, cellPos, energyType);
@@ -100,7 +99,7 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
     public void OnStabilityBarUpdate(int minValue, int maxValue, int currentValue)
     {
         float percent = (float)(currentValue - minValue) / (maxValue - minValue);
-        layerToCoordinatePlane[0].UpdateStabilityBar(percent); //TODO only layer 0 for now
+        stabilityBar.UpdateStabilityBar(percent);
     }
 
     public void OnActivateStabilityMalus(StabilityMalusType stabilityMalusType)
@@ -141,8 +140,8 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
         var nodeBackendID = backend.PlaceNode(nodeType, frameNum, localCoordinates, energyType);
         if (nodeBackendID != null)
         {
-            frame.PlaceNode(nodeType, spawnPos,nodeBackendID.Value, energyType);
-            
+            frame.PlaceNode(nodeType, spawnPos, nodeBackendID.Value, energyType);
+
             return true;
         }
 
@@ -157,20 +156,21 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
 
         var frame = rh.transform.GetComponentInParent<CoordinatePlane>();
         if (frame == null) return false; // Not hovering over a frame
-      
+
         var hitPoint = rh.point;
-      
+
         var spawnPos = frame.WorldToLocal(hitPoint);
-        GUID? nodeBackendID =backend.PlaceNode(nodeDto, frame.layerNum, spawnPos, energyType);
+        GUID? nodeBackendID = backend.PlaceNode(nodeDto, frame.layerNum, spawnPos, energyType);
         GUID id;
         if (nodeBackendID.HasValue) id = nodeBackendID.Value;
         else return false;
-        NodeVisual node= frame.PlaceNode(nodeDto, spawnPos, id, energyType);
+        NodeVisual node = frame.PlaceNode(nodeDto, spawnPos, id, energyType);
         if (node)
         {
             nodeVisuals.Add(id, node);
             return true;
         }
+
         return false;
     }
 
@@ -194,9 +194,9 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
     {
         return layerToCoordinatePlane.ContainsKey(startPosLayer)
             ? layerToCoordinatePlane[startPosLayer]
-            : null ;
+            : null;
     }
-    
+
     public void TryDrop(NodeDTO nodeDTO)
     {
         SpawnOnHoveredFrame(nodeDTO, EnergyType.WHITE);

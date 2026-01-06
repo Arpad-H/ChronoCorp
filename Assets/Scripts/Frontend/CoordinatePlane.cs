@@ -26,7 +26,7 @@ public class CoordinatePlane : MonoBehaviour
     private float maxX, maxY, minX, minY; // Max/min bounds (avoid placing outside frame)
     
     [Header("Stabilitybar Settings")]
-    public Image stabilityBar;
+   
     
     
     public int layerNum = 0; //changed when bakcend spawns layer
@@ -168,12 +168,5 @@ public class CoordinatePlane : MonoBehaviour
     {
         Vector3 localPos = ToPlaneLocal(endPos);
         return nodeContainer.TransformPoint(localPos);
-    }
-    public void UpdateStabilityBar(float stabilityPercent)
-    {
-        if (stabilityBar)
-        {
-            stabilityBar.fillAmount = stabilityPercent;
-        }
     }
 }
