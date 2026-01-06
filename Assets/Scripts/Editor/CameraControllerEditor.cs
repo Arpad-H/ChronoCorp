@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 
-[CustomEditor(typeof(CamShowcase))]
+[CustomEditor(typeof(TemporalLayerStack))]
 public class CameraControllerEditor : Editor
 {
     SerializedProperty framePrefabProp;
@@ -45,7 +45,7 @@ public class CameraControllerEditor : Editor
         EditorGUILayout.PropertyField(numberOfFramesProp);
         EditorGUILayout.PropertyField(cameraModeProp);
 
-        CamShowcase controller = (CamShowcase)target;
+        TemporalLayerStack controller = (TemporalLayerStack)target;
         CameraMode mode = controller.cameraMode;
 
         EditorGUILayout.Space();

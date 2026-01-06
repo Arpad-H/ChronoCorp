@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Interfaces;
 using NodeBase;
 using Unity.VisualScripting.Dependencies.NCalc;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -34,6 +35,7 @@ public class CoordinatePlane : MonoBehaviour
 
     void Awake()
     {
+       
         if (!frameMesh) frameMesh = transform.Find("FrameMesh");
         if (!nodeContainer) nodeContainer = transform.Find("NodeContainer");
         // Calculate bounds
@@ -72,9 +74,9 @@ public class CoordinatePlane : MonoBehaviour
     /// <summary>
     /// Instantiates a node inside the nodeContainer at plane coordinates.
     /// </summary>
-    public bool PlaceNode(NodeDTO nodeDTO, Vector3 planePos, out GameObject obj, EnergyType energyType)
+    public bool PlaceNode(NodeDTO nodeDTO, Vector3 planePos,GUID guid, EnergyType energyType)
     {
-        obj = null;
+        GameObject obj = null;
         Vector3 localPos = ToPlaneLocal(planePos);
         // if (! _backend.PlaceNode(prefab,layerNum, new Vector2(localPos.x,localPos.y))) return false;
 
@@ -83,7 +85,11 @@ public class CoordinatePlane : MonoBehaviour
         if (!IsWithinBounds(localPos) || IsPlaceOccupied(localPos)) return false;
         obj = Instantiate(node, nodeContainer);
         NodeVisual nv = obj.GetComponent<NodeVisual>();
-        if (nv) nv.SetEnergyType(energyType);
+        if (nv)
+        {
+            nv.backendID = guid;
+            nv.SetEnergyType(energyType);
+        }
         obj.transform.localPosition = localPos;
         nodes.Add(obj);
         return true;

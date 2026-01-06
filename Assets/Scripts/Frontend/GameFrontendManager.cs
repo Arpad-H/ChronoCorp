@@ -12,14 +12,14 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
 {
     public static GameFrontendManager Instance;
     public CameraController cameraController;
-
-    [Header("Asset References")] public GameObject conduitPrefab;
-
+    
     public CoordinatePlane layer0; //TODO temp hardcode
 
    
-    [Header("Layer Management")] public float layerDuplicationTime = 60f;
- private Dictionary<int, CoordinatePlane> layerToCoordinatePlane = new();
+    [Header("Layer Management")] 
+    public TemporalLayerStack temporalLayerStack;
+    public float layerDuplicationTime = 60f;
+    private Dictionary<int, CoordinatePlane> layerToCoordinatePlane = new();
  
     public float layerZSpacing = 15f; // How far apart to space layers
     private IBackend backend; // Link to backend
@@ -32,6 +32,7 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
 
     private void Awake()
     {
+        if (!temporalLayerStack) temporalLayerStack = FindObjectOfType<TemporalLayerStack>();
         backend = new BackendImpl(this);
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
@@ -113,7 +114,7 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
 
     public bool AddTimeSlice(int sliceNum)
     {
-        var newLayer = Instantiate(layer0, new Vector3(0, 0, sliceNum * layerZSpacing), Quaternion.identity);
+        CoordinatePlane newLayer = temporalLayerStack.AddNewFrame();
         newLayer.layerNum = sliceNum;
         //TODO initialize layer properly
         layerToCoordinatePlane[sliceNum] = newLayer;
@@ -142,8 +143,8 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
         var nodeBackendID = backend.PlaceNode(nodeType, frameNum, localCoordinates, energyType);
         if (nodeBackendID != null)
         {
-            frame.PlaceNode(nodeType, spawnPos, out var newNode, energyType);
-          newNode.GetComponent<NodeVisual>().backendID = nodeBackendID.Value;
+            frame.PlaceNode(nodeType, spawnPos,nodeBackendID.Value, energyType);
+            
             return true;
         }
 
@@ -160,12 +161,19 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
         if (frame == null) return false; // Not hovering over a frame
       
         var hitPoint = rh.point;
-        if (frame != null)
+      
+        var spawnPos = frame.WorldToLocal(hitPoint);
+        GUID? nodeBackendID =backend.PlaceNode(nodeDto, frame.layerNum, spawnPos, energyType);
+        GUID id;
+        if (nodeBackendID.HasValue) id = nodeBackendID.Value;
+        else return false;
+            
+        if (frame.PlaceNode(nodeDto, spawnPos, id, energyType))
         {
-            var spawnPos = frame.WorldToLocal(hitPoint);
-            var nodeBackendID = backend.PlaceNode(nodeDto, frame.layerNum, spawnPos, energyType);
-            if (frame.PlaceNode(nodeDto, spawnPos, out var newNode, energyType)) return true;
+               
+            return true;
         }
+        
 
 
         return false;

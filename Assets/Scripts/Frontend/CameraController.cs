@@ -1,5 +1,6 @@
 
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public enum CameraMode
 {
@@ -11,7 +12,7 @@ public enum CameraMode
 public class CameraController : MonoBehaviour
 {
     
-    public CamShowcase camShowcase;
+    [FormerlySerializedAs("camShowcase")] public TemporalLayerStack temporalLayerStack;
     public float zoomSpeed = 3f;
     public Camera cam;
 
@@ -31,8 +32,8 @@ public class CameraController : MonoBehaviour
         if (cam == null) cam = FindObjectOfType<Camera>();
         InputManager.Instance.OnLeftClick += HandleClickEvent;
         InputManager.Instance.OnMouseScroll += HandleScrollEvent;
-        camShowcase.OnCameraModeChanged += CameraModeChanged;
-        cameraMode = camShowcase.cameraMode;
+        temporalLayerStack.OnCameraModeChanged += CameraModeChanged;
+        cameraMode = temporalLayerStack.cameraMode;
     }
 
     void OnDisable()
@@ -54,11 +55,11 @@ public class CameraController : MonoBehaviour
                 break;
 
             case CameraMode.StackedTower:
-                float angleSpeed = camShowcase.angleStep;
-                float heightStep = camShowcase.heightStep;
-                float radius = camShowcase.radius;
-                float heightOffset = camShowcase.heightOffset;
-                float lookAheadAngle = camShowcase.lookAheadAngle;
+                float angleSpeed = temporalLayerStack.angleStep;
+                float heightStep = temporalLayerStack.heightStep;
+                float radius = temporalLayerStack.radius;
+                float heightOffset = temporalLayerStack.heightOffset;
+                float lookAheadAngle = temporalLayerStack.lookAheadAngle;
 
                 // Advance angle and height based on scroll
                 currentAngle += scroll * angleSpeed;
@@ -88,14 +89,14 @@ public class CameraController : MonoBehaviour
                 break;
 
             case CameraMode.CoverFlow:
-                camShowcase.UpdateFrames(scroll);
+                temporalLayerStack.UpdateFrames(scroll);
                 break;
         }
     }
 
     public void ForceCamUpdate()
     {
-        cameraMode = camShowcase.cameraMode;
+        cameraMode = temporalLayerStack.cameraMode;
         HandleScrollEvent(0);
     }
 

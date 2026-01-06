@@ -129,7 +129,7 @@ namespace Backend.Simulation.World
             }
             if (!isNodeKnown(idNode1) || !isNodeKnown(idNode2) || !canPlace)
             {
-                Debug.Log("Nodes not known to slice!");
+                Debug.Log("Nodes not known to slice! " + idNode1 + " or " + idNode2);
                 return null;
             }
 

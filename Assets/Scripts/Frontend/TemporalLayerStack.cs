@@ -4,13 +4,13 @@ using UnityEditor;
 using UnityEngine;
 
 
-public class CamShowcase : MonoBehaviour
+public class TemporalLayerStack : MonoBehaviour
 {
     public Action<CameraMode> OnCameraModeChanged;
     public GameObject framePrefab;
 
     [Min(1)]
-    public int numberOfFrames = 5;
+    public int numberOfFrames = 1;
 
     public CameraController cameraController;
     [SerializeField] public CameraMode cameraMode = CameraMode.IsoGlide;
@@ -37,7 +37,7 @@ public class CamShowcase : MonoBehaviour
     
       
     
-    private List<GameObject> frames = new List<GameObject>();
+    private List<CoordinatePlane> frames = new List<CoordinatePlane>();
     
     
 
@@ -52,19 +52,19 @@ public class CamShowcase : MonoBehaviour
 
     public void OnValidate()
     {
-#if UNITY_EDITOR
-        if (!Application.isPlaying)
-        {
-            EditorApplication.delayCall += () =>
-            {
-                if (this != null)
-                {
-                    GenerateFrames();
-                    cameraController.ForceCamUpdate();
-                }
-            };
-        }
-#endif
+// #if UNITY_EDITOR
+//         if (!Application.isPlaying)
+//         {
+//             EditorApplication.delayCall += () =>
+//             {
+//                 if (this != null)
+//                 {
+//                     GenerateFrames();
+//                     cameraController.ForceCamUpdate();
+//                 }
+//             };
+//         }
+// #endif
     }
 
     void HandleCameraModeChanged(CameraMode newMode)
@@ -104,7 +104,7 @@ public class CamShowcase : MonoBehaviour
                 for (int i = 0; i < numberOfFrames; i++)
                 {
                     Vector3 pos = new(0, 0, i * 10.0f);
-                    GameObject frame = InstantiatePrefab(pos, Quaternion.identity, $"IsoGlideFrame_{i}");
+                    CoordinatePlane frame = InstantiatePrefab(pos, Quaternion.identity, $"IsoGlideFrame_{i}");
                 }
                
                 break;
@@ -124,8 +124,8 @@ public class CamShowcase : MonoBehaviour
                     
                     Quaternion rot = Quaternion.Euler(90f,0f,  i * angleStep);
 
-                    GameObject frame = InstantiatePrefab(pos, rot,$"SpiralFrame_{i}");
-                    frame.layer = i;
+                    CoordinatePlane frame = InstantiatePrefab(pos, rot,$"SpiralFrame_{i}");
+                    frame.layerNum = i;
                     frames.Add(frame);
                 }
                 break;
@@ -150,20 +150,27 @@ public class CamShowcase : MonoBehaviour
                     Vector3 pos = new Vector3(xPos, 0, zPos);
                     Quaternion rot = Quaternion.Euler(0, yRot, 0);
 
-                    GameObject frame = InstantiatePrefab(pos, rot, $"CoverFlow_{i}");
+                    CoordinatePlane frame = InstantiatePrefab(pos, rot, $"CoverFlow_{i}");
                 }
                 break;
         }
     }
-
-    private GameObject InstantiatePrefab(Vector3 pos, Quaternion rot, string objName)
+    public CoordinatePlane AddNewFrame()
     {
-        GameObject obj;
+        numberOfFrames += 1;
+        CoordinatePlane frame = InstantiatePrefab(Vector3.zero, Quaternion.identity, $"Frame_{numberOfFrames - 1}");
+        GenerateFrames();
+        return frame;
+    }
+
+    private CoordinatePlane InstantiatePrefab(Vector3 pos, Quaternion rot, string objName)
+    {
+        CoordinatePlane obj;
 
         if (Application.isPlaying)
-            obj = Instantiate(framePrefab, pos, rot, transform);
+            obj = Instantiate(framePrefab, pos, rot, transform).GetComponent<CoordinatePlane>();
         else
-            obj = (GameObject)UnityEditor.PrefabUtility.InstantiatePrefab(framePrefab, transform);
+            obj = ((GameObject)UnityEditor.PrefabUtility.InstantiatePrefab(framePrefab, transform)).GetComponent<CoordinatePlane>();
 
         obj.transform.SetLocalPositionAndRotation(pos, rot);
         obj.name = objName;
