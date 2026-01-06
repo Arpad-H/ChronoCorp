@@ -32,8 +32,7 @@ public class TemporalLayerStack : MonoBehaviour
     private int half;
     private Vector3 baseScale = new Vector3(16, 9, 1);
     [Header("Cam Settings")] private List<CoordinatePlane> frames = new List<CoordinatePlane>();
-
-GameObject vfxPrefab;
+    
     void Start()
     {
         GenerateFrames();
@@ -150,16 +149,9 @@ GameObject vfxPrefab;
                 break;
         }
     }
-    IEnumerator DelaySpawn()
-    {
-       
-        yield return new WaitForSeconds(5);
-
-      
-    }
+  
     public CoordinatePlane AddNewFrame()
     {
-       // Instantiate(vfxPrefab);
        // StartCoroutine(DelaySpawn());
         Vector3 pos;
         CoordinatePlane frame = null;

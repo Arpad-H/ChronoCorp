@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Interfaces;
 using NodeBase;
@@ -32,10 +33,12 @@ public class CoordinatePlane : MonoBehaviour
     private IBackend _backend;
 
     private List<GameObject> nodes = new List<GameObject>();
-
+    public GameObject vfxPrefab;
+    public MeshRenderer meshRenderer;
     void Awake()
     {
-       Debug.Log("Awake");
+        meshRenderer.enabled =false;
+       
         if (!frameMesh) frameMesh = transform.Find("FrameMesh");
         if (!nodeContainer) nodeContainer = transform.Find("NodeContainer");
         // Calculate bounds
@@ -48,7 +51,16 @@ public class CoordinatePlane : MonoBehaviour
         minY = -scale.y / 2f;
         maxY = minY + numY * cellHeight;
     }
-
+    void Start()
+    {
+        StartCoroutine(DelaySpawn());
+    }
+    IEnumerator DelaySpawn()
+    {
+        yield return new WaitForSeconds(3);
+        vfxPrefab.SetActive(false);
+        meshRenderer.enabled = true;
+    }
   
     void Update()
     {
