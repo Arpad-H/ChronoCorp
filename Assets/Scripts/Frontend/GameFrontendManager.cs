@@ -12,21 +12,18 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
 {
     public static GameFrontendManager Instance;
     public CameraController cameraController;
-    
-    public CoordinatePlane layer0; //TODO temp hardcode
 
-   
+    
     [Header("Layer Management")] 
     public TemporalLayerStack temporalLayerStack;
     public float layerDuplicationTime = 60f;
     private Dictionary<int, CoordinatePlane> layerToCoordinatePlane = new();
- 
-    public float layerZSpacing = 15f; // How far apart to space layers
+    private Dictionary<GUID, NodeVisual> nodeVisuals = new();
+    
     private IBackend backend; // Link to backend
     private EnergyPacketVisualizer energyPacketVisualizer;
 
     private long fixedTickCount;
-    private float layerTimer = 0f;
    
 
 
@@ -78,9 +75,11 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
     public bool PlaceNodeVisual(GUID id,NodeDTO nodeDto, int layerNum, Vector2 cellPos, EnergyType energyType)
     {
         var frame = GetCoordinatePlane(layerNum);
-        if (frame.PlaceNodeFromBackend(nodeDto, cellPos, out var newNode, energyType))
+        NodeVisual nv = frame.PlaceNodeFromBackend(nodeDto, cellPos, energyType);
+        if (nv)
         {
-            newNode.GetComponent<NodeVisual>().backendID = id;
+            nv.backendID = id;
+            nodeVisuals.Add(id, nv);
             return true;
         }
 
@@ -116,14 +115,13 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
     {
         CoordinatePlane newLayer = temporalLayerStack.AddNewFrame();
         newLayer.layerNum = sliceNum;
-        //TODO initialize layer properly
         layerToCoordinatePlane[sliceNum] = newLayer;
         return true;
     }
 
     public void onNodeHealthChange(GUID id, int minValue, int maxValue, int currentValue)
     {
-        
+        nodeVisuals[id].UpdateHealthBar((float)(currentValue - minValue) / (maxValue - minValue));
     }
 
     //when a button is pressed to spawn a node
@@ -167,15 +165,12 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
         GUID id;
         if (nodeBackendID.HasValue) id = nodeBackendID.Value;
         else return false;
-            
-        if (frame.PlaceNode(nodeDto, spawnPos, id, energyType))
+        NodeVisual node= frame.PlaceNode(nodeDto, spawnPos, id, energyType);
+        if (node)
         {
-               
+            nodeVisuals.Add(id, node);
             return true;
         }
-        
-
-
         return false;
     }
 

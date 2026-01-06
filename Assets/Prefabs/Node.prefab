@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4497349311707787191}
   - component: {fileID: 1787153165581330612}
   m_Layer: 5
-  m_Name: Image
+  m_Name: hp
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -87,7 +87,7 @@ GameObject:
   - component: {fileID: 1819155257115301077}
   - component: {fileID: 4899984009691037233}
   m_Layer: 5
-  m_Name: Image (1)
+  m_Name: bg
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -230,6 +230,7 @@ MonoBehaviour:
   energyDemand: 0
   nodeScale: 0.75
   spriteRenderer: {fileID: -5221408241510210698}
+  hpBar: {fileID: 1787153165581330612}
   currentEnergy: 0
   collapseTimer: 0
   connectedConduits: []

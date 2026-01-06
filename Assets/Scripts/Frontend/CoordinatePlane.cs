@@ -35,7 +35,7 @@ public class CoordinatePlane : MonoBehaviour
 
     void Awake()
     {
-       
+       Debug.Log("Awake");
         if (!frameMesh) frameMesh = transform.Find("FrameMesh");
         if (!nodeContainer) nodeContainer = transform.Find("NodeContainer");
         // Calculate bounds
@@ -74,7 +74,7 @@ public class CoordinatePlane : MonoBehaviour
     /// <summary>
     /// Instantiates a node inside the nodeContainer at plane coordinates.
     /// </summary>
-    public bool PlaceNode(NodeDTO nodeDTO, Vector3 planePos,GUID guid, EnergyType energyType)
+    public NodeVisual PlaceNode(NodeDTO nodeDTO, Vector3 planePos,GUID guid, EnergyType energyType)
     {
         GameObject obj = null;
         Vector3 localPos = ToPlaneLocal(planePos);
@@ -82,7 +82,7 @@ public class CoordinatePlane : MonoBehaviour
 
         
         GameObject node = nodeDTO == NodeDTO.RIPPLE ? nodePrefab : generatorPrefab;
-        if (!IsWithinBounds(localPos) || IsPlaceOccupied(localPos)) return false;
+        if (!IsWithinBounds(localPos) || IsPlaceOccupied(localPos)) return null;
         obj = Instantiate(node, nodeContainer);
         NodeVisual nv = obj.GetComponent<NodeVisual>();
         if (nv)
@@ -92,22 +92,22 @@ public class CoordinatePlane : MonoBehaviour
         }
         obj.transform.localPosition = localPos;
         nodes.Add(obj);
-        return true;
+        return nv;
     }
- public bool PlaceNodeFromBackend(NodeDTO nodeDTO, Vector2 planePos, out GameObject obj, EnergyType energyType)
+ public NodeVisual PlaceNodeFromBackend(NodeDTO nodeDTO, Vector2 planePos, EnergyType energyType)
     {
-        obj = null;
+        GameObject obj;
         Vector3 localPos = ToPlaneLocal(planePos);
 
         
         GameObject node = nodeDTO == NodeDTO.RIPPLE ? nodePrefab : generatorPrefab;
-        if (!IsWithinBounds(localPos) || IsPlaceOccupied(localPos)) return false;
+        if (!IsWithinBounds(localPos) || IsPlaceOccupied(localPos)) return null;
         obj = Instantiate(node, nodeContainer);
         NodeVisual nv = obj.GetComponent<NodeVisual>();
         if (nv) nv.SetEnergyType(energyType);
         obj.transform.localPosition = localPos;
         nodes.Add(obj);
-        return true;
+        return nv;
     }
 
     public Vector3 SnapToGrid(Vector3 position)

@@ -5,6 +5,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using NodeBase;
 using UnityEditor;
+using UnityEngine.UI;
 
 public class NodeVisual : MonoBehaviour
 {
@@ -17,6 +18,7 @@ public class NodeVisual : MonoBehaviour
     public GameObject redGlowEffect;
     public GameObject yellowGlowEffect;
     private GameObject currentGlowEffect;
+    
 
     public EnergyType energyType;
     public bool isSource; // Is it an energy source or a Time Ripple?
@@ -24,7 +26,7 @@ public class NodeVisual : MonoBehaviour
     public float energyDemand = 0f; // Energy consumed (if ripple)
     public float nodeScale = 0.75f; // Scale of the node (not overfill the grid)
     public SpriteRenderer spriteRenderer;
-
+    public Image hpBar;
 
     public float currentEnergy = 0f; // Current energy buffer
     public float collapseTimer = 0f;
@@ -36,6 +38,7 @@ public class NodeVisual : MonoBehaviour
 
     void Awake()
     {
+       UpdateHealthBar(1f);
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
@@ -105,5 +108,10 @@ public class NodeVisual : MonoBehaviour
     private void Update()
     {
         DebugbackendID = backendID.ToString();
+    }
+
+    public void UpdateHealthBar(float currentValue)
+    {
+        if (hpBar)hpBar.fillAmount = currentValue;
     }
 }

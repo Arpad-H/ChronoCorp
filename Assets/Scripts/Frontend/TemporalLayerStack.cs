@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -9,45 +10,37 @@ public class TemporalLayerStack : MonoBehaviour
     public Action<CameraMode> OnCameraModeChanged;
     public GameObject framePrefab;
 
-    [Min(1)]
-    public int numberOfFrames = 1;
+    [Min(1)] public int numberOfFrames = 1;
 
     public CameraController cameraController;
     [SerializeField] public CameraMode cameraMode = CameraMode.IsoGlide;
     private CameraMode previousMode = CameraMode.StackedTower;
-    
-    [Header("Stacked Tower Settings")]
-    public float heightStep = 4.0f;     // vertical distance between frames
-    public  float radius = 5.0f;         // distance from center pillar
-    public float angleStep = 25f;       // how many degrees each step advances
+
+    [Header("Stacked Tower Settings")] public float heightStep = 4.0f; // vertical distance between frames
+    public float radius = 5.0f; // distance from center pillar
+    public float angleStep = 25f; // how many degrees each step advances
     public float heightOffset = 5f;
     public float lookAheadAngle = 15f;
-    
-    [Header("Cover Flow Settings")]
-    public float spacing = 2f;            // horizontal spacing
-    public float sideAngle = 60f;         // Y rotation for side planes
-    public float sideZOffset = 0.5f;      // depth offset for side planes
-    public float sideScale = 0.8f;        // scale for side planes
-    public float scrollSpeed = 5f;        // how fast scroll moves
-    public float lerpSpeed = 10f;         // how fast planes animate to positions
-    private float centerIndex = 0f;       // current "floating" center
-    private int half ;
-    private Vector3 baseScale = new Vector3(16,9,1);
-    [Header("Cam Settings")]
-    
-      
-    
-    private List<CoordinatePlane> frames = new List<CoordinatePlane>();
-    
-    
 
+    [Header("Cover Flow Settings")] public float spacing = 2f; // horizontal spacing
+    public float sideAngle = 60f; // Y rotation for side planes
+    public float sideZOffset = 0.5f; // depth offset for side planes
+    public float sideScale = 0.8f; // scale for side planes
+    public float scrollSpeed = 5f; // how fast scroll moves
+    public float lerpSpeed = 10f; // how fast planes animate to positions
+    private float centerIndex = 0f; // current "floating" center
+    private int half;
+    private Vector3 baseScale = new Vector3(16, 9, 1);
+    [Header("Cam Settings")] private List<CoordinatePlane> frames = new List<CoordinatePlane>();
+
+GameObject vfxPrefab;
     void Start()
     {
         GenerateFrames();
         OnCameraModeChanged?.Invoke(cameraMode);
-        half = numberOfFrames / 2;;
+        half = numberOfFrames / 2;
+        ;
         baseScale = framePrefab.transform.localScale;
-        
     }
 
     public void OnValidate()
@@ -84,7 +77,6 @@ public class TemporalLayerStack : MonoBehaviour
 
     private void GenerateFrames()
     {
-        
         // Cleanup
         for (int i = transform.childCount - 1; i >= 0; i--)
         {
@@ -95,9 +87,10 @@ public class TemporalLayerStack : MonoBehaviour
             else
                 DestroyImmediate(child.gameObject);
         }
+
         frames.Clear();
 
-        
+
         switch (cameraMode)
         {
             case CameraMode.IsoGlide:
@@ -106,7 +99,7 @@ public class TemporalLayerStack : MonoBehaviour
                     Vector3 pos = new(0, 0, i * 10.0f);
                     CoordinatePlane frame = InstantiatePrefab(pos, Quaternion.identity, $"IsoGlideFrame_{i}");
                 }
-               
+
                 break;
 
             case CameraMode.StackedTower:
@@ -121,13 +114,14 @@ public class TemporalLayerStack : MonoBehaviour
                         i * heightStep,
                         Mathf.Sin(angle) * radius
                     );
-                    
-                    Quaternion rot = Quaternion.Euler(90f,0f,  i * angleStep);
 
-                    CoordinatePlane frame = InstantiatePrefab(pos, rot,$"SpiralFrame_{i}");
+                    Quaternion rot = Quaternion.Euler(90f, 0f, i * angleStep);
+
+                    CoordinatePlane frame = InstantiatePrefab(pos, rot, $"SpiralFrame_{i}");
                     frame.layerNum = i;
                     frames.Add(frame);
                 }
+
                 break;
 
             case CameraMode.CoverFlow:
@@ -152,14 +146,79 @@ public class TemporalLayerStack : MonoBehaviour
 
                     CoordinatePlane frame = InstantiatePrefab(pos, rot, $"CoverFlow_{i}");
                 }
+
                 break;
         }
     }
+    IEnumerator DelaySpawn()
+    {
+       
+        yield return new WaitForSeconds(5);
+
+      
+    }
     public CoordinatePlane AddNewFrame()
     {
-        numberOfFrames += 1;
-        CoordinatePlane frame = InstantiatePrefab(Vector3.zero, Quaternion.identity, $"Frame_{numberOfFrames - 1}");
-        GenerateFrames();
+        Instantiate(vfxPrefab);
+       // StartCoroutine(DelaySpawn());
+        Vector3 pos;
+        CoordinatePlane frame = null;
+        Quaternion rot;
+        switch (cameraMode)
+        {
+            case CameraMode.IsoGlide:
+
+                pos = new(0, 0, numberOfFrames * 10.0f);
+                frame = InstantiatePrefab(pos, Quaternion.identity, $"IsoGlideFrame_{numberOfFrames}");
+                break;
+
+            case CameraMode.StackedTower:
+                Vector3 center = Vector3.zero; // Center of the helix
+
+                float angle = numberOfFrames * angleStep * Mathf.Deg2Rad;
+
+                // Position in helix
+                pos = center + new Vector3(
+                    Mathf.Cos(angle) * radius,
+                    numberOfFrames * heightStep,
+                    Mathf.Sin(angle) * radius
+                );
+
+                rot = Quaternion.Euler(90f, 0f, numberOfFrames * angleStep);
+
+                frame = InstantiatePrefab(pos, rot, $"SpiralFrame_{numberOfFrames}");
+                frame.layerNum = numberOfFrames;
+                frames.Add(frame);
+
+
+                break;
+
+            case CameraMode.CoverFlow:
+                // max Y rotation for side planes
+                int half = numberOfFrames / 2;
+
+
+                int offsetFromCenter = numberOfFrames - half;
+
+                // X position
+                float xPos = offsetFromCenter * spacing;
+
+                // Z position: planes slightly behind as they go to the side
+                float zPos = Mathf.Abs(offsetFromCenter) * 0.5f;
+
+                // Rotation: tilt side planes along Y
+                float yRot = sideAngle * Mathf.Sign(offsetFromCenter) * Mathf.Min(Mathf.Abs(offsetFromCenter), 1f);
+
+                pos = new Vector3(xPos, 0, zPos);
+                rot = Quaternion.Euler(0, yRot, 0);
+
+                frame = InstantiatePrefab(pos, rot, $"CoverFlow_{numberOfFrames}");
+
+
+                break;
+        }
+
+        if (frame) numberOfFrames += 1;
         return frame;
     }
 
@@ -170,7 +229,8 @@ public class TemporalLayerStack : MonoBehaviour
         if (Application.isPlaying)
             obj = Instantiate(framePrefab, pos, rot, transform).GetComponent<CoordinatePlane>();
         else
-            obj = ((GameObject)UnityEditor.PrefabUtility.InstantiatePrefab(framePrefab, transform)).GetComponent<CoordinatePlane>();
+            obj = ((GameObject)UnityEditor.PrefabUtility.InstantiatePrefab(framePrefab, transform))
+                .GetComponent<CoordinatePlane>();
 
         obj.transform.SetLocalPositionAndRotation(pos, rot);
         obj.name = objName;
@@ -178,7 +238,7 @@ public class TemporalLayerStack : MonoBehaviour
         frames.Add(obj);
         return obj;
     }
-    
+
     public void UpdateFrames(float scrollDelta)
     {
         if (cameraMode != CameraMode.CoverFlow) return;
@@ -197,11 +257,15 @@ public class TemporalLayerStack : MonoBehaviour
             Vector3 targetPos = new Vector3(targetX, 0, targetZ);
 
             // Target rotation
-            float targetYRot = (Mathf.Abs(offset) < 0.01f) ? 0f : sideAngle * Mathf.Sign(offset) * Mathf.Min(Mathf.Abs(offset), 1f);
+            float targetYRot = (Mathf.Abs(offset) < 0.01f)
+                ? 0f
+                : sideAngle * Mathf.Sign(offset) * Mathf.Min(Mathf.Abs(offset), 1f);
             Quaternion targetRot = Quaternion.Euler(0f, targetYRot, 0f);
 
             // Target scale
-            float targetScale = (Mathf.Abs(offset) < 0.01f) ? 1f : Mathf.Lerp(1f, sideScale, Mathf.Min(Mathf.Abs(offset), 1f));
+            float targetScale = (Mathf.Abs(offset) < 0.01f)
+                ? 1f
+                : Mathf.Lerp(1f, sideScale, Mathf.Min(Mathf.Abs(offset), 1f));
             Vector3 targetScl = baseScale * targetScale;
 
             // DIRECTLY APPLY (no smoothing)
@@ -210,6 +274,4 @@ public class TemporalLayerStack : MonoBehaviour
             frames[i].transform.localScale = targetScl;
         }
     }
-
-
 }

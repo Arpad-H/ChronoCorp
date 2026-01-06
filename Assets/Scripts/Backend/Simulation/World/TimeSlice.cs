@@ -25,13 +25,13 @@ namespace Backend.Simulation.World
         public Dictionary<GUID, AbstractNodeInstance> guidToNodesMapping = new();
         public Inventory inventory = new();
         public Dictionary<NodeType, List<AbstractNodeInstance>> nodeTypeToNodesMapping = new();
-
+        private int timeSliceNumCounter = 0;
 
         public SimulationStorage(IFrontend frontend)
         {
             Frontend = frontend;
             //timeSlices[0] = new TimeSlice(this);
-            timeSlices.Add(new TimeSlice(this, 0, 0)); //prevents out of bounds since starts of with count 0
+            timeSlices.Add(new TimeSlice(this, timeSliceNumCounter++, 0)); //prevents out of bounds since starts of with count 0
         }
 
         public uint getTickSeed(long tickCount)
@@ -114,8 +114,9 @@ namespace Backend.Simulation.World
 
             if (tickCount == 3000)
             {
-                timeSlices.Add(new TimeSlice(this, 1, 3000));
-                Frontend.AddTimeSlice(1);
+                //TODO slice number was hardcoded. added counter as quick solution
+                timeSlices.Add(new TimeSlice(this, timeSliceNumCounter++, 3000));
+                Frontend.AddTimeSlice(timeSliceNumCounter-1); //pre increment otherwise it would be desynced
             }
         }
 
