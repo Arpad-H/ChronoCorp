@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c2cdb254c7864dcfba5d46c782c46a57, type: 3}
+  m_Name: GameBalance
+  m_EditorClassIdentifier: 
+  energyPacketSpeed: 0
+  energyPacketSpawnInterval: 15
+  energyPacketRechargeAmount: 0
+  nodeMaxHp: 0
+  nodeDrainRate: 0
+  layerDuplicationTime: 400
+  initialGeneratorCount: 3
+  stabilityMaxValue: 0
+  malusThreshholds: []

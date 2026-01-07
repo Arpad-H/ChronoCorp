@@ -42,11 +42,11 @@ public class CoordinatePlane : MonoBehaviour
     
     [Header("decal")]
     public DecalProjector decalProjector;
-    public Texture tex1;
-    public Texture tex2;
-    public Texture tex3;
-    public Texture tex4;
-    public Texture tex5;
+    public Material tex1;
+    public Material tex2;
+    public Material tex3;
+    public Material tex4;
+    public Material texEmpty;
     
     void Awake()
     {
@@ -78,19 +78,19 @@ public class CoordinatePlane : MonoBehaviour
         switch (layerNum)  //TODO fix discrepency between layerNum and texture index
         {
             case 0:
-                decalProjector.material.SetTexture("_BaseMap", tex1);
+                decalProjector.material = tex1;
                 break;
             case 1:
-                decalProjector.material.SetTexture("_BaseMap", tex2);
+                decalProjector.material =  tex2;
                 break;
             case 2:
-                decalProjector.material.SetTexture("_BaseMap", tex3);
+                decalProjector.material = tex3;
                 break;
             case 3:
-                decalProjector.material.SetTexture("_BaseMap", tex4);
+                decalProjector.material = tex4;
                 break;
             default:
-                decalProjector.material.SetTexture("_BaseMap", tex5);
+                decalProjector.material = texEmpty;
                 break;
         }
        

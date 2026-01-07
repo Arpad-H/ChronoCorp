@@ -2,19 +2,21 @@
 using System.Linq;
 using NodeBase;
 using UnityEngine;
+using Util;
 using Random = Unity.Mathematics.Random;
 
 namespace Backend.Simulation.World
 {
     public class NodeSpawner : ITickable
     {
-        private const int TICK_SPAWN_COOLDOWN = SimulationStorage.TICKS_PER_SECOND * 15;
+        private int TICK_SPAWN_COOLDOWN;
         private Random _random;
         private TimeSlice _timeSlice;
         private long lastSpawnTick;
 
         public NodeSpawner(TimeSlice timeSlice)
         {
+            TICK_SPAWN_COOLDOWN = (int)(SimulationStorage.TICKS_PER_SECOND * BalanceProvider.Balance.energyPacketSpawnInterval);
             _timeSlice = timeSlice;
         }
 

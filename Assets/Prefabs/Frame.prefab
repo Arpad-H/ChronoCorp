@@ -153,7 +153,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0777d029ed3dffa4692f417d4aba19ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 2100000, guid: b144d48fc1e25ff4f903fa544aaf6c4e, type: 2}
+  m_Material: {fileID: 2100000, guid: 14973cfa04d65a04082969c7200d87a2, type: 2}
   m_DrawDistance: 1000
   m_FadeScale: 0.9
   m_StartAngleFade: 180
@@ -372,6 +372,12 @@ MonoBehaviour:
   vfxPrefab: {fileID: 5685577382097887799}
   meshRenderer: {fileID: 5746251869297445114}
   deco: {fileID: 8401970406535057862}
+  decalProjector: {fileID: 4353579258241746640}
+  tex1: {fileID: 2100000, guid: dd8f7d8c7983ede4fba0c3f66ce3c3ea, type: 2}
+  tex2: {fileID: 2100000, guid: 1df729b80158cd14dbecc209a822d51d, type: 2}
+  tex3: {fileID: 2100000, guid: e89db76af7849e5469c8b38f2d6d48f1, type: 2}
+  tex4: {fileID: 2100000, guid: 8e6d9dfc75c8c7242a2493f0e3acb096, type: 2}
+  texEmpty: {fileID: 2100000, guid: 14973cfa04d65a04082969c7200d87a2, type: 2}
 --- !u!114 &6234938033560865205
 MonoBehaviour:
   m_ObjectHideFlags: 0

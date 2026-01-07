@@ -7,6 +7,7 @@ using Interfaces;
 using NodeBase;
 using UnityEditor;
 using UnityEngine;
+using Util;
 
 namespace Backend.Simulation.World
 {
@@ -112,10 +113,10 @@ namespace Backend.Simulation.World
             for (var i = 0; i < _removeBuffer.Count; i++)
                 energyPackets.Remove(_removeBuffer[i]);
 
-            if (tickCount == 2000)
+            if (tickCount == BalanceProvider.Balance.layerDuplicationTime)
             {
                 //TODO slice number was hardcoded. added counter as quick solution
-                timeSlices.Add(new TimeSlice(this, timeSliceNumCounter++, 2000));
+                timeSlices.Add(new TimeSlice(this, timeSliceNumCounter++, BalanceProvider.Balance.layerDuplicationTime));
                 Frontend.AddTimeSlice(timeSliceNumCounter-1); //pre increment otherwise it would be desynced
             }
         }

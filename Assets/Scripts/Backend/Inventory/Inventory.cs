@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Interfaces;
+using Util;
 
 namespace Backend.Inv
 {
@@ -78,12 +79,11 @@ namespace Backend.Inv
 
     {
         public const int STARTNUMBER_OF_CONNECTIONS = int.MaxValue;
-        public const int STARTNUMBER_OF_GENERATORS = 3;
 
         public static Dictionary<NodeDTO, int> startConf = new()
         {
             [NodeDTO.NORMALCONNECTION] = STARTNUMBER_OF_CONNECTIONS,
-            [NodeDTO.GENERATOR] = STARTNUMBER_OF_GENERATORS
+            [NodeDTO.GENERATOR] = BalanceProvider.Balance.initialGeneratorCount
         };
     }
 }
