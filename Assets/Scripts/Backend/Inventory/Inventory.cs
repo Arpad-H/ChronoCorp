@@ -6,8 +6,8 @@ namespace Backend.Inv
     public class Inventory
     {
         public Dictionary<NodeDTO, int> nodesAvailable = new();
-
-
+        public static GameFrontendManager Instance;
+        
         public Inventory()
         {
             foreach (var key in InventoryConfig.startConf.Keys) nodesAvailable.Add(key, InventoryConfig.startConf[key]);

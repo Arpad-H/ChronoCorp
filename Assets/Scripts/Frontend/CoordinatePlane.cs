@@ -50,8 +50,9 @@ public class CoordinatePlane : MonoBehaviour
     
     void Awake()
     {
+        Debug.Log("CoordinatePlane Awake");
         meshRenderer.enabled =false;
-       deco.SetActive(false);
+         deco.SetActive(false);
         if (!frameMesh) frameMesh = transform.Find("FrameMesh");
         if (!nodeContainer) nodeContainer = transform.Find("NodeContainer");
         // Calculate bounds

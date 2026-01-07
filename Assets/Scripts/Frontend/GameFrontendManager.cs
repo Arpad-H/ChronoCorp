@@ -197,8 +197,8 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
             : null;
     }
 
-    public void TryDrop(NodeDTO nodeDTO)
+    public bool TryDrop(NodeDTO nodeDTO)
     {
-        SpawnOnHoveredFrame(nodeDTO, EnergyType.WHITE);
+        return SpawnOnHoveredFrame(nodeDTO, EnergyType.WHITE);
     }
 }
