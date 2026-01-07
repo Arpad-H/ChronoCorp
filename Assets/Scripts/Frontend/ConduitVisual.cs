@@ -70,8 +70,6 @@ public class ConduitVisual : MonoBehaviour
         int layerA = nodeVisualA.layerNum;
         Vector3 B = lineEnd;
         List<Vector3> path = new List<Vector3>();
-       
-       
         if (layerA == layerNumberB) //same time slice
         {
             path.Add(A);
@@ -103,65 +101,51 @@ public class ConduitVisual : MonoBehaviour
         else //different time slices
         {
             path.Clear();
-           // lineRenderer.positionCount = 4;
-            if (A.y < B.y)
-            {
-                path.Add(A);
-                path.Add(new Vector3(A.x, B.y + 1, A.z));
-                path.Add(new Vector3(B.x, B.y + 1, B.z));
-                path.Add(B);
-            }
-            else
-            {
-                path.Add(A);
-                path.Add(new Vector3(A.x, A.y + 1, A.z));
-                path.Add(new Vector3(B.x, A.y + 1, B.z));
-                path.Add(B);
-            }
-
             spline.Clear();
-// BASE A – tangent must be flat!
-            Vector3 tangentA = (B - A);
-            tangentA.y = 0;
-            tangentA.Normalize();
-
-// BASE B – tangent must be flat!
-            Vector3 tangentB = (A - B);
-            tangentB.y = 0;
-            tangentB.Normalize();
-            float scale = Vector3.Distance(A, B) / 3f;
-            BezierKnot knotA = new BezierKnot(
-                A,
-                -tangentA * scale,
-                tangentA * scale,
-                Quaternion.LookRotation(tangentA, Vector3.up)
-            );
-
-            BezierKnot knotB = new BezierKnot(
-                B,
-                -tangentB * scale,
-                tangentB * scale,
-                Quaternion.LookRotation(tangentB, Vector3.up)
-            );
-            float arcHeight = 2f;
-            Vector3 mid = (A + B) * 0.5f;
-            mid.y += arcHeight;
+            float height = 2f; // Height of the bulge
+            float verticalStrength = 1f; // how aggressive the vertical drop is
+            float tangentScale = 1f;  
             
-            BezierKnot knotMid = new BezierKnot(
-                mid,
-                -tangentB * scale,
-                tangentB * scale,
-                Quaternion.LookRotation(tangentB, Vector3.up)
-            );
+            Vector3 up = Vector3.up;
 
+            Vector3 mid = (A + B) * 0.5f + up * height;
 
-                spline.Add(knotA);
-                spline.Add(knotMid);
-                spline.Add(knotB);
+            Vector3 flatDir = (B - A).normalized;
+
+            float totalDist = Vector3.Distance(A, B);
+            float halfDist = totalDist * 0.5f;
+            Vector3 groundNormal = Vector3.up;
+            Vector3 down = -groundNormal;
+
+            Vector3 side = Vector3.Cross(flatDir, groundNormal).normalized;
+            Vector3 verticalInPlane = Vector3.Cross(side, flatDir).normalized;
+
+// ---- START KNOT ----
+            BezierKnot startKnot = new BezierKnot(A);
+            startKnot.TangentOut =
+                verticalInPlane * verticalStrength * tangentScale;
+
+// ---- MID KNOT ----
+            BezierKnot midKnot = new BezierKnot(mid);
+            midKnot.TangentIn  = -flatDir * halfDist * 0.5f;
+            midKnot.TangentOut =  flatDir * halfDist * 0.5f;
+
+// ---- END KNOT ----
+            BezierKnot endKnot = new BezierKnot(B);
+            endKnot.TangentIn =
+                verticalInPlane * verticalStrength * tangentScale;
+            spline.Add(startKnot);
+            spline.Add(midKnot);
+            spline.Add(endKnot);
+        
+         
+          
                 
            
         }
-      
+
+
+
     }
 
     Quaternion BuildStableRotation(Vector3 tangent)
