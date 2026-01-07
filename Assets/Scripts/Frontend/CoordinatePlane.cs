@@ -6,6 +6,7 @@ using NodeBase;
 using Unity.VisualScripting.Dependencies.NCalc;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
 
 public class CoordinatePlane : MonoBehaviour
@@ -38,6 +39,15 @@ public class CoordinatePlane : MonoBehaviour
     public GameObject vfxPrefab;
     public MeshRenderer meshRenderer;
     public GameObject deco;
+    
+    [Header("decal")]
+    public DecalProjector decalProjector;
+    public Texture tex1;
+    public Texture tex2;
+    public Texture tex3;
+    public Texture tex4;
+    public Texture tex5;
+    
     void Awake()
     {
         meshRenderer.enabled =false;
@@ -64,6 +74,25 @@ public class CoordinatePlane : MonoBehaviour
         vfxPrefab.SetActive(false);
         meshRenderer.enabled = true;
         deco.SetActive(true);
+        switch (layerNum)  //TODO fix discrepency between layerNum and texture index
+        {
+            case 0:
+                decalProjector.material.SetTexture("_BaseMap", tex1);
+                break;
+            case 1:
+                decalProjector.material.SetTexture("_BaseMap", tex2);
+                break;
+            case 2:
+                decalProjector.material.SetTexture("_BaseMap", tex3);
+                break;
+            case 3:
+                decalProjector.material.SetTexture("_BaseMap", tex4);
+                break;
+            default:
+                decalProjector.material.SetTexture("_BaseMap", tex5);
+                break;
+        }
+       
     }
   
     void Update()
