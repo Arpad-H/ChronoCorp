@@ -57,6 +57,7 @@ public class ConduitVisual : MonoBehaviour
             ? nodeVisualB.energyType
             : nodeVisualA.energyType;
         Color color = energyType.ToColor();
+        mat.SetColor("_Color", color);
         // lineRenderer.startColor = color;
         // lineRenderer.endColor = color;
     }

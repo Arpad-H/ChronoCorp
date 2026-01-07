@@ -8,7 +8,7 @@ namespace Backend.Simulation.World
 {
     public class NodeSpawner : ITickable
     {
-        private const int TICK_SPAWN_COOLDOWN = SimulationStorage.TICKS_PER_SECOND * 10;
+        private const int TICK_SPAWN_COOLDOWN = SimulationStorage.TICKS_PER_SECOND * 15;
         private Random _random;
         private TimeSlice _timeSlice;
         private long lastSpawnTick;
