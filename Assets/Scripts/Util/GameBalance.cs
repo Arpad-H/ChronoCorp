@@ -11,7 +11,8 @@ namespace Util
         public float energyPacketRechargeAmount;
         
         [Header("Node Settings")]
-        public float nodeMaxHp;
+        public int nodeMaxHp;
+        public int nodeMinHp;
         public float nodeDrainRate;
         
         [Header("Layer Settings")]

@@ -129,20 +129,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DebugbackendID: 
+  isSource: 1
+  energyType: 0
   greenGlowEffect: {fileID: 6861097270307614490}
   blueGlowEffect: {fileID: 8960094423453604463}
   redGlowEffect: {fileID: 692158972718670392}
   yellowGlowEffect: {fileID: 4843375623530212610}
-  energyType: 0
-  isSource: 1
-  energySupply: 0
-  energyDemand: 0
   nodeScale: 0.75
   spriteRenderer: {fileID: -5221408241510210698}
   hpBar: {fileID: 0}
-  currentEnergy: 0
-  collapseTimer: 0
   connectedConduits: []
+  attachPoint: {fileID: 5282979143592384722}
 --- !u!1 &7614996818551872774
 GameObject:
   m_ObjectHideFlags: 0

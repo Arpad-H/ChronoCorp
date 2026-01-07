@@ -5,6 +5,7 @@ using Interfaces;
 using JetBrains.Annotations;
 using UnityEditor;
 using UnityEngine;
+using Util;
 
 namespace NodeBase
 {
@@ -90,8 +91,8 @@ namespace NodeBase
         {
             Connections = new List<Connection>();
             EnergyType = energyType;
-            minStability = 0;
-            maxStability = 100;
+            minStability = BalanceProvider.Balance.nodeMinHp;
+            maxStability = BalanceProvider.Balance.nodeMaxHp;
             currentStability = maxStability;
         }
 

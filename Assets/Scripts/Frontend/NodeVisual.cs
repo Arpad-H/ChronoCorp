@@ -9,32 +9,26 @@ using UnityEngine.UI;
 
 public class NodeVisual : MonoBehaviour
 {
-    [Header("Node Properties")] public GUID backendID { get; set; }
-
+    [Header("Node Properties")] 
+    public GUID backendID { get; set; }
+    public int layerNum { get; set; }
     public String DebugbackendID;
-
+    public bool isSource; // Is it an energy source or a Time Ripple?
+    public EnergyType energyType;
+    
+    [Header("Effects")] 
     public GameObject greenGlowEffect;
     public GameObject blueGlowEffect;
     public GameObject redGlowEffect;
     public GameObject yellowGlowEffect;
     private GameObject currentGlowEffect ;
-    
-
-    public EnergyType energyType;
-    public bool isSource; // Is it an energy source or a Time Ripple?
-    public float energySupply = 0f; // Energy generated (if source)
-    public float energyDemand = 0f; // Energy consumed (if ripple)
     public float nodeScale = 0.75f; // Scale of the node (not overfill the grid)
+    
+    [Header("Other")] 
     public SpriteRenderer spriteRenderer;
     public Image hpBar;
-
-    public float currentEnergy = 0f; // Current energy buffer
-    public float collapseTimer = 0f;
-    public const float COLLAPSE_TIME_LIMIT = 5f;
-
-    // References for the simulation
-    public List<ConduitVisual> connectedConduits = new List<ConduitVisual>();
-
+    public List<ConduitVisual> connectedConduits = new List<ConduitVisual>(); // References for the simulation
+    public Transform attachPoint;
 
     void Awake()
     {
@@ -66,7 +60,7 @@ public class NodeVisual : MonoBehaviour
 
     public Vector3 GetAttachPosition()
     {
-        return transform.position;
+        return attachPoint.position ;
     }
 
     public void SetEnergyType(EnergyType newEnergyType)
@@ -78,8 +72,6 @@ public class NodeVisual : MonoBehaviour
         //     spriteRenderer.color = color;
         //     return;
         // }
-
-
         switch (newEnergyType)
         {
             case EnergyType.GREEN:

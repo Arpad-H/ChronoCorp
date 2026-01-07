@@ -224,20 +224,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Node
   DebugbackendID: 
+  isSource: 0
+  energyType: 0
   greenGlowEffect: {fileID: 7615955434371999596}
   blueGlowEffect: {fileID: 1918619846962885237}
   redGlowEffect: {fileID: 1769240337960092434}
   yellowGlowEffect: {fileID: 4993073206826581519}
-  energyType: 0
-  isSource: 0
-  energySupply: 0
-  energyDemand: 0
   nodeScale: 0.75
   spriteRenderer: {fileID: -5221408241510210698}
   hpBar: {fileID: 1787153165581330612}
-  currentEnergy: 0
-  collapseTimer: 0
   connectedConduits: []
+  attachPoint: {fileID: 7132188543664963030}
 --- !u!212 &-5221408241510210698
 SpriteRenderer:
   m_ObjectHideFlags: 0

@@ -122,7 +122,16 @@ public class ConduitVisualizer : MonoBehaviour
             if (cameraController.RaycastForFirst(out raycastHit))
             {
                 Vector3 lineEnd = raycastHit.point;
-                previewConduitVisual.SetPreviewPosition(lineEnd);
+                GameObject hitObject = raycastHit.collider.gameObject;
+                int layerNumber = -1;
+                NodeVisual nodeVisual = hitObject.GetComponent<NodeVisual>();
+                if (nodeVisual) layerNumber = nodeVisual.layerNum;
+                else 
+                {
+                    CoordinatePlane frame = hitObject.GetComponentInParent<CoordinatePlane>();
+                    if (frame) layerNumber = frame.layerNum;
+                }
+                if (layerNumber != -1) previewConduitVisual.SetPreviewPosition(lineEnd, layerNumber);
             }
         }
     }

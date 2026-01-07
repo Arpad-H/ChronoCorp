@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: GameBalance
   m_EditorClassIdentifier: 
   energyPacketSpeed: 0
-  energyPacketSpawnInterval: 15
+  energyPacketSpawnInterval: 5
   energyPacketRechargeAmount: 0
   nodeMaxHp: 0
+  nodeMinHp: 100
   nodeDrainRate: 0
   layerDuplicationTime: 400
   initialGeneratorCount: 3

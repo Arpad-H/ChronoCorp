@@ -31,23 +31,19 @@ public class ConduitVisual : MonoBehaviour
         mat = mr.material;
         splineContainer = GetComponent<SplineContainer>();
         spline = splineContainer.Splines[0];
-        // lineRenderer = GetComponent<LineRenderer>();
-        // lineRenderer.positionCount = 3;
-        // lineRenderer.startWidth = 0.1f;
-        // lineRenderer.endWidth = 0.1f;
     }
 
     public void SetStartNode(NodeVisual nodeVisual)
     {
         nodeVisualA = nodeVisual;
-        // lineRenderer.SetPosition(0, nodeVisual.GetAttachPosition());
+      
     }
 
     public void FinalizeConduit(NodeVisual nodeVisual, GUID newBackendID)
     {
         backendID = newBackendID;
         nodeVisualB = nodeVisual;
-        SetPreviewPosition(nodeVisual.GetAttachPosition());
+        SetPreviewPosition(nodeVisual.GetAttachPosition(), nodeVisualB.layerNum);
         SetConduitEnergyType();
     }
 
@@ -58,8 +54,7 @@ public class ConduitVisual : MonoBehaviour
             : nodeVisualA.energyType;
         Color color = energyType.ToColor();
         mat.SetColor("_Color", color);
-        // lineRenderer.startColor = color;
-        // lineRenderer.endColor = color;
+     
     }
 
     public void StartNewConduitAtNode(NodeVisual nodeVisual)
@@ -69,14 +64,15 @@ public class ConduitVisual : MonoBehaviour
     }
 
 
-    public void SetPreviewPosition(Vector3 lineEnd)
+    public void SetPreviewPosition(Vector3 lineEnd, int layerNumberB)
     {
         Vector3 A = nodeVisualA.transform.position;
+        int layerA = nodeVisualA.layerNum;
         Vector3 B = lineEnd;
         List<Vector3> path = new List<Vector3>();
        
-
-        if (A.y - B.y < 0.1f && A.y - B.y > -0.1f) //same time slice
+       
+        if (layerA == layerNumberB) //same time slice
         {
             path.Add(A);
             bool horizontalFirst = Mathf.Abs(A.x - B.x) > Mathf.Abs(A.y - B.y);
@@ -94,10 +90,7 @@ public class ConduitVisual : MonoBehaviour
             path.Add(B);
 
             spline.Clear();
-            // if (!nodeVisualA.isSource)
-            // {
-            //    path.Reverse();
-            // }
+           
             for (int i = 0; i < path.Count; i++)
             {
                 BezierKnot knot = new BezierKnot(path[i]);
@@ -168,8 +161,7 @@ public class ConduitVisual : MonoBehaviour
                 
            
         }
-        // lineRenderer.positionCount = path.Count;
-        // lineRenderer.SetPositions(path.ToArray());
+      
     }
 
     Quaternion BuildStableRotation(Vector3 tangent)
@@ -196,8 +188,6 @@ public class ConduitVisual : MonoBehaviour
     {
         nodeVisualA = null;
         nodeVisualB = null;
-        // lineRenderer.SetPosition(0, Vector3.zero);
-        // lineRenderer.SetPosition(1, Vector3.zero);
-        // lineRenderer.SetPosition(2, Vector3.zero);
+     
     }
 }

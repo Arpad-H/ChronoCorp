@@ -38,14 +38,6 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
     {
         if (energyPacketVisualizer == null) energyPacketVisualizer = FindObjectOfType<EnergyPacketVisualizer>();
         if (cameraController == null) cameraController = FindObjectOfType<CameraController>();
-        InputManager.Instance.OnButtonN += () => SpawnManuallyOnHoveredFrame(NodeDTO.RIPPLE, EnergyType.BLUE);
-        InputManager.Instance.OnButtonG += () => SpawnManuallyOnHoveredFrame(NodeDTO.GENERATOR, EnergyType.BLUE);
-        InputManager.Instance.OnButton1 += () => SpawnManuallyOnHoveredFrame(NodeDTO.RIPPLE, EnergyType.GREEN);
-        InputManager.Instance.OnButton2 += () => SpawnManuallyOnHoveredFrame(NodeDTO.GENERATOR, EnergyType.GREEN);
-        InputManager.Instance.OnButton3 += () => SpawnManuallyOnHoveredFrame(NodeDTO.RIPPLE, EnergyType.RED);
-        InputManager.Instance.OnButton4 += () => SpawnManuallyOnHoveredFrame(NodeDTO.GENERATOR, EnergyType.RED);
-        InputManager.Instance.OnButton5 += () => SpawnManuallyOnHoveredFrame(NodeDTO.RIPPLE, EnergyType.YELLOW);
-        InputManager.Instance.OnButton6 += () => SpawnManuallyOnHoveredFrame(NodeDTO.GENERATOR, EnergyType.YELLOW);
         InputManager.Instance.OnButtonX += () => DeleteNodeManually();
 
         //get all existing layers in scene
@@ -71,6 +63,7 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
         UIManager.Instance.ShowGameOver(reason);
     }
 
+    //Spawn Nodes from backend
     public bool PlaceNodeVisual(GUID id, NodeDTO nodeDto, int layerNum, Vector2 cellPos, EnergyType energyType)
     {
         var frame = GetCoordinatePlane(layerNum);
@@ -78,6 +71,7 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
         if (nv)
         {
             nv.backendID = id;
+            nv.layerNum = layerNum;
             nodeVisuals.Add(id, nv);
             return true;
         }
@@ -123,32 +117,7 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
         nodeVisuals[id].UpdateHealthBar((float)(currentValue - minValue) / (maxValue - minValue));
     }
 
-    //when a button is pressed to spawn a node
-    private bool SpawnManuallyOnHoveredFrame(NodeDTO nodeType, EnergyType energyType)
-    {
-        RaycastHit rh;
-        cameraController.RaycastForFirst(out rh); //maybe replace with single ray with custom layer?
-
-        var frame = rh.transform.GetComponentInParent<CoordinatePlane>();
-        if (!frame) return false; // Not hovering over a frame
-        var frameNum = frame.layerNum;
-        var hitPoint = rh.point;
-
-        var spawnPos = frame.WorldToLocal(hitPoint);
-        Vector2 localCoordinates = frame.SnapToGrid(spawnPos);
-
-        var nodeBackendID = backend.PlaceNode(nodeType, frameNum, localCoordinates, energyType);
-        if (nodeBackendID != null)
-        {
-            frame.PlaceNode(nodeType, spawnPos, nodeBackendID.Value, energyType);
-
-            return true;
-        }
-
-
-        return false;
-    }
-
+    //Spawn Nodes from inventory or other manual placement
     private bool SpawnOnHoveredFrame(NodeDTO nodeDto, EnergyType energyType)
     {
         RaycastHit rh;
@@ -168,6 +137,7 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
         if (node)
         {
             nodeVisuals.Add(id, node);
+            node.layerNum = frame.layerNum;
             return true;
         }
 
