@@ -112,10 +112,10 @@ namespace Backend.Simulation.World
             for (var i = 0; i < _removeBuffer.Count; i++)
                 energyPackets.Remove(_removeBuffer[i]);
 
-            if (tickCount == 3000)
+            if (tickCount == 500)
             {
                 //TODO slice number was hardcoded. added counter as quick solution
-                timeSlices.Add(new TimeSlice(this, timeSliceNumCounter++, 3000));
+                timeSlices.Add(new TimeSlice(this, timeSliceNumCounter++, 500));
                 Frontend.AddTimeSlice(timeSliceNumCounter-1); //pre increment otherwise it would be desynced
             }
         }

@@ -42,11 +42,14 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Fill: 18.87
+    - _Fill: 14.73
     - _FresnelPower: 3
     - _QueueControl: 0
     - _QueueOffset: 0
     - _WallThiccness: 4.18
+    - _bulgePos: 3.89
+    - _bulgeRadius: 0.55
+    - _bulgeStrength: 0.24
     - _speed: 0.2
     m_Colors:
     - _Color: {r: 16, g: 1.7811311, b: 5.471971, a: 0}

@@ -308,7 +308,7 @@ MonoBehaviour:
   generatorPrefab: {fileID: 6574809473556729728, guid: 71126fb5960374047b8269a6dbe614e0, type: 3}
   cellWidth: 1
   cellHeight: 1
-  showGrid: 0
+  showGrid: 1
   layerNum: 0
   vfxPrefab: {fileID: 5685577382097887799}
   meshRenderer: {fileID: 5746251869297445114}

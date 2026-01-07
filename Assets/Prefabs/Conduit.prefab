@@ -162,6 +162,9 @@ MonoBehaviour:
   splineExtrudeRound: {fileID: 0}
   splineExtrudesquare: {fileID: 0}
   debugInfo: 
+  pos: 0
+  mr: {fileID: 4147508576704826286}
+  mat: {fileID: 0}
 --- !u!114 &2781901633303892491
 MonoBehaviour:
   m_ObjectHideFlags: 0
