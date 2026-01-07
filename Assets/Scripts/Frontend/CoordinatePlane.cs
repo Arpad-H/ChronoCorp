@@ -33,12 +33,15 @@ public class CoordinatePlane : MonoBehaviour
     private IBackend _backend;
 
     private List<GameObject> nodes = new List<GameObject>();
+    
+    [Header("Spawn Effect")]
     public GameObject vfxPrefab;
     public MeshRenderer meshRenderer;
+    public GameObject deco;
     void Awake()
     {
         meshRenderer.enabled =false;
-       
+       deco.SetActive(false);
         if (!frameMesh) frameMesh = transform.Find("FrameMesh");
         if (!nodeContainer) nodeContainer = transform.Find("NodeContainer");
         // Calculate bounds
@@ -60,6 +63,7 @@ public class CoordinatePlane : MonoBehaviour
         yield return new WaitForSeconds(3);
         vfxPrefab.SetActive(false);
         meshRenderer.enabled = true;
+        deco.SetActive(true);
     }
   
     void Update()
