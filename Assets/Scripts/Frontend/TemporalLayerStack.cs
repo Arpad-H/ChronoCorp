@@ -266,4 +266,15 @@ public class TemporalLayerStack : MonoBehaviour
             frames[i].transform.localScale = targetScl;
         }
     }
+
+    public CoordinatePlane GetLayerByNum(int nodeVisualLayerNum)
+    {
+        foreach (CoordinatePlane layer in frames)
+        {
+            if (layer.layerNum == nodeVisualLayerNum)
+                return layer;
+        }
+
+        return null;
+    }
 }

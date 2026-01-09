@@ -34,6 +34,7 @@ public class CoordinatePlane : MonoBehaviour
     private IBackend _backend;
 
     private List<GameObject> nodes = new List<GameObject>();
+    public List<Vector3> occupiedPositions = new List<Vector3>();
     
     [Header("Spawn Effect")]
     public GameObject vfxPrefab;
@@ -168,7 +169,7 @@ public class CoordinatePlane : MonoBehaviour
         return position.x >= minX && position.x <= maxX && position.y >= minY && position.y <= maxY;
     }
 
-    private bool IsPlaceOccupied(Vector3 position)
+    public bool IsPlaceOccupied(Vector3 position)
     {
         foreach (GameObject node in nodes)
         {

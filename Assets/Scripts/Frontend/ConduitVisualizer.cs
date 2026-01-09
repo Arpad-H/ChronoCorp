@@ -10,9 +10,12 @@ public class ConduitVisualizer : MonoBehaviour
     public CameraController cameraController;
     public GameObject prefab;
     private ObjectPool<ConduitVisual> pool;
-     private Dictionary<GUID,ConduitVisual> conduitVisuals = new();
+
+    private Dictionary<GUID, ConduitVisual> conduitVisuals = new();
+
     //private LinkedList<ConduitVisual> conduitVisuals = new();
     ConduitVisual previewConduitVisual;
+
     private void Awake()
     {
         Instance = this;
@@ -29,10 +32,10 @@ public class ConduitVisualizer : MonoBehaviour
 
     private void Start()
     {
-      //  InputManager.Instance.OnLeftClickUp += CancelDrag;
+        //  InputManager.Instance.OnLeftClickUp += CancelDrag;
         if (cameraController == null) cameraController = FindObjectOfType<CameraController>();
     }
-   
+
 
     private ConduitVisual CreateItem()
     {
@@ -45,16 +48,15 @@ public class ConduitVisualizer : MonoBehaviour
         conduitVisual.gameObject.SetActive(true);
     }
 
-    
+
     private void OnRelease(ConduitVisual conduitVisual)
     {
         conduitVisual.gameObject.SetActive(false);
     }
-    
+
     // Called when the pool decides to destroy an item (e.g., above max size).
     private void OnDestroyItem(ConduitVisual conduitVisual)
     {
-      
         Destroy(conduitVisual.gameObject);
     }
 
@@ -71,19 +73,19 @@ public class ConduitVisualizer : MonoBehaviour
         // ReleaseItem(conduitVisual);
         // conduitVisuals.Remove(guid);
     }
-    
+
     public void StartDrag(NodeVisual nodeVisual)
     {
         if (previewConduitVisual) return; // Already dragging
         previewConduitVisual = pool.Get();
-        previewConduitVisual.StartNewConduitAtNode(nodeVisual);
+        previewConduitVisual.StartNewConduitAtNode(nodeVisual,GameFrontendManager.Instance.temporalLayerStack.GetLayerByNum(nodeVisual.layerNum));
     }
-    
+
     // Resets the drag state
     public void CancelDrag()
     {
         if (!previewConduitVisual) return;
-        
+
         RaycastHit rh;
         if (cameraController.RaycastForFirst(out rh))
         {
@@ -94,20 +96,23 @@ public class ConduitVisualizer : MonoBehaviour
                 return;
             }
         }
+
         ReleaseItem(previewConduitVisual);
         previewConduitVisual = null;
     }
 
     private void CompleteConduit(NodeVisual endNodeVisual)
     {
-        GUID? conduitBackendID = GameFrontendManager.Instance.isValidConduit(previewConduitVisual.nodeVisualA, endNodeVisual);
+        GUID? conduitBackendID =
+            GameFrontendManager.Instance.isValidConduit(previewConduitVisual.nodeVisualA, endNodeVisual);
         if (conduitBackendID != null)
         {
-            previewConduitVisual.FinalizeConduit(endNodeVisual,conduitBackendID.Value);
-            conduitVisuals.Add(conduitBackendID.Value,previewConduitVisual);
+            previewConduitVisual.FinalizeConduit(endNodeVisual, conduitBackendID.Value);
+            conduitVisuals.Add(conduitBackendID.Value, previewConduitVisual);
             previewConduitVisual = null;
             return;
         }
+
         //else invalid conduit, cancel
         ReleaseItem(previewConduitVisual);
         previewConduitVisual = null;
@@ -123,15 +128,9 @@ public class ConduitVisualizer : MonoBehaviour
             {
                 Vector3 lineEnd = raycastHit.point;
                 GameObject hitObject = raycastHit.collider.gameObject;
-                int layerNumber = -1;
-                NodeVisual nodeVisual = hitObject.GetComponent<NodeVisual>();
-                if (nodeVisual) layerNumber = nodeVisual.layerNum;
-                else 
-                {
-                    CoordinatePlane frame = hitObject.GetComponentInParent<CoordinatePlane>();
-                    if (frame) layerNumber = frame.layerNum;
-                }
-                if (layerNumber != -1) previewConduitVisual.SetPreviewPosition(lineEnd, layerNumber);
+
+                CoordinatePlane frame = hitObject.GetComponentInParent<CoordinatePlane>();
+                if (frame) previewConduitVisual.SetPreviewPosition(lineEnd, frame); //todo of nodevisual then no frame 
             }
         }
     }
@@ -142,6 +141,7 @@ public class ConduitVisualizer : MonoBehaviour
         {
             return conduitVisuals[guid];
         }
+
         return null;
     }
 }

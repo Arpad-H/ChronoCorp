@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using NodeBase;
 using UnityEditor;
 using UnityEngine;
@@ -13,16 +14,18 @@ public class ConduitVisual : MonoBehaviour
 {
     [FormerlySerializedAs("nodeA")] public NodeVisual nodeVisualA;
     [FormerlySerializedAs("nodeB")] public NodeVisual nodeVisualB;
+    public CoordinatePlane planeA;
+    public CoordinatePlane planeB; //if seperate time slices
     private Vector3 dragPosition;
-  //  public LineRenderer lineRenderer;
+    List<Vector3> path = new List<Vector3>();
+    //  public LineRenderer lineRenderer;
     public SplineContainer splineContainer;
     public SplineExtrude splineExtrudeRound;
     public SplineExtrude splineExtrudesquare;
     private Spline spline;
     public GUID backendID;
     public String debugInfo;
-    
-    
+   
     public float pos = 0f;
     public MeshRenderer mr;
     public Material mat;
@@ -33,18 +36,15 @@ public class ConduitVisual : MonoBehaviour
         spline = splineContainer.Splines[0];
     }
 
-    public void SetStartNode(NodeVisual nodeVisual)
-    {
-        nodeVisualA = nodeVisual;
-      
-    }
+   
 
     public void FinalizeConduit(NodeVisual nodeVisual, GUID newBackendID)
     {
         backendID = newBackendID;
         nodeVisualB = nodeVisual;
-        SetPreviewPosition(nodeVisual.GetAttachPosition(), nodeVisualB.layerNum);
+        SetPreviewPosition(nodeVisual.GetAttachPosition(), GameFrontendManager.Instance.temporalLayerStack.GetLayerByNum(nodeVisual.layerNum));
         SetConduitEnergyType();
+        path.Clear();
     }
 
     private void SetConduitEnergyType()
@@ -57,46 +57,77 @@ public class ConduitVisual : MonoBehaviour
      
     }
 
-    public void StartNewConduitAtNode(NodeVisual nodeVisual)
+    public void StartNewConduitAtNode(NodeVisual nodeVisual,CoordinatePlane plane)
     {
         if (nodeVisualA != null) return; // Don't start a new drag if one is active
-        SetStartNode(nodeVisual);
+        nodeVisualA = nodeVisual;
+        planeA = plane;
     }
 
 
-    public void SetPreviewPosition(Vector3 lineEnd, int layerNumberB)
+    public void SetPreviewPosition(Vector3 lineEnd, CoordinatePlane layerB)
     {
-        Vector3 A = nodeVisualA.transform.position;
         int layerA = nodeVisualA.layerNum;
+        Vector3 A = nodeVisualA.transform.position;
         Vector3 B = lineEnd;
-        List<Vector3> path = new List<Vector3>();
-        if (layerA == layerNumberB) //same time slice
+        
+        if (layerA == layerB.layerNum) //same time slice
         {
-            path.Add(A);
-            bool horizontalFirst = Mathf.Abs(A.x - B.x) > Mathf.Abs(A.y - B.y);
-            if (horizontalFirst)
+            Vector3 snappedLocalPos = layerB.WorldToLocal(lineEnd);
+            Vector3 snappedPos = layerB.GridToWorldPosition(snappedLocalPos);
+            Debug.Log("Snapped Pos: " + snappedPos);
+            Debug.Log("Snapped Local Pos: " + snappedLocalPos);
+            
+            if(layerB.IsPlaceOccupied(layerB.ToPlaneLocal(snappedLocalPos)))
             {
-                // Horizontal → Vertical
-                path.Add(new Vector3(B.x, A.y, A.z));
+             // return; works but need to handle overshooting occupied nodes
+            }
+            if (path.Count == 0)
+            {
+                path.Add(snappedPos);
+                SplineFromPath();
+                return;
+            }
+            Vector3 lastPos = path.Last();
+            if (snappedPos == lastPos) return;
+            if (path.Contains(snappedPos))
+            {
+                int index = path.IndexOf(snappedPos);
+                path.RemoveRange(index + 1, path.Count - (index + 1));
             }
             else
             {
-                // Vertical → Horizontal
-                path.Add(new Vector3(A.x, B.y, A.z));
-            }
+                // FILL THE GAP: Calculate the distance in grid units
+                // Assuming your grid size is 1.0f; if not, divide by your grid cell size.
+                float dist = Vector3.Distance(lastPos, snappedPos);
+                float gridSize = 1f; // Replace with your layerB grid size
 
-            path.Add(B);
+                if (dist > gridSize + 0.2f)
+                {
+                    // Calculate how many steps we need to fill the gap
+                    int steps = Mathf.CeilToInt(dist / gridSize);
+                    for (int i = 1; i <= steps; i++)
+                    {
+                        float t = (float)i / steps;
+                        Vector3 intermediatePos = Vector3.Lerp(lastPos, snappedPos, t);
+                
+                        // Snap the intermediate result to the grid
+                        Vector3 finalSnapped = layerB.GridToWorldPosition(layerB.WorldToLocal(intermediatePos));
+                
+                        if (!path.Contains(finalSnapped))
+                        {
+                            path.Add(finalSnapped);
+                        }
+                    }
+                }
+                else
+                {
+                    path.Add(snappedPos);
+                }
+            } 
 
-            spline.Clear();
-           
-            for (int i = 0; i < path.Count; i++)
-            {
-                BezierKnot knot = new BezierKnot(path[i]);
-                // Tangents zero = straight, sharp bends (no curvature)
-                knot.TangentIn = Vector3.zero;
-                knot.TangentOut = Vector3.zero;
-                spline.Add(knot);
-            }
+          
+            SplineFromPath();
         }
         else //different time slices
         {
@@ -148,6 +179,22 @@ public class ConduitVisual : MonoBehaviour
 
     }
 
+    private void SplineFromPath()
+    {
+        
+        spline.Clear();
+        for (int i = 0; i < path.Count; i++)
+        {
+            BezierKnot knot = new BezierKnot(path[i]);
+            // Tangents zero = straight, sharp bends (no curvature)
+            knot.TangentIn = Vector3.zero;
+            knot.TangentOut = Vector3.zero;
+            spline.Add(knot);
+            Vector3 planeLocalPos = planeA.ToPlaneLocal(planeA.WorldToLocal(path[i]));
+            if (!planeA.IsPlaceOccupied(planeLocalPos)) planeA.occupiedPositions.Add(planeLocalPos);
+        }
+    }
+
     Quaternion BuildStableRotation(Vector3 tangent)
     {
         tangent.Normalize();
@@ -172,6 +219,6 @@ public class ConduitVisual : MonoBehaviour
     {
         nodeVisualA = null;
         nodeVisualB = null;
-     
+        path.Clear();
     }
 }
