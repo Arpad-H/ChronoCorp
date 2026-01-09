@@ -4,6 +4,17 @@ using Util;
 
 namespace Backend.Inv
 {
+    public static class InventoryConfig
+
+    {
+        public const int STARTNUMBER_OF_CONNECTIONS = int.MaxValue;
+
+        public static Dictionary<NodeDTO, int> startConf = new()
+        {
+            [NodeDTO.NORMALCONNECTION] = STARTNUMBER_OF_CONNECTIONS,
+            [NodeDTO.GENERATOR] = BalanceProvider.Balance.initialGeneratorCount
+        };
+    }
     public class Inventory
     {
         public Dictionary<NodeDTO, int> nodesAvailable = new();
@@ -73,17 +84,5 @@ namespace Backend.Inv
         {
             return nodesAvailable[NodeDTO.GENERATOR] > 0;
         }
-    }
-
-    public static class InventoryConfig
-
-    {
-        public const int STARTNUMBER_OF_CONNECTIONS = int.MaxValue;
-
-        public static Dictionary<NodeDTO, int> startConf = new()
-        {
-            [NodeDTO.NORMALCONNECTION] = STARTNUMBER_OF_CONNECTIONS,
-            [NodeDTO.GENERATOR] = BalanceProvider.Balance.initialGeneratorCount
-        };
     }
 }

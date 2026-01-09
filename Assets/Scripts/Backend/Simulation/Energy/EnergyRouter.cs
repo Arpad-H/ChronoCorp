@@ -3,6 +3,7 @@ using Backend.Simulation.World;
 using NodeBase;
 using UnityEditor;
 using UnityEngine;
+using Util;
 
 namespace Backend.Simulation.Energy
 {
@@ -17,7 +18,7 @@ namespace Backend.Simulation.Energy
 
             Debug.Log("Creating energy routes for " + generator.guid);
 
-            foreach (var output in generator.AvailableOutputs) result[output] = createEnergyRoute(output);
+            foreach (var output in generator.totalOutputs) result[output] = createEnergyRoute(output);
 
             return result;
         }
@@ -141,7 +142,7 @@ namespace Backend.Simulation.Energy
 
     public class EnergyScheduler
     {
-        private const int TickCooldownOutputs = 100;
+        private static int TickCooldownOutputs = (int)(SimulationStorage.TICKS_PER_SECOND * BalanceProvider.Balance.energyPacketSpawnIntervalPerSecond);
 
         // For one output try to spawn a new packet via cooldown.
         public static void tick(long currentTick, Output output, SimulationStorage storage)
@@ -184,7 +185,7 @@ namespace Backend.Simulation.Energy
 
     public class EnergyPacket : ITickable
     {
-        private const float PacketTravelSpeedPerTick = 0.1f;
+        private float PacketTravelSpeedPerTick = 0.1f;
 
         private int _currentEdgeIndex;
         private float _travelledOnEdge;
@@ -202,6 +203,7 @@ namespace Backend.Simulation.Energy
             Source = source;
             Destination = destination;
             Steps = steps;
+            PacketTravelSpeedPerTick = BalanceProvider.Balance.energyPacketSpeed;
         }
 
         public GUID Guid { get; }
@@ -232,7 +234,7 @@ namespace Backend.Simulation.Energy
 
                 if (Destination is TimeRippleInstance timeRipple)
                 {
-                    timeRipple.currentStability += 1;
+                    timeRipple.currentStability += BalanceProvider.Balance.energyPacketRechargeAmount;
                     if (timeRipple.currentStability > timeRipple.maxStability)
                     {
                         timeRipple.currentStability = timeRipple.maxStability;

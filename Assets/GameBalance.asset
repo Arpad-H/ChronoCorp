@@ -12,13 +12,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c2cdb254c7864dcfba5d46c782c46a57, type: 3}
   m_Name: GameBalance
   m_EditorClassIdentifier: 
-  energyPacketSpeed: 0
-  energyPacketSpawnInterval: 5
-  energyPacketRechargeAmount: 0
-  nodeMaxHp: 0
-  nodeMinHp: 100
-  nodeDrainRate: 0
-  layerDuplicationTime: 400
+  energyPacketSpeed: 0.1
+  energyPacketSpawnIntervalPerSecond: 2
+  energyPacketRechargeAmount: 1
+  nodeMaxHp: 100
+  nodeMinHp: 0
+  nodeDrainRate: 1
+  nodeDrainTicks: 100
+  nodeSpawnIntervalPerSecond: 30
+  layerDuplicationTime: 3000
   initialGeneratorCount: 3
-  stabilityMaxValue: 0
-  malusThreshholds: []
+  stabilityMaxValue: 100
+  stabilityMinValue: 0
+  stabilityDecreaseValue: 0
+  stabilityDecreaseTicks: 50
+  malusThresholds: []
+  baseStabilityDecreasePerNode: 1
+  nodeStableThresholdPercentage: 0.5

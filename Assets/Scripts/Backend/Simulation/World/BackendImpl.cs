@@ -37,22 +37,43 @@ namespace Backend.Simulation.World
 
         public bool DeleteNode(GUID nodeBackendId)
         {
-            var timeSlice = byObjectGuid(nodeBackendId);
-            return timeSlice?.removeNode(nodeBackendId) ?? false;
+            var timeSlice = getTimeSliceOfNodeByGuid(nodeBackendId);
+            _storage.guidToNodesMapping.TryGetValue(nodeBackendId, out var foundNode);
+            switch (foundNode)
+            {
+                case null:
+                    return false;
+                case GeneratorInstance generatorInstance:
+                {
+                    foreach (var generatorInstanceTotalOutput in generatorInstance.totalOutputs)
+                    {
+                        UnlinkNodes(generatorInstanceTotalOutput.Connection.guid, false);
+                    }
+                    _storage.recalculatePaths();
+                    return timeSlice?.removeNode(nodeBackendId) ?? false;
+                }
+                default:
+                    return false;
+            }
         }
 
-        public GUID? LinkNodes(GUID backendIdA, GUID backendIdB)
+        public GUID? LinkNodes(GUID backendIdA, GUID backendIdB, Vector2[] cellsOfConnection)
         {
             var connectionID = _storage.link(backendIdA, backendIdB);
-            if (connectionID != null) _storage.recalculatePaths((GUID)connectionID);
+            if (connectionID != null) _storage.recalculatePaths();
             return connectionID;
         }
 
         public bool UnlinkNodes(GUID connectionId)
         {
+            return UnlinkNodes(connectionId, true);
+        }
+
+        public bool UnlinkNodes(GUID connectionId, bool recalculatePaths)
+        {
             if (_storage.unlink(connectionId))
             {
-                _storage.recalculatePaths(connectionId);
+                if(recalculatePaths) _storage.recalculatePaths();
                 return true;
             }
 
@@ -76,8 +97,8 @@ namespace Backend.Simulation.World
                 var sourceNode = foundPacket.currentStep().getStart();
                 var targetNode = foundPacket.currentStep().getEnd();
 
-                var timeSliceSource = byObjectGuid(sourceNode.guid);
-                var timeSliceTarget = byObjectGuid(targetNode.guid);
+                var timeSliceSource = getTimeSliceOfNodeByGuid(sourceNode.guid);
+                var timeSliceTarget = getTimeSliceOfNodeByGuid(targetNode.guid);
 
                 sourcePos = new Vector3(sourceNode.Pos.x, sourceNode.Pos.y, timeSliceSource.SliceNumber);
                 targetPos = new Vector3(targetNode.Pos.x, targetNode.Pos.y, timeSliceTarget.SliceNumber);
@@ -123,7 +144,7 @@ namespace Backend.Simulation.World
         }
 
         [CanBeNull]
-        private TimeSlice byObjectGuid(GUID guid)
+        private TimeSlice getTimeSliceOfNodeByGuid(GUID guid)
         {
             foreach (var timeSlice in _storage.timeSlices)
                 if (timeSlice.isNodeKnown(guid))

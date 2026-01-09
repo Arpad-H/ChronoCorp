@@ -1,12 +1,15 @@
 ﻿using System.Collections.Generic;
 using Interfaces;
+using NodeBase;
+using UnityEngine;
+using Util;
 
 namespace Backend.Simulation.World
 {
     public class StabilityBar : ITickable
     {
-        public const long MALUS_TICK_SPEED = 50;
-        public const int valueDecreasePerTick = 5;
+        public long MALUS_TICK_SPEED = BalanceProvider.Balance.stabilityDecreaseTicks;
+        public float valueDecreasePerTick = BalanceProvider.Balance.stabilityDecreaseValue;
         private readonly List<StabilityMalus> _activeMalusses = new();
 
         private readonly Dictionary<StabilityMalusType, StabilityMalusRegistration> _malusRegistrations = new();
@@ -21,22 +24,53 @@ namespace Backend.Simulation.World
 
         public int maxValue { get; set; }
         public int minValue { get; set; }
-        public int currentValue { get; set; }
+        public float currentValue { get; set; }
 
         public void Tick(long tickCount, SimulationStorage storage)
         {
             if (tickCount - _lastTick < MALUS_TICK_SPEED) return;
             _lastTick = tickCount;
 
-            setStability(currentValue - valueDecreasePerTick);
-            storage.Frontend.OnStabilityBarUpdate(minValue, maxValue, currentValue);
+            var amountRipplesInSimulation = storage.nodeTypeToNodesMapping.ContainsKey(NodeType.TIME_RIPPLE) ? storage.nodeTypeToNodesMapping[NodeType.TIME_RIPPLE].Count : 0;
+            valueDecreasePerTick = BalanceProvider.Balance.stabilityDecreaseValue + amountRipplesInSimulation * BalanceProvider.Balance.baseStabilityDecreasePerNode;
+            
+            decreaseStability(valueDecreasePerTick, storage);
 
             UpdateActiveMalusses(storage.Frontend);
 
             foreach (var malus in _activeMalusses) malus.tick(tickCount);
+
+            if (currentValue <= minValue)
+            {
+                storage.Frontend.GameOver("Stability bar is zero! You have lost the game.");
+            }
         }
 
-        private void setStability(int value)
+        public void decreaseStability(float value, SimulationStorage storage)
+        {
+            updateStability(currentValue - value, storage);
+        }
+        
+        public void increaseStability(float value, SimulationStorage storage)
+        {
+            updateStability(currentValue + value, storage);
+        }
+        
+        public void updateStability(float newStabilityValue, SimulationStorage storage)
+        {
+            var oldValue = currentValue;
+            setStability(newStabilityValue);
+            var newValue = currentValue;
+            
+            if (oldValue - newValue <= float.Epsilon)
+            {
+                return;
+            }
+            storage.Frontend.OnStabilityBarUpdate(minValue, maxValue, (int)currentValue);
+            Debug.Log("New stability: "+currentValue);
+        }
+
+        private void setStability(float value)
         {
             if (value < minValue) currentValue = minValue;
             else if (value > maxValue) currentValue = maxValue;

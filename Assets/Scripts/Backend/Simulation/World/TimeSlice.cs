@@ -18,7 +18,7 @@ namespace Backend.Simulation.World
         public readonly IFrontend Frontend;
 
         public readonly uint simulationSeed = 2930473240;
-        public readonly StabilityBar StabilityBar = new(1000, 0, 500);
+        public readonly StabilityBar StabilityBar = new(BalanceProvider.Balance.stabilityMaxValue, BalanceProvider.Balance.stabilityMinValue, BalanceProvider.Balance.stabilityMaxValue);
         public readonly List<TimeSlice> timeSlices = new();
         public Dictionary<GUID, EnergyPacket> energyPackets = new();
         public Dictionary<EnergyType, int> energyTypesAvailableInSimulation = new();
@@ -46,7 +46,7 @@ namespace Backend.Simulation.World
             {
                 return 0;
             }
-            return value?.Sum(instance => ((GeneratorInstance)instance).AvailableOutputs.Count) ?? 0;
+            return value?.Sum(instance => ((GeneratorInstance)instance).totalOutputs.Count) ?? 0;
         }
 
         public int getAmountDifferentEnergyTypesInSimulation()
@@ -79,9 +79,8 @@ namespace Backend.Simulation.World
             Debug.Log("Created new energy packet " + energyPacket.Guid);
         }
 
-        public void recalculatePaths(GUID connectionId)
+        public void recalculatePaths()
         {
-            //TODO: For now we just recalculate all paths! 
             foreach (var abstractNodeInstance in guidToNodesMapping.Values)
                 if (abstractNodeInstance is GeneratorInstance generatorInstance)
                     foreach (var outputRouteStorage in EnergyRouter.createEnergyRoutes(generatorInstance))

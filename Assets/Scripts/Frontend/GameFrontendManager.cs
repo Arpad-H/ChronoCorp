@@ -29,13 +29,17 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
     private void Awake()
     {
         if (!temporalLayerStack) temporalLayerStack = FindObjectOfType<TemporalLayerStack>();
-        backend = new BackendImpl(this);
-        if (Instance == null) Instance = this;
+
+        if (Instance == null)
+        {
+            Instance = this;
+        }
         else Destroy(gameObject);
     }
 
     private void Start()
     {
+        backend = new BackendImpl(this);
         if (energyPacketVisualizer == null) energyPacketVisualizer = FindObjectOfType<EnergyPacketVisualizer>();
         if (cameraController == null) cameraController = FindObjectOfType<CameraController>();
         InputManager.Instance.OnButtonX += () => DeleteNodeManually();
@@ -73,6 +77,7 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
             nv.backendID = id;
             nv.layerNum = layerNum;
             nodeVisuals.Add(id, nv);
+            Debug.Log("Spawned "+id);
             return true;
         }
 
@@ -93,7 +98,7 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
     public void OnStabilityBarUpdate(int minValue, int maxValue, int currentValue)
     {
         float percent = (float)(currentValue - minValue) / (maxValue - minValue);
-        stabilityBar.UpdateStabilityBar(percent);
+        //stabilityBar.UpdateStabilityBar(percent);
     }
 
     public void OnActivateStabilityMalus(StabilityMalusType stabilityMalusType)
@@ -157,7 +162,7 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
     public GUID? isValidConduit(NodeVisual a, NodeVisual b)
     {
         if (!a || !b || a == b) return null;
-        return backend.LinkNodes(a.backendID, b.backendID);
+        return backend.LinkNodes(a.backendID, b.backendID, new Vector2[]{});
     }
 
     public CoordinatePlane GetCoordinatePlane(int startPosLayer)

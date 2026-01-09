@@ -34,16 +34,16 @@ namespace NodeBase
     {
         public GeneratorInstance(Vector2 pos, int amountInitialOutputs) : base(pos, NodeType.GENERATOR)
         {
-            AvailableOutputs = new List<Output>(amountInitialOutputs);
-            for (var i = 0; i < amountInitialOutputs; i++) AvailableOutputs.Add(new Output());
+            totalOutputs = new List<Output>(amountInitialOutputs);
+            for (var i = 0; i < amountInitialOutputs; i++) totalOutputs.Add(new Output());
         }
 
-        public List<Output> AvailableOutputs { get; }
+        public List<Output> totalOutputs { get; }
 
         [CanBeNull]
         public Output findFreeOutput()
         {
-            foreach (var availableOutput in AvailableOutputs)
+            foreach (var availableOutput in totalOutputs)
                 if (availableOutput.Connection == null)
                     return availableOutput;
 
@@ -52,7 +52,7 @@ namespace NodeBase
 
         public Output findOutputWithConnection(Connection connection)
         {
-            foreach (var availableOutput in AvailableOutputs)
+            foreach (var availableOutput in totalOutputs)
                 if (availableOutput.Connection == connection)
                     return availableOutput;
 
@@ -61,7 +61,7 @@ namespace NodeBase
 
         public bool alreadyConnectedTo(AbstractNodeInstance anyNode)
         {
-            foreach (var availableOutput in AvailableOutputs)
+            foreach (var availableOutput in totalOutputs)
                 if (availableOutput.Connection?.isPartOfConnection(anyNode) ?? false)
                     return true;
 
@@ -70,7 +70,7 @@ namespace NodeBase
 
         public override void Tick(long tickCount, SimulationStorage storage)
         {
-            foreach (var availableOutput in AvailableOutputs) EnergyScheduler.tick(tickCount, availableOutput, storage);
+            foreach (var availableOutput in totalOutputs) EnergyScheduler.tick(tickCount, availableOutput, storage);
         }
     }
 
@@ -79,13 +79,12 @@ namespace NodeBase
  */
     public class TimeRippleInstance : AbstractNodeInstance, NodeWithConnections
     {
-        public const int ENERGY_DRAIN_TICKS = 50 * 5;
-        
         public List<Connection> Connections;
         public int minStability {get; set;}
         public int maxStability  {get; set;}
         public int currentStability  {get; set;}
-        public long lastDrainTick {get; set;}
+        public long lastEnergyDrainTick {get; set;}
+        public long lastStabilityDrainTick {get; set;}
 
         public TimeRippleInstance(Vector2 pos, EnergyType energyType) : base(pos, NodeType.TIME_RIPPLE)
         {
@@ -105,18 +104,26 @@ namespace NodeBase
 
         public override void Tick(long tickCount, SimulationStorage storage)
         {
-            if (tickCount - lastDrainTick < ENERGY_DRAIN_TICKS)
+            if (tickCount - lastEnergyDrainTick >= BalanceProvider.Balance.nodeDrainTicks)
             {
-                return;
+                currentStability -= BalanceProvider.Balance.nodeDrainRate;
+                if (currentStability < minStability)
+                {
+                    currentStability = minStability;
+                }
+                storage.Frontend.onNodeHealthChange(guid, minStability, maxStability, currentStability);
+                lastEnergyDrainTick = tickCount;
             }
 
-            currentStability -= 1;
-            if (currentStability < minStability)
+            if (tickCount - lastStabilityDrainTick >= BalanceProvider.Balance.stabilityDecreaseTicks)
             {
-                currentStability = minStability;
+                var currentEnergyThreshold = currentStability * 1f / maxStability;
+                var maximumGlobalStabilityGain = BalanceProvider.Balance.baseStabilityDecreasePerNode / BalanceProvider.Balance.nodeStableThresholdPercentage;
+                var currentStabilityGain = currentEnergyThreshold * maximumGlobalStabilityGain;
+                
+                storage.StabilityBar.increaseStability(currentStabilityGain, storage);
+                lastStabilityDrainTick = tickCount;
             }
-            storage.Frontend.onNodeHealthChange(guid, minStability, maxStability, currentStability);
-            lastDrainTick = tickCount;
         }
     }
 

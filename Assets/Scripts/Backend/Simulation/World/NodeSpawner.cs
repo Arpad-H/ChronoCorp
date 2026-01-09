@@ -16,8 +16,9 @@ namespace Backend.Simulation.World
 
         public NodeSpawner(TimeSlice timeSlice)
         {
-            TICK_SPAWN_COOLDOWN = (int)(SimulationStorage.TICKS_PER_SECOND * BalanceProvider.Balance.energyPacketSpawnInterval);
+            TICK_SPAWN_COOLDOWN = (int)(SimulationStorage.TICKS_PER_SECOND * BalanceProvider.Balance.nodeSpawnIntervalPerSecond);
             _timeSlice = timeSlice;
+            lastSpawnTick = (long)(-TICK_SPAWN_COOLDOWN * 0.8);
         }
 
         public void Tick(long tickCount, SimulationStorage storage)

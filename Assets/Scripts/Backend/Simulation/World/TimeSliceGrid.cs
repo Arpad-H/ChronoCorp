@@ -9,6 +9,7 @@ namespace Backend.Simulation.World
     public class TimeSliceGrid
     {
         private readonly AbstractNodeInstance[,] cells;
+        private readonly Connection[,] connections;
         private readonly int width;
         private readonly int height;
         private readonly float cellSize;
@@ -19,6 +20,7 @@ namespace Backend.Simulation.World
             this.height = height;
             this.cellSize = cellSize;
             cells = new AbstractNodeInstance[width, height];
+            connections = new Connection[width, height];
         }
 
         private bool IsInside(int x, int y)
