@@ -19,7 +19,7 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
     private Dictionary<int, CoordinatePlane> layerToCoordinatePlane = new();
     private Dictionary<GUID, NodeVisual> nodeVisuals = new();
 
-    private IBackend backend; // Link to backend
+    public IBackend backend; // Link to backend
     private EnergyPacketVisualizer energyPacketVisualizer;
 
     private long fixedTickCount;

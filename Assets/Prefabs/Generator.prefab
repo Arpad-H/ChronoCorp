@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7470352548723964567}
   - component: {fileID: 7956081175756955612}
-  - component: {fileID: -5221408241510210698}
   - component: {fileID: -2575550045880019342}
   m_Layer: 0
   m_Name: Generator
@@ -61,61 +60,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1.0106074}
   m_Center: {x: 0, y: 0, z: -0.40530366}
---- !u!212 &-5221408241510210698
-SpriteRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6574809473556729728}
-  m_Enabled: 0
-  m_CastShadows: 0
-  m_ReceiveShadows: 0
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 0
-  m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
-  m_SmallMeshCulling: 1
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 0
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: fab2d417c4bccb84aaf4168000e3913a, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_FlipX: 0
-  m_FlipY: 0
-  m_DrawMode: 0
-  m_Size: {x: 0.5, y: 0.5}
-  m_AdaptiveModeThreshold: 0.5
-  m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
-  m_MaskInteraction: 0
-  m_SpriteSortPoint: 0
 --- !u!114 &-2575550045880019342
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -136,10 +80,11 @@ MonoBehaviour:
   redGlowEffect: {fileID: 692158972718670392}
   yellowGlowEffect: {fileID: 4843375623530212610}
   nodeScale: 0.75
-  spriteRenderer: {fileID: -5221408241510210698}
+  spriteRenderer: {fileID: 0}
   hpBar: {fileID: 0}
   connectedConduits: []
   attachPoint: {fileID: 5282979143592384722}
+  deleteButtonPrefab: {fileID: 6574809473556729728, guid: 88dfd4cda28fd384c870c0f359b5cd3b, type: 3}
 --- !u!1 &7614996818551872774
 GameObject:
   m_ObjectHideFlags: 0

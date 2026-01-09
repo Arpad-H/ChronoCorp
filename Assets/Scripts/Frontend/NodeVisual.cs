@@ -3,11 +3,19 @@
 using System;
 using UnityEngine;
 using System.Collections.Generic;
+using Frontend.UIComponents;
 using NodeBase;
 using UnityEditor;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using Object = System.Object;
 
-public class NodeVisual : MonoBehaviour
+public class NodeVisual : MonoBehaviour, IPointerClickHandler,IPointerEnterHandler,
+    IPointerExitHandler,
+    IBeginDragHandler,
+    IDragHandler,
+    IEndDragHandler,
+    IInitializePotentialDragHandler
 {
     [Header("Node Properties")] 
     public GUID backendID { get; set; }
@@ -29,11 +37,13 @@ public class NodeVisual : MonoBehaviour
     public Image hpBar;
     public List<ConduitVisual> connectedConduits = new List<ConduitVisual>(); // References for the simulation
     public Transform attachPoint;
+    
+   
 
     void Awake()
     {
         currentGlowEffect = greenGlowEffect;
-       UpdateHealthBar(1f);
+        UpdateHealthBar(1f);
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
@@ -42,18 +52,42 @@ public class NodeVisual : MonoBehaviour
         transform.localScale = Vector3.one * nodeScale; // Adjust scale to not overcrowd the grid
     }
 
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if (eventData.button != PointerEventData.InputButton.Left)
+            return;
 
-    private void OnMouseDown()
+        SpawnDeleteButton();
+    }
+
+    private void SpawnDeleteButton()
+    {
+        if (!isSource) return;
+        DeleteButton deleteBtn = UIManager.Instance.SpawnDeleteButton(transform.position + Vector3.up);
+        deleteBtn.Init(() =>
+        {
+            if(GameFrontendManager.Instance.backend.DeleteNode(backendID))
+            {
+                Destroy(this.gameObject);
+                Destroy(deleteBtn.gameObject);
+            }
+           
+        });
+    }
+    public void OnBeginDrag(PointerEventData eventData)
     {
         ConduitVisualizer.Instance.StartDrag(this);
     }
-
-    private void OnMouseEnter()
+    public void OnEndDrag(PointerEventData eventData)
     {
-        transform.localScale = Vector3.one * nodeScale * 1.4f; // Highlight
+        ConduitVisualizer.Instance.CancelDrag();
+    }
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        transform.localScale = Vector3.one * nodeScale * 1.4f;
     }
 
-    private void OnMouseExit()
+    public void OnPointerExit(PointerEventData eventData)
     {
         transform.localScale = Vector3.one * nodeScale;
     }
@@ -106,5 +140,15 @@ public class NodeVisual : MonoBehaviour
     public void UpdateHealthBar(float currentValue)
     {
         if (hpBar)hpBar.fillAmount = currentValue;
+    }
+
+    public void OnInitializePotentialDrag(PointerEventData eventData)
+    {
+        eventData.useDragThreshold = true; 
+    }
+
+    public void OnDrag(PointerEventData eventData)
+    {
+        
     }
 }

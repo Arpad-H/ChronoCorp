@@ -29,7 +29,7 @@ public class ConduitVisualizer : MonoBehaviour
 
     private void Start()
     {
-        InputManager.Instance.OnLeftClickUp += CancelDrag;
+      //  InputManager.Instance.OnLeftClickUp += CancelDrag;
         if (cameraController == null) cameraController = FindObjectOfType<CameraController>();
     }
    
@@ -80,7 +80,7 @@ public class ConduitVisualizer : MonoBehaviour
     }
     
     // Resets the drag state
-    void CancelDrag()
+    public void CancelDrag()
     {
         if (!previewConduitVisual) return;
         
