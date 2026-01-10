@@ -188,8 +188,8 @@ public class ConduitVisual : MonoBehaviour
 
     private void SplineFromPath()
     {
-        
         spline.Clear();
+        planeA.occupiedPositions.Add(nodeVisualA.GetAttachPosition());
         for (int i = 0; i < path.Count; i++)
         {
             BezierKnot knot = new BezierKnot(path[i]);
@@ -225,7 +225,7 @@ public class ConduitVisual : MonoBehaviour
             Vector2 cell = planeA.ToPlaneLocal(localPos);
             if (!cells.Contains(cell))
             {
-                cells.Add(cell);
+                cells.Add(new Vector2(localPos.x, localPos.y) - new Vector2(0.5f, 0.5f));
             }
         }
         return cells.ToArray();

@@ -98,7 +98,7 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
     public void OnStabilityBarUpdate(int minValue, int maxValue, int currentValue)
     {
         float percent = (float)(currentValue - minValue) / (maxValue - minValue);
-        //stabilityBar.UpdateStabilityBar(percent);
+        stabilityBar.UpdateStabilityBar(percent);
     }
 
     public void OnActivateStabilityMalus(StabilityMalusType stabilityMalusType)
