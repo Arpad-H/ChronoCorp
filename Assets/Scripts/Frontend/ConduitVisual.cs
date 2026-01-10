@@ -17,7 +17,7 @@ public class ConduitVisual : MonoBehaviour
     public CoordinatePlane planeA;
     public CoordinatePlane planeB; //if seperate time slices
     private Vector3 dragPosition;
-    List<Vector3> path = new List<Vector3>();
+    private List<Vector3> path = new List<Vector3>();
     //  public LineRenderer lineRenderer;
     public SplineContainer splineContainer;
     public SplineExtrude splineExtrudeRound;
@@ -66,7 +66,7 @@ public class ConduitVisual : MonoBehaviour
             ? nodeVisualB.energyType
             : nodeVisualA.energyType;
         Color color = energyType.ToColor();
-        mat.SetColor("_Color", color);
+        mat.SetColor("_Color2", color);
      
     }
 
@@ -181,15 +181,9 @@ public class ConduitVisual : MonoBehaviour
             spline.Add(startKnot);
             spline.Add(midKnot);
             spline.Add(endKnot);
-        
-         
-          
-                
-           
+
         }
-
-
-
+        
     }
 
     private void SplineFromPath()
@@ -208,20 +202,7 @@ public class ConduitVisual : MonoBehaviour
         }
     }
 
-    Quaternion BuildStableRotation(Vector3 tangent)
-    {
-        tangent.Normalize();
-
-        // Remove the component of up that points in tangent direction
-        Vector3 upProjected = Vector3.ProjectOnPlane(Vector3.up, tangent).normalized;
-
-        // If tangent is vertical, fallback
-        if (upProjected.sqrMagnitude < 0.0001f)
-            upProjected = Vector3.forward;
-
-        return Quaternion.LookRotation(tangent, upProjected);
-    }
-
+   
     public void Update()
     {
         debugInfo = backendID.ToString();
@@ -233,5 +214,20 @@ public class ConduitVisual : MonoBehaviour
         nodeVisualA = null;
         nodeVisualB = null;
         path.Clear();
+    }
+
+    public Vector2[] GetCellsOfConnection()
+    {
+        List<Vector2> cells = new List<Vector2>();
+        foreach (var worldPos in path)
+        {
+            Vector3 localPos = planeA.WorldToLocal(worldPos);
+            Vector2 cell = planeA.ToPlaneLocal(localPos);
+            if (!cells.Contains(cell))
+            {
+                cells.Add(cell);
+            }
+        }
+        return cells.ToArray();
     }
 }

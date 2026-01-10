@@ -116,22 +116,25 @@ public class NodeVisual : MonoBehaviour, IPointerClickHandler,IPointerEnterHandl
                 greenGlowEffect.SetActive(true);
                 currentGlowEffect.SetActive(false);
                 currentGlowEffect = greenGlowEffect;
-
+                energyType = EnergyType.GREEN;
                 break;
             case EnergyType.BLUE:
                 blueGlowEffect.SetActive(true);
                 currentGlowEffect.SetActive(false);
-                currentGlowEffect = greenGlowEffect;
+                currentGlowEffect = blueGlowEffect;
+                energyType = EnergyType.BLUE;
                 break;
             case EnergyType.RED:
                 redGlowEffect.SetActive(true);
                 currentGlowEffect.SetActive(false);
                 currentGlowEffect = redGlowEffect;
+                energyType = EnergyType.RED;
                 break;
             case EnergyType.YELLOW:
                 yellowGlowEffect.SetActive(true);
                 currentGlowEffect.SetActive(false);
                 currentGlowEffect = yellowGlowEffect;
+                energyType = EnergyType.YELLOW;
                 break;
         }
     }

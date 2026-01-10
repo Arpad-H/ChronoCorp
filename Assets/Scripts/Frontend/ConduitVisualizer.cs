@@ -104,7 +104,7 @@ public class ConduitVisualizer : MonoBehaviour
     private void CompleteConduit(NodeVisual endNodeVisual)
     {
         GUID? conduitBackendID =
-            GameFrontendManager.Instance.isValidConduit(previewConduitVisual.nodeVisualA, endNodeVisual);
+            GameFrontendManager.Instance.isValidConduit(previewConduitVisual.nodeVisualA, endNodeVisual, previewConduitVisual.GetCellsOfConnection());
         if (conduitBackendID != null)
         {
             previewConduitVisual.FinalizeConduit(endNodeVisual, conduitBackendID.Value);

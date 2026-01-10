@@ -159,10 +159,10 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
         if (backend.DeleteNode(node.backendID)) Destroy(node.gameObject);
     }
 
-    public GUID? isValidConduit(NodeVisual a, NodeVisual b)
+    public GUID? isValidConduit(NodeVisual a, NodeVisual b, Vector2[] cellsOfConnection)
     {
         if (!a || !b || a == b) return null;
-        return backend.LinkNodes(a.backendID, b.backendID, new Vector2[]{});
+        return backend.LinkNodes(a.backendID, b.backendID, cellsOfConnection);
     }
 
     public CoordinatePlane GetCoordinatePlane(int startPosLayer)
