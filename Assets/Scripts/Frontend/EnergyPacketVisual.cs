@@ -52,42 +52,10 @@ public class EnergyPacketVisual : MonoBehaviour
         if (conduitID.HasValue)
         {
             conduit = ConduitVisualizer.Instance.GetConduitVisual(conduitID.Value);
-            splineAnimate.Container = conduit.splineContainer;
-            debugconduitID = conduit.backendID.ToString();
+            conduit.bulgePos = progress;
         }
-        
-        // determine direction
-        if (sourceNode.HasValue && targetNode.HasValue)
-        {
-            splineAnimate.Container = conduit.splineContainer;
-            Vector2 startPos;
-             startPos.x = sourceNode.Value.x; // position in local grid space 0-width-1,0-height-1,layer
-             startPos.y = sourceNode.Value.y; // position in local grid space 0-width-1,0-height-1,layer
-         int layer = (int)sourceNode.Value.z;
-            
-            Spline spline = conduit.splineContainer.Splines[0];
-            Vector3 splineStartPos = spline[0].Position;
-          
-            
-            CoordinatePlane startPlane = GameFrontendManager.Instance.GetCoordinatePlane(layer);
-            
-            
-            Vector3 localSplineStartPos = startPlane.WorldToLocal(splineStartPos);
-            Vector2 localCoordinates = startPlane.SnapToGrid(localSplineStartPos);
-            
-            if (Vector3.Distance(localCoordinates, startPos) < 1f)
-            {
-              progress =  progress;
-            }
-            else 
-            {
-                progress = 1- progress; 
-            }
-        }
-        splineAnimate.NormalizedTime = progress;
-        
-        
-       
+
+
         // if (sourceNode == null || targetNode == null) return;
         // if (Mathf.Approximately(progress, -1))
         // {

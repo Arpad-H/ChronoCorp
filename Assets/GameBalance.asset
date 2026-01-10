@@ -20,7 +20,7 @@ MonoBehaviour:
   nodeDrainRate: 1
   nodeDrainTicks: 100
   nodeSpawnIntervalPerSecond: 5
-  layerDuplicationTime: 3000
+  layerDuplicationTime: 500
   initialGeneratorCount: 3
   stabilityMaxValue: 100
   stabilityMinValue: 0

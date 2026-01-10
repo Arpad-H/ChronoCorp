@@ -27,8 +27,8 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
     private Spline spline;
     public GUID backendID;
     public String debugInfo;
-   
-    public float pos = 0f;
+    private float conduitLength;
+    public float bulgePos = 0f;
     public MeshRenderer mr;
     public Material mat;
     void Awake()
@@ -60,6 +60,7 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
         path.Clear();
         nodeVisualA.AddConnectedConduit(this);
         nodeVisualB.AddConnectedConduit(this);
+        conduitLength = spline.GetLength();
     }
 
     private void SetConduitEnergyType()
@@ -208,7 +209,7 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
     public void Update()
     {
         debugInfo = backendID.ToString();
-        mat.SetFloat("_bulgePos", pos); // 0–1
+        mat.SetFloat("_bulgePos", bulgePos*conduitLength); 
     }
 
     public void Reset()
@@ -240,6 +241,7 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
         Vector3 clickPosWorld = eventData.pointerCurrentRaycast.worldPosition;
         SpawnDeleteButton( clickPosWorld);
     }
+    
     private void SpawnDeleteButton(Vector3 clickPosWorld)
     {
       

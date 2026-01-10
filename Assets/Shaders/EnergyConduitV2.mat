@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: EnergyConduit
-  m_Shader: {fileID: -6465566751694194690, guid: 4ef783041c76063448147d0b5dea22e4, type: 3}
+  m_Name: EnergyConduitV2
+  m_Shader: {fileID: -6465566751694194690, guid: 9bda996c3311dc9478b4cf8fee13c894, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -24,10 +24,6 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
-    - _SampleTexture2D_a8f9a5d1452e4bd5b8d62cb05356695e_Texture_1_Texture2D:
-        m_Texture: {fileID: 2800000, guid: af7e97f40f1280147876f810ece4a64e, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -42,21 +38,25 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Fill: 14.73
-    - _FresnelPower: 3
+    - _BulgePos: 0.5
+    - _BulgePower: 0.33
+    - _BulgeWidth: 4.64
+    - _Fill: 0
+    - _FresnelPower: 0.59
+    - _Panner: 3.66
     - _QueueControl: 0
     - _QueueOffset: 0
-    - _WallThiccness: 4.18
-    - _bulgePos: 5.51
-    - _bulgeRadius: 0.55
-    - _bulgeStrength: 0.24
+    - _WallThiccness: 0
+    - _bulgePos: 6.37
+    - _bulgeRadius: 0.05
+    - _bulgeStrength: 0.08
     - _speed: 0.2
     m_Colors:
-    - _Color: {r: 16, g: 1.7811311, b: 5.471971, a: 0}
-    - _Color2: {r: 0.05301362, g: 0.4582049, b: 0.8027793, a: 0}
+    - _Color: {r: 1, g: 0.1113207, b: 0.3419982, a: 0}
+    - _Color2: {r: 0.0660376, g: 0.5707732, b: 1, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
---- !u!114 &943981641310912246
+--- !u!114 &6884961681210822359
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}

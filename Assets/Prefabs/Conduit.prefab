@@ -165,7 +165,7 @@ MonoBehaviour:
   splineExtrudeRound: {fileID: 0}
   splineExtrudesquare: {fileID: 0}
   debugInfo: 
-  pos: 0
+  bulgePos: 0
   mr: {fileID: 4147508576704826286}
   mat: {fileID: 0}
 --- !u!114 &2781901633303892491
@@ -239,7 +239,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: f1b24605d16ef0143b4ba6c6e18b89c7, type: 2}
+  - {fileID: 2100000, guid: 1b4da212c357ccb468cd23ae07cde4cd, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
