@@ -390,6 +390,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -8276506330963161057, guid: 931f8e47332b59540b9e056d09bf28fe, type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 1884306050439479725, guid: 931f8e47332b59540b9e056d09bf28fe, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -525,8 +529,38 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6120440085130223727, guid: 931f8e47332b59540b9e056d09bf28fe, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 301955526}
   m_SourcePrefab: {fileID: 100100000, guid: 931f8e47332b59540b9e056d09bf28fe, type: 3}
+--- !u!1 &301955525 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6120440085130223727, guid: 931f8e47332b59540b9e056d09bf28fe, type: 3}
+  m_PrefabInstance: {fileID: 301955524}
+  m_PrefabAsset: {fileID: 0}
+--- !u!64 &301955526
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 301955525}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 0}
 --- !u!1 &303989238
 GameObject:
   m_ObjectHideFlags: 0
@@ -1012,7 +1046,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0.00000014156103, y: -8.599976}
+  m_AnchoredPosition: {x: 0.00000014156103, y: -8.600037}
   m_SizeDelta: {x: 106.22, y: 0}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &819099296
@@ -1361,6 +1395,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -8276506330963161057, guid: 931f8e47332b59540b9e056d09bf28fe, type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 1884306050439479725, guid: 931f8e47332b59540b9e056d09bf28fe, type: 3}
       propertyPath: m_Enabled
       value: 0

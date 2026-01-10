@@ -3,14 +3,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Frontend.UIComponents;
 using NodeBase;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
 using UnityEngine.Splines;
 
 [RequireComponent(typeof(LineRenderer))]
-public class ConduitVisual : MonoBehaviour
+public class ConduitVisual : MonoBehaviour, IPointerClickHandler
 {
     [FormerlySerializedAs("nodeA")] public NodeVisual nodeVisualA;
     [FormerlySerializedAs("nodeB")] public NodeVisual nodeVisualB;
@@ -40,11 +42,11 @@ public class ConduitVisual : MonoBehaviour
     {
         if (nodeVisualA == nodeVisual)
         {
-            nodeVisualA.connectedConduits.Remove(this);
+            nodeVisualA.RemoveConnectedConduit(this);
         }
         else if (nodeVisualB == nodeVisual)
         {
-            nodeVisualB.connectedConduits.Remove(this);
+            nodeVisualB.RemoveConnectedConduit(this);
         }
         Destroy(this.gameObject);
     }
@@ -56,8 +58,8 @@ public class ConduitVisual : MonoBehaviour
         SetPreviewPosition(nodeVisual.GetAttachPosition(), GameFrontendManager.Instance.temporalLayerStack.GetLayerByNum(nodeVisual.layerNum));
         SetConduitEnergyType();
         path.Clear();
-        nodeVisualA.connectedConduits.Add(this);
-        nodeVisualB.connectedConduits.Add(this);
+        nodeVisualA.AddConnectedConduit(this);
+        nodeVisualB.AddConnectedConduit(this);
     }
 
     private void SetConduitEnergyType()
@@ -229,5 +231,29 @@ public class ConduitVisual : MonoBehaviour
             }
         }
         return cells.ToArray();
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if (eventData.button != PointerEventData.InputButton.Left)
+            return;
+        Vector3 clickPosWorld = eventData.pointerCurrentRaycast.worldPosition;
+        SpawnDeleteButton( clickPosWorld);
+    }
+    private void SpawnDeleteButton(Vector3 clickPosWorld)
+    {
+      
+        DeleteButton deleteBtn = UIManager.Instance.SpawnDeleteButton(clickPosWorld + Vector3.up);
+        deleteBtn.Init(() =>
+        {
+            if(GameFrontendManager.Instance.UnlinkConduit(backendID))
+            {
+                nodeVisualA.RemoveConnectedConduit(this);
+                nodeVisualB.RemoveConnectedConduit(this);
+                Destroy(this.gameObject);
+                Destroy(deleteBtn.gameObject);
+            }
+          
+        });
     }
 }

@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 3187060986796623945}
   - component: {fileID: 4147508576704826286}
   - component: {fileID: 43647870587393883}
+  - component: {fileID: -8276506330963161057}
   m_Layer: 0
   m_Name: Conduit
   m_TagString: Untagged
@@ -158,6 +159,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Conduit
   nodeVisualA: {fileID: 0}
   nodeVisualB: {fileID: 0}
+  planeA: {fileID: 0}
+  planeB: {fileID: 0}
   splineContainer: {fileID: 0}
   splineExtrudeRound: {fileID: 0}
   splineExtrudesquare: {fileID: 0}
@@ -290,3 +293,25 @@ MonoBehaviour:
       type: {class: Circle, ns: UnityEngine.Splines.ExtrusionShapes, asm: Unity.Splines}
       data:
         m_Sides: 8
+--- !u!64 &-8276506330963161057
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6120440085130223727}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 0}

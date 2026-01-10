@@ -182,4 +182,9 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
         layerToCoordinatePlane[nodeVisuals[nodeID].layerNum].RemoveNodeVisual(nodeVisuals[nodeID]);
         return backend.DeleteNode(nodeID);
     }
+
+    public bool UnlinkConduit(GUID backendID)
+    {
+        return backend.UnlinkNodes(backendID);
+    }
 }

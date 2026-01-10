@@ -35,7 +35,7 @@ public class NodeVisual : MonoBehaviour, IPointerClickHandler,IPointerEnterHandl
     [Header("Other")] 
     public SpriteRenderer spriteRenderer;
     public Image hpBar;
-    public List<ConduitVisual> connectedConduits = new List<ConduitVisual>(); // References for the simulation
+    private List<ConduitVisual> connectedConduits = new List<ConduitVisual>(); // References for the simulation
     public Transform attachPoint;
     
    
@@ -157,5 +157,15 @@ public class NodeVisual : MonoBehaviour, IPointerClickHandler,IPointerEnterHandl
     public void OnDrag(PointerEventData eventData)
     {
         
+    }
+
+    public void RemoveConnectedConduit(ConduitVisual conduitVisual)
+    {
+        connectedConduits.Remove(conduitVisual);
+    }
+
+    public void AddConnectedConduit(ConduitVisual conduitVisual)
+    {
+        connectedConduits.Add(conduitVisual);
     }
 }
