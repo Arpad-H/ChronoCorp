@@ -66,12 +66,16 @@ public class NodeVisual : MonoBehaviour, IPointerClickHandler,IPointerEnterHandl
         DeleteButton deleteBtn = UIManager.Instance.SpawnDeleteButton(transform.position + Vector3.up);
         deleteBtn.Init(() =>
         {
-            if(GameFrontendManager.Instance.backend.DeleteNode(backendID))
+            if(GameFrontendManager.Instance.DestroyNode(backendID))
             {
+                foreach (ConduitVisual conduit in new List<ConduitVisual>(connectedConduits))
+                {
+                    conduit.ConnectedNodeDestroyedConnection(this);
+                }
                 Destroy(this.gameObject);
-                Destroy(deleteBtn.gameObject);
+               Destroy(deleteBtn.gameObject);
             }
-           
+          
         });
     }
     public void OnBeginDrag(PointerEventData eventData)

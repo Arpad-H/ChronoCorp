@@ -36,7 +36,18 @@ public class ConduitVisual : MonoBehaviour
         spline = splineContainer.Splines[0];
     }
 
-   
+   public void ConnectedNodeDestroyedConnection(NodeVisual nodeVisual)
+    {
+        if (nodeVisualA == nodeVisual)
+        {
+            nodeVisualA.connectedConduits.Remove(this);
+        }
+        else if (nodeVisualB == nodeVisual)
+        {
+            nodeVisualB.connectedConduits.Remove(this);
+        }
+        Destroy(this.gameObject);
+    }
 
     public void FinalizeConduit(NodeVisual nodeVisual, GUID newBackendID)
     {
@@ -45,6 +56,8 @@ public class ConduitVisual : MonoBehaviour
         SetPreviewPosition(nodeVisual.GetAttachPosition(), GameFrontendManager.Instance.temporalLayerStack.GetLayerByNum(nodeVisual.layerNum));
         SetConduitEnergyType();
         path.Clear();
+        nodeVisualA.connectedConduits.Add(this);
+        nodeVisualB.connectedConduits.Add(this);
     }
 
     private void SetConduitEnergyType()

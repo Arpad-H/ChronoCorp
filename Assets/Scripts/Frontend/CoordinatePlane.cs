@@ -204,4 +204,9 @@ public class CoordinatePlane : MonoBehaviour
         Vector3 localPos = ToPlaneLocal(endPos);
         return nodeContainer.TransformPoint(localPos);
     }
+
+    public void RemoveNodeVisual(NodeVisual nodeVisual)
+    {
+        nodes.Remove(nodeVisual.gameObject);
+    }
 }

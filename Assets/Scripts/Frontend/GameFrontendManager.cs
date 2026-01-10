@@ -19,7 +19,7 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
     private Dictionary<int, CoordinatePlane> layerToCoordinatePlane = new();
     private Dictionary<GUID, NodeVisual> nodeVisuals = new();
 
-    public IBackend backend; // Link to backend
+    private IBackend backend; // Link to backend
     private EnergyPacketVisualizer energyPacketVisualizer;
 
     private long fixedTickCount;
@@ -175,5 +175,11 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
     public bool TryDrop(NodeDTO nodeDTO)
     {
         return SpawnOnHoveredFrame(nodeDTO, EnergyType.WHITE);
+    }
+
+    public bool DestroyNode(GUID nodeID)
+    {
+        layerToCoordinatePlane[nodeVisuals[nodeID].layerNum].RemoveNodeVisual(nodeVisuals[nodeID]);
+        return backend.DeleteNode(nodeID);
     }
 }

@@ -47,6 +47,7 @@ public class EnergyPacketVisual : MonoBehaviour
         Vector3? sourceNode;
         Vector3? targetNode;
         GUID? conduitID;
+        if (!conduit) this.gameObject.SetActive(false);
         float progress = backend.GetEnergyPacketProgress(guid, out sourceNode, out targetNode, out conduitID);
         if (conduitID.HasValue)
         {

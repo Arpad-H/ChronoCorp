@@ -45,9 +45,13 @@ namespace Backend.Simulation.World
                     return false;
                 case GeneratorInstance generatorInstance:
                 {
-                    foreach (var generatorInstanceTotalOutput in generatorInstance.totalOutputs)
+                    foreach (Output generatorInstanceTotalOutput in generatorInstance.totalOutputs)
                     {
-                        UnlinkNodes(generatorInstanceTotalOutput.Connection.guid, false);
+                        if (generatorInstanceTotalOutput != null && generatorInstanceTotalOutput.Connection != null) //TODO did this as a quick fix when deleting a generator with no connecections
+                        {
+                            UnlinkNodes(generatorInstanceTotalOutput.Connection.guid, false);
+                        }
+                        
                     }
                     _storage.recalculatePaths();
                     return timeSlice?.removeNode(nodeBackendId) ?? false;
