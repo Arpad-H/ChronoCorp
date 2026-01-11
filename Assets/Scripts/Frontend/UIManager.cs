@@ -10,9 +10,8 @@ public class UIManager : MonoBehaviour
     public static UIManager Instance;
     public GameObject deleteButtonPrefab;
     private GameObject deleteNodeButton;
+    public GameObject gameOverScreen;
     
-    
-    public GameObject gameOverPanel; 
  
     
 
@@ -24,7 +23,7 @@ public class UIManager : MonoBehaviour
 
     public void ShowGameOver(string reason)
     {
-    
+        gameOverScreen.SetActive(true);
     }
 
     public DeleteButton SpawnDeleteButton(Vector3 position)

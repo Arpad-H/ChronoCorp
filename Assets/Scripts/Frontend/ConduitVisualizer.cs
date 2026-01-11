@@ -130,7 +130,7 @@ public class ConduitVisualizer : MonoBehaviour
                 GameObject hitObject = raycastHit.collider.gameObject;
 
                 CoordinatePlane frame = hitObject.GetComponentInParent<CoordinatePlane>();
-                if (frame) previewConduitVisual.SetPreviewPosition(lineEnd, frame); //todo of nodevisual then no frame 
+                if (frame) previewConduitVisual.SetPreviewPosition(lineEnd, frame); 
             }
         }
     }

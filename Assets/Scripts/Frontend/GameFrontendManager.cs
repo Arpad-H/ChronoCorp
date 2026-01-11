@@ -65,7 +65,6 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
     public void GameOver(string reason)
     {
         Time.timeScale = 0f; // Pause game
-        Debug.LogError($"GAME OVER: {reason}");
         UIManager.Instance.ShowGameOver(reason);
     }
 
@@ -165,6 +164,10 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
     {
         if (!a || !b || a == b) return null;
         return backend.LinkNodes(a.backendID, b.backendID, cellsOfConnection);
+    }
+    public bool IsConnectionPathValid(int layerNum,  Vector2[] cellsOfConnection)
+    {
+        return !backend.IsConnectionPathOccupied(layerNum,cellsOfConnection);
     }
 
     public CoordinatePlane GetCoordinatePlane(int startPosLayer)

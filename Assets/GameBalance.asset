@@ -17,9 +17,9 @@ MonoBehaviour:
   energyPacketRechargeAmount: 10
   nodeMaxHp: 100
   nodeMinHp: 0
-  nodeDrainRate: 3
+  nodeDrainRate: 30
   nodeDrainTicks: 100
-  nodeSpawnIntervalPerSecond: 5
+  nodeSpawnIntervalPerSecond: 50
   noodeBlinkThreshhold: 0.25
   layerDuplicationTime: 500
   initialGeneratorCount: 10

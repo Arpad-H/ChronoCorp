@@ -20,6 +20,7 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
     public CoordinatePlane planeB; //if seperate time slices
     private Vector3 dragPosition;
     private List<Vector3> path = new List<Vector3>();
+    private bool sameLayerConnection = false;
     //  public LineRenderer lineRenderer;
     public SplineContainer splineContainer;
     public SplineExtrude splineExtrudeRound;
@@ -31,6 +32,8 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
     public float bulgePos = 0f;
     public MeshRenderer mr;
     public Material mat;
+    public Color invalidColor;
+    public Color previewColor;
     void Awake()
     { 
         mat = mr.material;
@@ -89,6 +92,7 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
         
         if (layerA == layerB.layerNum) //same time slice
         {
+            sameLayerConnection = true;
             Vector3 snappedLocalPos = layerB.WorldToLocal(lineEnd);
             Vector3 snappedPos = layerB.GridToWorldPosition(snappedLocalPos);
             
@@ -145,6 +149,7 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
         }
         else //different time slices
         {
+            sameLayerConnection = false;
             path.Clear();
             spline.Clear();
             float height = 2f; // Height of the bulge
@@ -200,6 +205,15 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
             spline.Add(knot);
             Vector3 planeLocalPos = planeA.ToPlaneLocal(planeA.WorldToLocal(path[i]));
             if (!planeA.IsPlaceOccupied(planeLocalPos)) planeA.occupiedPositions.Add(planeLocalPos);
+        }
+
+        if (sameLayerConnection && GameFrontendManager.Instance.IsConnectionPathValid(nodeVisualA.layerNum, GetCellsOfConnection()))
+        {
+            mat.SetColor("_Color2", previewColor);
+        }
+        else
+        {
+            mat.SetColor("_Color2", invalidColor);
         }
     }
 

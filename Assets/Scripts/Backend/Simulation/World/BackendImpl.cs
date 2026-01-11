@@ -207,6 +207,22 @@ namespace Backend.Simulation.World
             return _storage.inventory.getAmountPlaceable(nodeDTO);
         }
 
+        public bool IsConnectionPathOccupied(int layerNum, Vector2[] cellsOfConnection)
+        {
+            var timeSlice = byLayerNum(layerNum);
+            var grid = timeSlice.TimeSliceGrid;
+
+            foreach (var cell in cellsOfConnection)
+            {
+                if (grid.IsCellOccupied(cell, out var node, out var connection))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         private TimeSlice byLayerNum(int layerNum)
         {
             return _storage.timeSlices[layerNum];

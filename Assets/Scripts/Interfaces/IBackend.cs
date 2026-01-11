@@ -66,6 +66,7 @@ namespace Interfaces
         public int GetAmountPlaceable(NodeDTO nodeDTO);
 
         // TimeLayer GetTimeLayer(int layerNum); //change time layer to whatever applies
+        bool IsConnectionPathOccupied(int layerNum, Vector2[] cellsOfConnection);
     }
 
     public enum NodeDTO //TODO NodeType got renamed to NodeDTO to prevent double naming with Backend.NodeType

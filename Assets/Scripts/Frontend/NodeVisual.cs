@@ -35,12 +35,14 @@ public class NodeVisual : MonoBehaviour, IPointerClickHandler, IPointerEnterHand
     public float nodeScale = 0.75f; // Scale of the node (not overfill the grid)
     private bool isBlinking = false;
     private bool blinkToggle;
+    public GameObject ScreenEdgeIconPrefab;
+    private ScreenEdgeIcon screenEdgeIcon;
     [Header("Other")] public SpriteRenderer spriteRenderer;
     public Image hpBar;
     private List<ConduitVisual> connectedConduits = new List<ConduitVisual>(); // References for the simulation
     public Transform attachPoint;
     private bool isEnergySupplied = true;
-
+   
 
     void Awake()
     {
@@ -157,10 +159,18 @@ public class NodeVisual : MonoBehaviour, IPointerClickHandler, IPointerEnterHand
         if (hpBar) hpBar.fillAmount = currentValue;
         if (currentValue <= BalanceProvider.Balance.noodeBlinkThreshhold && !isEnergySupplied)
         {
+            if(!screenEdgeIcon)
+            {
+                screenEdgeIcon = Instantiate(ScreenEdgeIconPrefab).GetComponentInChildren<ScreenEdgeIcon>();
+                screenEdgeIcon.target = this.transform;
+            }
             ToggleBlinking(true);
         }
         else
+        {
+            if (screenEdgeIcon) Destroy(screenEdgeIcon);
             ToggleBlinking(false);
+        }
     }
 
 

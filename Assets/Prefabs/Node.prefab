@@ -236,6 +236,7 @@ MonoBehaviour:
   redGlowInactiveEffect: {fileID: 3357172085579997632}
   yellowGlowInactiveEffect: {fileID: 3242199454315143523}
   nodeScale: 0.75
+  ScreenEdgeIconPrefab: {fileID: 1225898907467027101, guid: c12da8f82d18fdf4896364294e880c33, type: 3}
   spriteRenderer: {fileID: 0}
   hpBar: {fileID: 1787153165581330612}
   attachPoint: {fileID: 7132188543664963030}
