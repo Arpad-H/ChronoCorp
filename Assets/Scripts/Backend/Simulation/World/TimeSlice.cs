@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Backend.Inv;
 using Backend.Simulation.Energy;
+using Backend.Simulation.SimEvent;
 using Interfaces;
 using NodeBase;
 using UnityEditor;
@@ -21,12 +22,12 @@ namespace Backend.Simulation.World
         public readonly StabilityBar StabilityBar = new(BalanceProvider.Balance.stabilityMaxValue, BalanceProvider.Balance.stabilityMinValue, BalanceProvider.Balance.stabilityMaxValue);
         public readonly List<TimeSlice> timeSlices = new();
         public Dictionary<GUID, EnergyPacket> energyPackets = new();
-        public Dictionary<EnergyType, int> energyTypesAvailableInSimulation = new();
         public Dictionary<GUID, Connection> guidToConnections = new();
         public Dictionary<GUID, AbstractNodeInstance> guidToNodesMapping = new();
         public Inventory inventory = new();
         public Dictionary<NodeType, List<AbstractNodeInstance>> nodeTypeToNodesMapping = new();
         private int timeSliceNumCounter = 0;
+        public SimEventLog log = new();
 
         public SimulationStorage(IFrontend frontend)
         {
@@ -47,16 +48,6 @@ namespace Backend.Simulation.World
                 return 0;
             }
             return value?.Sum(instance => ((GeneratorInstance)instance).totalOutputs.Count) ?? 0;
-        }
-
-        public int getAmountDifferentEnergyTypesInSimulation()
-        {
-            return energyTypesAvailableInSimulation.Count;
-        }
-
-        public HashSet<EnergyType> getEnergyTypesInSimulation()
-        {
-            return energyTypesAvailableInSimulation.Keys.ToHashSet();
         }
 
         public int getAmountOutputsTotal()
@@ -227,6 +218,8 @@ namespace Backend.Simulation.World
         private readonly long _tickPastDiff;
         public readonly NodeSpawner NodeSpawner;
         public readonly TimeSliceGrid TimeSliceGrid = new(16,9,1);
+        public Dictionary<EnergyType, int> energyTypesAvailableInSimulation = new();
+        private TimeSliceRunner _runner;
 
         public TimeSlice(SimulationStorage simulationStorage, int sliceNumber, long tickPastDiff)
         {
@@ -234,6 +227,7 @@ namespace Backend.Simulation.World
             SliceNumber = sliceNumber;
             _tickPastDiff = tickPastDiff;
             NodeSpawner = new(this);
+            _runner = new (this, _simulationStorage.log,tickPastDiff);
         }
 
         public void Tick(long tickCount, SimulationStorage storage)
@@ -246,7 +240,24 @@ namespace Backend.Simulation.World
             
             foreach (var abstractNodeInstance in _simulationStorage.guidToNodesMapping.Values)
                 abstractNodeInstance.Tick(tickCount, _simulationStorage);
-            NodeSpawner.Tick(tickCount, _simulationStorage);
+            if (SliceNumber == 0)
+            {
+                NodeSpawner.Tick(tickCount, _simulationStorage);
+            }
+            else
+            {
+                _runner.Tick(tickCount, storage);
+            }
+        }
+        
+        public int getAmountDifferentEnergyTypesInSimulation()
+        {
+            return energyTypesAvailableInSimulation.Count;
+        }
+
+        public HashSet<EnergyType> getEnergyTypesInSimulation()
+        {
+            return energyTypesAvailableInSimulation.Keys.ToHashSet();
         }
 
         public GUID? spawnGenerator(Vector2 pos, int amountInitialOutputs)
@@ -266,35 +277,36 @@ namespace Backend.Simulation.World
         public GUID? spawnRipple(Vector2 pos, EnergyType energyType, out TimeRippleInstance timeRippleInstance)
         {
             timeRippleInstance = null;
-            if (TimeSliceGrid.HasNodeNear(pos, TOLERANCE)) return null;
+            if(TimeSliceGrid.IsCellOccupied(pos, out var node, out var connection)) return null;
             var newNode = new TimeRippleInstance(pos, energyType);
             TimeSliceGrid.Add(newNode);
             addNodeToMapping(newNode);
             timeRippleInstance = newNode;
 
-            if (!_simulationStorage.energyTypesAvailableInSimulation.ContainsKey(energyType))
+            if (!energyTypesAvailableInSimulation.ContainsKey(energyType))
             {
-                _simulationStorage.energyTypesAvailableInSimulation[energyType] = 0;
+                energyTypesAvailableInSimulation[energyType] = 0;
             }
             
-            _simulationStorage.energyTypesAvailableInSimulation[energyType]++;
+            energyTypesAvailableInSimulation[energyType]++;
             return newNode.guid;
         }
 
         public bool removeNode(GUID guid)
         {
+            Debug.Log("Removing " + guid);
             if (_simulationStorage.guidToNodesMapping.TryGetValue(guid, out var nodeInstance))
                 if (TimeSliceGrid.Remove(nodeInstance))
                 {
                     if (nodeInstance is GeneratorInstance) _simulationStorage.inventory.removeGenerator();
                     if (nodeInstance is TimeRippleInstance timeRippleInstance)
                     {
-                        if (_simulationStorage.energyTypesAvailableInSimulation.ContainsKey(timeRippleInstance.EnergyType))
+                        if (energyTypesAvailableInSimulation.ContainsKey(timeRippleInstance.EnergyType))
                         {
-                            _simulationStorage.energyTypesAvailableInSimulation[timeRippleInstance.EnergyType]--;
-                            if (_simulationStorage.energyTypesAvailableInSimulation[timeRippleInstance.EnergyType] <= 0)
+                            energyTypesAvailableInSimulation[timeRippleInstance.EnergyType]--;
+                            if (energyTypesAvailableInSimulation[timeRippleInstance.EnergyType] <= 0)
                             {
-                                _simulationStorage.energyTypesAvailableInSimulation.Remove(timeRippleInstance.EnergyType);
+                                energyTypesAvailableInSimulation.Remove(timeRippleInstance.EnergyType);
                             }
                         }
                     }
@@ -327,27 +339,6 @@ namespace Backend.Simulation.World
             if (_simulationStorage.nodeTypeToNodesMapping.ContainsKey(newNode.NodeType))
                 _simulationStorage.nodeTypeToNodesMapping.Remove(newNode.NodeType);
             Debug.Log("Removed node " + newNode.guid);
-        }
-    }
-
-    public interface TimeBasedEvent
-    {
-        void processEvent(TimeSlice timeSlice);
-    }
-
-    public class SpawnGeneratorEvent : TimeBasedEvent
-    {
-        private int amountInitialOutputs;
-        private Vector2 pos;
-
-        public SpawnGeneratorEvent(Vector2 pos, int amountInitialOutputs)
-        {
-            this.pos = pos;
-            this.amountInitialOutputs = amountInitialOutputs;
-        }
-
-        public void processEvent(TimeSlice timeSlice)
-        {
         }
     }
 }
