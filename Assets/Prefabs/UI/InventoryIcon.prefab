@@ -92,8 +92,9 @@ MonoBehaviour:
   iconImage: {fileID: 21300000, guid: 0520328383820b245a679486cb9138ed, type: 3}
   canvas: {fileID: 0}
   count: 3
-  countText: {fileID: 0}
+  countText: {fileID: 6043396885263484922}
   item: 0
+  InventoryIcon: {fileID: 4317512439231906802}
 --- !u!1 &9131562468979539865
 GameObject:
   m_ObjectHideFlags: 0
@@ -159,7 +160,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 2x
+  m_text: 0
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

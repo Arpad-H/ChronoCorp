@@ -9,7 +9,7 @@ public class UISlide : MonoBehaviour
     public Sprite showIcon;
     public Sprite hideIcon;
     public Image buttonIcon;
-    
+    public DragItem dragItem; //TODO this is a temporary reference bcs bakcend is somehow null whe nfirst get count gets called
     public float speed = 8f;
 
     bool shown = false;
@@ -36,5 +36,6 @@ public class UISlide : MonoBehaviour
             ? new Vector2(showHeight,0)
             : new Vector2(hiddenHeight,0);
         buttonIcon.sprite = shown ? hideIcon : showIcon;
+        dragItem.ToggleChanged();
     }
 }

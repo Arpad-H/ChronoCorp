@@ -10,6 +10,8 @@ using UnityEngine;
 
 public class GameFrontendManager : MonoBehaviour, IFrontend
 {
+    public event Action GeneratorDeleted;
+    
     public static GameFrontendManager Instance;
     public CameraController cameraController;
 
@@ -28,13 +30,13 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
 
     private void Awake()
     {
-        if (!temporalLayerStack) temporalLayerStack = FindObjectOfType<TemporalLayerStack>();
-
         if (Instance == null)
         {
             Instance = this;
         }
         else Destroy(gameObject);
+        if (!temporalLayerStack) temporalLayerStack = FindObjectOfType<TemporalLayerStack>();
+       
     }
 
     private void Start()
@@ -180,7 +182,9 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
     public bool DestroyNode(GUID nodeID)
     {
         layerToCoordinatePlane[nodeVisuals[nodeID].layerNum].RemoveNodeVisual(nodeVisuals[nodeID]);
-        return backend.DeleteNode(nodeID);
+        bool result = backend.DeleteNode(nodeID);
+        if (result) GeneratorDeleted?.Invoke();
+        return result;
     }
 
     public bool UnlinkConduit(GUID backendID)
@@ -190,6 +194,6 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
 
     public int GetInvetoryCount(NodeDTO item)
     {
-        return backend.GetAmountPlaceable(item);
+       return backend.GetAmountPlaceable(item);
     }
 }

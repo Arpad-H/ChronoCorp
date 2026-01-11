@@ -10,20 +10,28 @@ public class DragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
     public Canvas canvas; // drag your UI canvas here
     private Image dragIcon;
     private RectTransform dragRect;
-    public int count = 3;
+    public int count = 0;
     public TextMeshProUGUI countText;
     public NodeDTO item;
+    public Image InventoryIcon;
 
     void Start()
     {
-        UpdateCountText();
-       
+        GameFrontendManager.Instance.GeneratorDeleted += UpdateCountText;
     }
 
     private void UpdateCountText()
     {
         count = GameFrontendManager.Instance.GetInvetoryCount(item);
         countText.text = count.ToString();
+        if (count <= 0)
+        {
+            InventoryIcon.color = new Color(1f, 0, 0, 1); 
+        }
+        else
+        {
+            InventoryIcon.color = new Color(1f, 1f, 1f, 1f); 
+        }
     }
 
     public void OnBeginDrag(PointerEventData eventData)
@@ -49,8 +57,12 @@ public class DragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
             Destroy(dragIcon.gameObject);
         if (GameFrontendManager.Instance.TryDrop(NodeDTO.GENERATOR))
         {
-            count--;
             UpdateCountText();
         }
+    }
+
+    public void ToggleChanged()
+    {
+        UpdateCountText();
     }
 }
