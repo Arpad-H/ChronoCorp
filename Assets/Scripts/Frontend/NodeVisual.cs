@@ -20,7 +20,6 @@ public class NodeVisual : MonoBehaviour, IPointerClickHandler,IPointerEnterHandl
     [Header("Node Properties")] 
     public GUID backendID { get; set; }
     public int layerNum { get; set; }
-    public String DebugbackendID;
     public bool isSource; // Is it an energy source or a Time Ripple?
     public EnergyType energyType;
     
@@ -29,6 +28,10 @@ public class NodeVisual : MonoBehaviour, IPointerClickHandler,IPointerEnterHandl
     public GameObject blueGlowEffect;
     public GameObject redGlowEffect;
     public GameObject yellowGlowEffect;
+    public GameObject greenGlowInactiveEffect;
+    public GameObject blueGlowInactiveEffect;
+    public GameObject redGlowInactiveEffect;
+    public GameObject yellowGlowInactiveEffect;
     private GameObject currentGlowEffect ;
     public float nodeScale = 0.75f; // Scale of the node (not overfill the grid)
     
@@ -37,7 +40,7 @@ public class NodeVisual : MonoBehaviour, IPointerClickHandler,IPointerEnterHandl
     public Image hpBar;
     private List<ConduitVisual> connectedConduits = new List<ConduitVisual>(); // References for the simulation
     public Transform attachPoint;
-    
+    private bool isEnergySupplied = true;
    
 
     void Awake()
@@ -50,6 +53,7 @@ public class NodeVisual : MonoBehaviour, IPointerClickHandler,IPointerEnterHandl
     void Start()
     {
         transform.localScale = Vector3.one * nodeScale; // Adjust scale to not overcrowd the grid
+        ChangeEnergySupplyState(false);
     }
 
     public void OnPointerClick(PointerEventData eventData)
@@ -110,39 +114,42 @@ public class NodeVisual : MonoBehaviour, IPointerClickHandler,IPointerEnterHandl
         //     spriteRenderer.color = color;
         //     return;
         // }
+        energyType = newEnergyType;
+        if (!isEnergySupplied)
+        {
+            ChangeEnergySupplyState(false);
+            return;
+        }
         switch (newEnergyType)
         {
             case EnergyType.GREEN:
                 greenGlowEffect.SetActive(true);
                 currentGlowEffect.SetActive(false);
                 currentGlowEffect = greenGlowEffect;
-                energyType = EnergyType.GREEN;
+                
                 break;
             case EnergyType.BLUE:
-                blueGlowEffect.SetActive(true);
+                blueGlowEffect.SetActive(true); 
                 currentGlowEffect.SetActive(false);
                 currentGlowEffect = blueGlowEffect;
-                energyType = EnergyType.BLUE;
+               
                 break;
             case EnergyType.RED:
                 redGlowEffect.SetActive(true);
                 currentGlowEffect.SetActive(false);
                 currentGlowEffect = redGlowEffect;
-                energyType = EnergyType.RED;
+                
                 break;
             case EnergyType.YELLOW:
                 yellowGlowEffect.SetActive(true);
                 currentGlowEffect.SetActive(false);
                 currentGlowEffect = yellowGlowEffect;
-                energyType = EnergyType.YELLOW;
+               
                 break;
         }
     }
 
-    private void Update()
-    {
-        DebugbackendID = backendID.ToString();
-    }
+   
 
     public void UpdateHealthBar(float currentValue)
     {
@@ -162,10 +169,50 @@ public class NodeVisual : MonoBehaviour, IPointerClickHandler,IPointerEnterHandl
     public void RemoveConnectedConduit(ConduitVisual conduitVisual)
     {
         connectedConduits.Remove(conduitVisual);
+        if (connectedConduits.Count == 0)
+        {
+            ChangeEnergySupplyState(false);
+        }
     }
 
     public void AddConnectedConduit(ConduitVisual conduitVisual)
     {
         connectedConduits.Add(conduitVisual);
+        ChangeEnergySupplyState(true);
+    }
+    private void ChangeEnergySupplyState(bool isSupplied)
+    {
+        if (isEnergySupplied == isSupplied) return;
+        isEnergySupplied = isSupplied;
+        if (isEnergySupplied)
+        {
+          SetEnergyType(energyType);
+        }
+        else
+        {
+            switch (energyType)
+            {
+                case EnergyType.GREEN:
+                    currentGlowEffect.SetActive(false);
+                    greenGlowInactiveEffect.SetActive(true);
+                    currentGlowEffect = greenGlowInactiveEffect;
+                    break;
+                case EnergyType.BLUE:
+                    currentGlowEffect.SetActive(false);
+                    blueGlowInactiveEffect.SetActive(true);
+                    currentGlowEffect = blueGlowInactiveEffect;
+                    break;
+                case EnergyType.RED:
+                    currentGlowEffect.SetActive(false);
+                    redGlowInactiveEffect.SetActive(true);
+                    currentGlowEffect = redGlowInactiveEffect;
+                    break;
+                case EnergyType.YELLOW:
+                    currentGlowEffect.SetActive(false);
+                    yellowGlowInactiveEffect.SetActive(true);
+                    currentGlowEffect = yellowGlowInactiveEffect;
+                    break;
+            }
+        }
     }
 }
