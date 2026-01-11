@@ -102,7 +102,7 @@ namespace Backend.Simulation.World
                 {
                     _removeBuffer.Add(kvp.Key);
                     onPacketDeleted?.Invoke(kvp.Key);
-                    Debug.Log("Energy packet " + kvp.Key + " delivered.");
+                    //Debug.Log("Energy packet " + kvp.Key + " delivered.");
                 }
             }
 
