@@ -160,6 +160,15 @@ namespace Backend.Simulation.World
                 var timeSliceSource = getTimeSliceOfNodeByGuid(sourceNode.guid);
                 var timeSliceTarget = getTimeSliceOfNodeByGuid(targetNode.guid);
 
+                // Only happens if start / end was deleted from the simulation
+                if (timeSliceSource == null || timeSliceTarget == null)
+                {
+                    sourcePos = null;
+                    targetPos = null;
+                    connectionID = null;
+                    return -1;
+                }
+
                 sourcePos = new Vector3(sourceNode.Pos.x, sourceNode.Pos.y, timeSliceSource.SliceNumber);
                 targetPos = new Vector3(targetNode.Pos.x, targetNode.Pos.y, timeSliceTarget.SliceNumber);
                 connectionID = foundPacket.currentStep().connection.guid;
