@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using NodeBase;
+using UnityEditor;
 using UnityEngine;
 using Random = Unity.Mathematics.Random;
 
@@ -8,8 +9,10 @@ namespace Backend.Simulation.World
 {
     public class TimeSliceGrid
     {
-        private readonly AbstractNodeInstance[,] cells;
-        private readonly Connection[,] connections;
+        private readonly AbstractNodeInstance[,] _nodes;
+        private readonly Connection[,] _connections;
+        
+        private readonly Dictionary<GUID, List<Vector2Int>> _connectionCellsById = new();
         private readonly int width;
         private readonly int height;
         private readonly float cellSize;
@@ -19,13 +22,74 @@ namespace Backend.Simulation.World
             this.width = width;
             this.height = height;
             this.cellSize = cellSize;
-            cells = new AbstractNodeInstance[width, height];
-            connections = new Connection[width, height];
+            _nodes = new AbstractNodeInstance[width, height];
+            _connections = new Connection[width, height];
         }
+        
+        #region Occupancy
+
+        public bool IsCellOccupied(Vector2 cell, out AbstractNodeInstance node, out Connection connection)
+        {
+            return IsCellOccupied(WorldToCell(cell), out node, out connection);
+        }
+
+        public bool IsCellOccupied(Vector2Int cell, out AbstractNodeInstance node, out Connection connection)
+        {
+            node = null;
+            connection = null;
+
+            if (!IsInside(cell.x, cell.y))
+                return true;
+
+            node = _nodes[cell.x, cell.y];
+            connection = _connections[cell.x, cell.y];
+
+            return node != null || connection != null;
+        }
+        
+        public bool IsCellOccupied(Vector2Int cell)
+        {
+            if (!IsInside(cell.x, cell.y))
+                return true;
+
+            var node = _nodes[cell.x, cell.y];
+            var connection = _connections[cell.x, cell.y];
+
+            return node != null || connection != null;
+        }
+        
+        public bool HasOccupiedNear(Vector2Int center, int radius)
+        {
+            for (int x = center.x - radius; x <= center.x + radius; x++)
+            {
+                for (int y = center.y - radius; y <= center.y + radius; y++)
+                {
+                    var c = new Vector2Int(x, y);
+                    if (!IsInside(c))
+                        continue;
+
+                    if (_nodes[x, y] != null || _connections[x, y] != null)
+                        return true;
+                }
+            }
+            return false;
+        }
+        
+        #endregion
 
         private bool IsInside(int x, int y)
         {
             return x >= 0 && x < width && y >= 0 && y < height;
+        }
+        
+        private bool IsInside(Vector2Int cell)
+        {
+            return IsInside(cell.x, cell.y);
+        }
+        
+        private bool IsInside(Vector2 cell)
+        {
+            return IsInside(WorldToCell(cell));
         }
 
         private Vector2Int WorldToCell(Vector2 worldPos)
@@ -41,20 +105,23 @@ namespace Backend.Simulation.World
             return new Vector2((cell.x + 0.5f) * cellSize, (cell.y + 0.5f) * cellSize);
         }
 
-        // --------------------------------------------------
-        // API ähnlich zur alten SpatialHashGrid
-        // --------------------------------------------------
-
-        public void Add(AbstractNodeInstance node)
+        #region Nodes
+        
+        public bool Add(AbstractNodeInstance node)
         {
             var cell = WorldToCell(node.Pos);
+            
+            if (IsCellOccupied(cell, out _, out _))
+                return false;
+            
             if (!IsInside(cell.x, cell.y))
             {
                 throw new ArgumentException("The cell "+cell+" is out of bounds for the grid with "+width+"x"+height);
             }
 
             // Wenn du Kollision willst, könntest du hier prüfen, ob cells[cell.x, cell.y] != null
-            cells[cell.x, cell.y] = node;
+            _nodes[cell.x, cell.y] = node;
+            return true;
         }
 
         public bool Remove(AbstractNodeInstance node)
@@ -63,49 +130,75 @@ namespace Backend.Simulation.World
             if (!IsInside(cell.x, cell.y))
                 return false;
 
-            if (cells[cell.x, cell.y] == node)
+            if (_nodes[cell.x, cell.y] == node)
             {
-                cells[cell.x, cell.y] = null;
+                _nodes[cell.x, cell.y] = null;
                 return true;
             }
 
             return false;
         }
-
-        public bool Remove(Vector2 pos, float tolerance)
+        
+        #endregion
+        
+        #region Connections
+        public bool TryAddConnectionCells(
+            Connection connection,
+            Vector2[] cells,
+            AbstractNodeInstance endpointA,
+            AbstractNodeInstance endpointB)
         {
-            // Finde den Node in Reichweite
-            var target = GetBestMatchNode(pos, tolerance);
-            if (target == null)
-                return false;
-
-            var cell = WorldToCell(target.Pos);
-            if (!IsInside(cell.x, cell.y))
-                return false;
-
-            if (cells[cell.x, cell.y] == target)
+            foreach (var cell in cells)
             {
-                cells[cell.x, cell.y] = null;
-                return true;
+                if (!IsInside(new Vector2Int((int)cell.x, (int)cell.y))) {
+                    Debug.Log("Is not inside!");
+                    return false;
+                }
+
+                // Endpunkte dürfen von den beiden Nodes belegt sein
+                if (cell == WorldToCell(endpointA.Pos) || cell == WorldToCell(endpointB.Pos))
+                    continue;
+
+                if (IsCellOccupied(cell, out _, out _)) {
+                    Debug.Log("A cell of the connection is occupied!");
+                    return false;
+                }
             }
 
-            return false;
+            var cellsToConnect = new List<Vector2Int>();
+            foreach (var cell in cells)
+            {
+                if (cell == WorldToCell(endpointA.Pos) || cell == WorldToCell(endpointB.Pos))
+                    continue;
+
+                var cellInt = WorldToCell(cell);
+                
+                _connections[cellInt.x, cellInt.y] = connection;
+                cellsToConnect.Add(cellInt);
+            }
+
+            _connectionCellsById[connection.guid] = cellsToConnect;
+            return true;
         }
 
-        public void UpdateNodePosition(AbstractNodeInstance node, Vector2 oldPos, Vector2 newPos)
+        public void RemoveConnectionCells(GUID connectionId)
         {
-            var oldCell = WorldToCell(oldPos);
-            var newCell = WorldToCell(newPos);
-
-            if (oldCell == newCell)
+            if (!_connectionCellsById.TryGetValue(connectionId, out var cells))
                 return;
 
-            if (IsInside(oldCell.x, oldCell.y) && cells[oldCell.x, oldCell.y] == node)
-                cells[oldCell.x, oldCell.y] = null;
+            foreach (var cell in cells)
+            {
+                if (!IsInside(cell))
+                    continue;
 
-            if (IsInside(newCell.x, newCell.y))
-                cells[newCell.x, newCell.y] = node;
+                if (_connections[cell.x, cell.y]?.guid == connectionId)
+                    _connections[cell.x, cell.y] = null;
+            }
+
+            _connectionCellsById.Remove(connectionId);
         }
+
+        #endregion
 
         /// <summary>
         /// Gibt true zurück, wenn in der Nähe der Position
@@ -135,7 +228,7 @@ namespace Backend.Simulation.World
                 if (!IsInside(cx, cy))
                     continue;
 
-                var node = cells[cx, cy];
+                var node = _nodes[cx, cy];
                 if (node == null)
                     continue;
 
@@ -193,7 +286,7 @@ namespace Backend.Simulation.World
             for (var x = 0; x < width; x++)
             for (var y = 0; y < height; y++)
             {
-                if (cells[x, y] != null || visited[x, y])
+                if (IsCellOccupied(new Vector2Int(x, y)) || visited[x, y])
                     continue;
 
                 // Neue leere Region via BFS/DFS finden
@@ -236,7 +329,8 @@ namespace Backend.Simulation.World
                         return;
                     if (visited[nx, ny])
                         return;
-                    if (cells[nx, ny] != null)
+                    
+                    if (IsCellOccupied(new Vector2Int(nx, ny)))
                         return;
 
                     visited[nx, ny] = true;

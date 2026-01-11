@@ -1,4 +1,5 @@
-﻿using Interfaces;
+﻿using System.Linq;
+using Interfaces;
 using JetBrains.Annotations;
 using NodeBase;
 using UnityEditor;
@@ -60,12 +61,62 @@ namespace Backend.Simulation.World
                     return false;
             }
         }
-
-        public GUID? LinkNodes(GUID backendIdA, GUID backendIdB, Vector2[] cellsOfConnection)
+        
+        public GUID? LinkNodes(
+            GUID a,
+            GUID b,
+            Vector2[] cellsOfConnection)
         {
-            var connectionID = _storage.link(backendIdA, backendIdB);
-            if (connectionID != null) _storage.recalculatePaths();
-            return connectionID;
+            var sliceA = getTimeSliceOfNodeByGuid(a);
+            var sliceB = getTimeSliceOfNodeByGuid(b);
+
+            if (sliceA == null || sliceA != sliceB)
+                return null;
+
+            var grid = sliceA.TimeSliceGrid;
+
+            foreach (var cell in cellsOfConnection)
+            {
+                if (grid.IsCellOccupied(cell, out var node, out var connection))
+                {
+                    if (node != null && (!node.guid.Equals(a) && !node.guid.Equals(b)))
+                    {
+                        Debug.Log("Cannot link because there is a node in its path");
+                        return null;
+                    }
+
+                    if (connection != null)
+                    {
+                        Debug.Log("Cannot link because there is a connection in its path");
+                        return null;
+                    }
+                }
+            }
+
+            var connectionId = _storage.link(a, b);
+            if (connectionId == null)
+            {
+                Debug.Log("Connection could not be created!");
+                return null;
+            }
+            Debug.Log("Linked nodes -> cells: "+string.Join(",", cellsOfConnection.Select(x => x.ToString()).ToArray()));
+
+            var connectionObj = _storage.guidToConnections[(GUID)connectionId];
+
+            bool reserved = grid.TryAddConnectionCells(
+                connectionObj,
+                cellsOfConnection,
+                _storage.guidToNodesMapping[a],
+                _storage.guidToNodesMapping[b]
+                );
+
+            if (!reserved)
+            {
+                _storage.unlink((GUID)connectionId);
+                return null;
+            }
+            _storage.recalculatePaths();
+            return connectionObj.guid;
         }
 
         public bool UnlinkNodes(GUID connectionId)
@@ -75,6 +126,11 @@ namespace Backend.Simulation.World
 
         public bool UnlinkNodes(GUID connectionId, bool recalculatePaths)
         {
+            foreach (var slice in _storage.timeSlices)
+            {
+                slice.TimeSliceGrid.RemoveConnectionCells(connectionId);
+            }
+
             if (_storage.unlink(connectionId))
             {
                 if(recalculatePaths) _storage.recalculatePaths();
