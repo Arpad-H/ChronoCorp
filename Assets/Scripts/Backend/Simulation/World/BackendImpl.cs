@@ -193,7 +193,7 @@ namespace Backend.Simulation.World
             _storage.tick(tickCount, frontend);
         }
 
-        public int getAmountPlaceable(NodeDTO nodeDTO)
+        public int GetAmountPlaceable(NodeDTO nodeDTO)
         {
             return _storage.inventory.getAmountPlaceable(nodeDTO);
         }

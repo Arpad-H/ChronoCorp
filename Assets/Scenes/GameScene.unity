@@ -504,6 +504,18 @@ PrefabInstance:
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 43647870587393883, guid: 931f8e47332b59540b9e056d09bf28fe, type: 3}
+      propertyPath: m_Shape
+      value: 2503109949013622852
+      objectReference: {fileID: 0}
+    - target: {fileID: 43647870587393883, guid: 931f8e47332b59540b9e056d09bf28fe, type: 3}
+      propertyPath: 'managedReferences[2503109949013622852]'
+      value: Unity.Splines UnityEngine.Splines.ExtrusionShapes.Circle
+      objectReference: {fileID: 0}
+    - target: {fileID: 43647870587393883, guid: 931f8e47332b59540b9e056d09bf28fe, type: 3}
+      propertyPath: managedReferences[2503109949013622852].m_Sides
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 1884306050439479725, guid: 931f8e47332b59540b9e056d09bf28fe, type: 3}
       propertyPath: m_Enabled
       value: 0

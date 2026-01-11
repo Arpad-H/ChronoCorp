@@ -63,7 +63,7 @@ namespace Interfaces
         /**
          * returns the amount of the specific NodesDTO in the inventory
          */
-        public int getAmountPlaceable(NodeDTO nodeDTO);
+        public int GetAmountPlaceable(NodeDTO nodeDTO);
 
         // TimeLayer GetTimeLayer(int layerNum); //change time layer to whatever applies
     }

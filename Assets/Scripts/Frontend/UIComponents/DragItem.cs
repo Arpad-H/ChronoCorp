@@ -17,10 +17,12 @@ public class DragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
     void Start()
     {
         UpdateCountText();
+       
     }
 
     private void UpdateCountText()
     {
+        count = GameFrontendManager.Instance.GetInvetoryCount(item);
         countText.text = count.ToString();
     }
 

@@ -159,7 +159,7 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
         if (backend.DeleteNode(node.backendID)) Destroy(node.gameObject);
     }
 
-    public GUID? isValidConduit(NodeVisual a, NodeVisual b, Vector2[] cellsOfConnection)
+    public GUID? IsValidConduit(NodeVisual a, NodeVisual b, Vector2[] cellsOfConnection)
     {
         if (!a || !b || a == b) return null;
         return backend.LinkNodes(a.backendID, b.backendID, cellsOfConnection);
@@ -186,5 +186,10 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
     public bool UnlinkConduit(GUID backendID)
     {
         return backend.UnlinkNodes(backendID);
+    }
+
+    public int GetInvetoryCount(NodeDTO item)
+    {
+        return backend.GetAmountPlaceable(item);
     }
 }
