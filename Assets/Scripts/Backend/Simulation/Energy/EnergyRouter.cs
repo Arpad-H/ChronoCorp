@@ -229,7 +229,6 @@ namespace Backend.Simulation.Energy
             _currentEdgeIndex++;
             if (_currentEdgeIndex >= Steps.Count)
             {
-                Debug.Log("Delivered at target");
                 Delivered = true;
 
                 if (Destination is TimeRippleInstance timeRipple)
@@ -241,10 +240,6 @@ namespace Backend.Simulation.Energy
                     }
                     storage.Frontend.onNodeHealthChange(timeRipple.guid, timeRipple.minStability, timeRipple.maxStability, timeRipple.currentStability);
                 }
-            }
-            else
-            {
-                Debug.Log("Relaying to next one");
             }
         }
 
