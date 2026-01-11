@@ -91,8 +91,6 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
         {
             Vector3 snappedLocalPos = layerB.WorldToLocal(lineEnd);
             Vector3 snappedPos = layerB.GridToWorldPosition(snappedLocalPos);
-            Debug.Log("Snapped Pos: " + snappedPos);
-            Debug.Log("Snapped Local Pos: " + snappedLocalPos);
             
             if(layerB.IsPlaceOccupied(layerB.ToPlaneLocal(snappedLocalPos)))
             {

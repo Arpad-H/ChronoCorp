@@ -14,14 +14,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   energyPacketSpeed: 0.1
   energyPacketSpawnIntervalPerSecond: 2
-  energyPacketRechargeAmount: 1
+  energyPacketRechargeAmount: 10
   nodeMaxHp: 100
   nodeMinHp: 0
-  nodeDrainRate: 1
+  nodeDrainRate: 3
   nodeDrainTicks: 100
   nodeSpawnIntervalPerSecond: 5
+  noodeBlinkThreshhold: 0.25
   layerDuplicationTime: 500
-  initialGeneratorCount: 3
+  initialGeneratorCount: 10
   stabilityMaxValue: 100
   stabilityMinValue: 0
   stabilityDecreaseValue: 0

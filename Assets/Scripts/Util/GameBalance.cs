@@ -16,6 +16,7 @@ namespace Util
         public int nodeDrainRate;
         public int nodeDrainTicks;
         public float nodeSpawnIntervalPerSecond;
+        public float noodeBlinkThreshhold;
         
         [Header("Layer Settings")]
         [Tooltip("Ticks. For example 3000 ticks at 50 TPS = 60 seconds")]
