@@ -67,7 +67,6 @@ namespace Backend.Simulation.World
                 return;
             }
             storage.Frontend.OnStabilityBarUpdate(minValue, maxValue, (int)currentValue);
-            Debug.Log("New stability: "+currentValue);
         }
 
         private void setStability(float value)
