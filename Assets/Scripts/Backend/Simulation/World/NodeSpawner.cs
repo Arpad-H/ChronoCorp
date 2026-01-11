@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Backend.Simulation.SimEvent;
 using NodeBase;
 using UnityEngine;
 using Util;
@@ -35,17 +36,18 @@ namespace Backend.Simulation.World
                 lastSpawnTick = tickCount;
                 Debug.Log("Auto generated new time ripple with "+energyTypeOfNewNode+" energy at "+cell);
                 storage.Frontend.PlaceNodeVisual(newTimeRipple.guid,newTimeRipple.NodeType.NodeDTO, _timeSlice.SliceNumber, cell, (EnergyType)energyTypeOfNewNode);
+                storage.log.Track(tickCount, new SpawnTimeRippleEvent(new Vector2(cell.x, cell.y), (EnergyType) energyTypeOfNewNode), SubTickTime.Zero);
             }
         }
 
         private EnergyType? determineEnergyTypeForSpawning(SimulationStorage storage)
         {
-            var energyTypesToChooseFrom = storage.getEnergyTypesInSimulation();
+            var energyTypesToChooseFrom = _timeSlice.getEnergyTypesInSimulation();
             energyTypesToChooseFrom.Remove(EnergyType.WHITE);
 
             var amountOutputsAvailable = storage.getAmountOutputsTotal();
             if (amountOutputsAvailable == 0) return null;
-            var amountEnergyTypesInSimulation = storage.getAmountDifferentEnergyTypesInSimulation();
+            var amountEnergyTypesInSimulation = _timeSlice.getAmountDifferentEnergyTypesInSimulation();
             
             if (amountOutputsAvailable > amountEnergyTypesInSimulation)
             {
