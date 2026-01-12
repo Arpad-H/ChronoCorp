@@ -24,11 +24,14 @@ MonoBehaviour:
   layerDuplicationTime: 500
   layerGridCellCount: {x: 0, y: 0}
   initialGeneratorCount: 10
-  stabilityMaxValue: 100
+  stabilityMaxValue: 10
   stabilityMinValue: 0
   stabilityDecreaseValue: 0
   stabilityDecreaseTicks: 50
-  malusThresholds: []
+  malusThresholds:
+  - 0.78
+  - 0.49
+  - 0.27
   baseStabilityDecreasePerNode: 1
   nodeStableThresholdPercentage: 0.5
   cameraZoomSpeed: 3

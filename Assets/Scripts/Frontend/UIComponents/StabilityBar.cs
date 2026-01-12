@@ -6,6 +6,7 @@ public class StabilityBar : MonoBehaviour
 {
     public Image stabilityBar;
     public TextMeshProUGUI stabilityText;
+    public MalusContainer malusContainer;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -23,6 +24,10 @@ public class StabilityBar : MonoBehaviour
         {
             stabilityBar.fillAmount = stabilityPercent;
             stabilityText.text = (int)(stabilityPercent*100) + "%";
+        }
+        if (malusContainer)
+        {
+            malusContainer.EvaluateMaluses(stabilityPercent);
         }
     }
 }

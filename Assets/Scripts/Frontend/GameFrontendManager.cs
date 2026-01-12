@@ -198,4 +198,9 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
     {
        return backend.GetAmountPlaceable(item);
     }
+
+    public bool GetValuesForStabilityMalusType(StabilityMalusType type, out int threshold)
+    {
+        return backend.getValuesForStabilityMalusType(type, out threshold);
+    }
 }

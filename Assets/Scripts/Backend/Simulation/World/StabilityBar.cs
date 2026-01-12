@@ -134,9 +134,9 @@ namespace Backend.Simulation.World
 
     public enum StabilityMalusType
     {
-        MALUS1, //TODO rename
-        MALUS2,
-        MALUS3
+        MALUS1 = 0, //TODO rename
+        MALUS2 = 1,
+        MALUS3 = 2
     }
 
     public abstract class StabilityMalus

@@ -33,6 +33,8 @@ namespace Util
         public int stabilityMinValue;
         public float stabilityDecreaseValue;
         public int stabilityDecreaseTicks;
+        [Tooltip("Index matches StabilityMalusType enum order. Index 0 -> MALUS1, index 1 -> MALUS2, etc.")]
+        [Range(0f, 1f)]
         public float[] malusThresholds;
         
         [Header("Node Stability Contribution")]
