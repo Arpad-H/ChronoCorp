@@ -134,7 +134,9 @@ namespace Backend.Simulation.World
 
     public enum StabilityMalusType
     {
-        TIME_RIPPLE_SPAWN_BOOST
+        MALUS1, //TODO rename
+        MALUS2,
+        MALUS3
     }
 
     public abstract class StabilityMalus
