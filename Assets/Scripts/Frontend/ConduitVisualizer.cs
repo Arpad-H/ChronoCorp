@@ -86,17 +86,17 @@ public class ConduitVisualizer : MonoBehaviour
     {
         if (!previewConduitVisual) return;
 
-        RaycastHit rh;
-        if (cameraController.RaycastForFirst(out rh))
+        RaycastHit[] hits = cameraController.RaycastAll();
+        foreach (RaycastHit hit in hits)
         {
-            NodeVisual endNodeVisual = rh.collider.GetComponent<NodeVisual>();
+            NodeVisual endNodeVisual = hit.collider.GetComponent<NodeVisual>();
             if (endNodeVisual)
             {
                 CompleteConduit(endNodeVisual);
                 return;
             }
         }
-
+       
         ReleaseItem(previewConduitVisual);
         previewConduitVisual = null;
     }

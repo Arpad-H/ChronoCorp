@@ -32,7 +32,7 @@ namespace Interfaces
          * Returns true and a connection uid if the nodes could be connected.
          * Otherwise, returns false and null.
          */
-        GUID? LinkNodes(GUID backendIdA, GUID backendIdB, Vector2[] cellsOfConnection);
+        GUID? LinkNodes(GUID backendIdA, GUID backendIdB, Vector2Int[] cellsOfConnection);
 
         /**
          * Takes a connection id (NOT A NODE ID) to remove the connection and unlink the nodes that are connected.
@@ -66,7 +66,7 @@ namespace Interfaces
         public int GetAmountPlaceable(NodeDTO nodeDTO);
 
         // TimeLayer GetTimeLayer(int layerNum); //change time layer to whatever applies
-        bool IsConnectionPathOccupied(int layerNum, Vector2[] cellsOfConnection);
+        bool IsConnectionPathOccupied(int layerNum, Vector2Int[] cellsOfConnection);
     }
 
     public enum NodeDTO //TODO NodeType got renamed to NodeDTO to prevent double naming with Backend.NodeType

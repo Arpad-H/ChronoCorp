@@ -65,7 +65,7 @@ namespace Backend.Simulation.World
         public GUID? LinkNodes(
             GUID a,
             GUID b,
-            Vector2[] cellsOfConnection)
+            Vector2Int[] cellsOfConnection)
         {
             var sliceA = getTimeSliceOfNodeByGuid(a);
             var sliceB = getTimeSliceOfNodeByGuid(b);
@@ -207,7 +207,7 @@ namespace Backend.Simulation.World
             return _storage.inventory.getAmountPlaceable(nodeDTO);
         }
 
-        public bool IsConnectionPathOccupied(int layerNum, Vector2[] cellsOfConnection)
+        public bool IsConnectionPathOccupied(int layerNum, Vector2Int[] cellsOfConnection)
         {
             var timeSlice = byLayerNum(layerNum);
             var grid = timeSlice.TimeSliceGrid;

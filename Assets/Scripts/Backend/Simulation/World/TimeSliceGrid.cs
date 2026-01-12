@@ -144,7 +144,7 @@ namespace Backend.Simulation.World
         #region Connections
         public bool TryAddConnectionCells(
             Connection connection,
-            Vector2[] cells,
+            Vector2Int[] cells,
             AbstractNodeInstance endpointA,
             AbstractNodeInstance endpointB)
         {

@@ -150,12 +150,12 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
 
         return false;
     }
-    public GUID? IsValidConduit(NodeVisual a, NodeVisual b, Vector2[] cellsOfConnection)
+    public GUID? IsValidConduit(NodeVisual a, NodeVisual b, Vector2Int[] cellsOfConnection)
     {
         if (!a || !b || a == b) return null;
         return backend.LinkNodes(a.backendID, b.backendID, cellsOfConnection);
     }
-    public bool IsConnectionPathValid(int layerNum,  Vector2[] cellsOfConnection)
+    public bool IsConnectionPathValid(int layerNum,  Vector2Int[] cellsOfConnection)
     {
         return !backend.IsConnectionPathOccupied(layerNum,cellsOfConnection);
     }

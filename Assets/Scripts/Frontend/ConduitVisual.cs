@@ -233,16 +233,20 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
         path.Clear();
     }
 
-    public Vector2[] GetCellsOfConnection()
+    public Vector2Int[] GetCellsOfConnection()
     {
-        List<Vector2> cells = new List<Vector2>();
+        List<Vector2Int> cells = new List<Vector2Int>();
         foreach (var worldPos in path)
         {
             Vector3 localPos = planeA.WorldToLocal(worldPos);
             Vector2 cell = planeA.ToPlaneLocal(localPos);
-            if (!cells.Contains(cell))
+            Vector2Int cellInt = new Vector2Int((int)Mathf.Floor(cell.x), (int)Mathf.Floor(cell.y));
+            if (!cells.Contains(cellInt))
             {
-                cells.Add(new Vector2(localPos.x, localPos.y) - new Vector2(0.5f, 0.5f));
+                localPos -= new Vector3(0.5f, 0.5f, 0); // Adjust for cell center
+                int x = Mathf.RoundToInt(localPos.x);
+                int y = Mathf.RoundToInt(localPos.y);
+                cells.Add(new Vector2Int(x, y));
             }
         }
         return cells.ToArray();
