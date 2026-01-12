@@ -68,12 +68,14 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
 
     private void SetConduitEnergyType()
     {
-        EnergyType energyType = nodeVisualA.energyType == EnergyType.WHITE
-            ? nodeVisualB.energyType
-            : nodeVisualA.energyType;
+        EnergyType energyType = EnergyType.WHITE;
+        if (nodeVisualA is TimeRipple rippleA)
+            energyType = rippleA.energyType;
+        else if (nodeVisualB is TimeRipple rippleB)
+            energyType = rippleB.energyType;
+        
         Color color = energyType.ToColor();
         mat.SetColor("_Color2", color);
-     
     }
 
     public void StartNewConduitAtNode(NodeVisual nodeVisual,CoordinatePlane plane)

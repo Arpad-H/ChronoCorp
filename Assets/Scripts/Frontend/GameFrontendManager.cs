@@ -83,8 +83,7 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
 
         return false;
     }
-
-
+    
     public void SpawnEnergyPacket(GUID guid, EnergyType energyType)
     {
         energyPacketVisualizer.SpawnEnergyPacket(guid, backend, energyType);
@@ -119,7 +118,11 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
 
     public void onNodeHealthChange(GUID id, int minValue, int maxValue, int currentValue)
     {
-        nodeVisuals[id].UpdateHealthBar((float)(currentValue - minValue) / (maxValue - minValue));
+        NodeVisual nodeVisual = nodeVisuals[id];
+        if (nodeVisual.GetType() == typeof(TimeRipple))
+        {
+            ((TimeRipple)nodeVisual).UpdateHealthBar((float)(currentValue - minValue) / (maxValue - minValue));
+        }
     }
 
     //Spawn Nodes from inventory or other manual placement
@@ -127,7 +130,6 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
     {
         RaycastHit rh;
         cameraController.RaycastForFirst(out rh); //maybe replace with single ray with custom layer?
-
         var frame = rh.transform.GetComponentInParent<CoordinatePlane>();
         if (frame == null) return false; // Not hovering over a frame
 
@@ -148,17 +150,6 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
 
         return false;
     }
-
-    private void DeleteNodeManually()
-    {
-        RaycastHit rh;
-        cameraController.RaycastForFirst(out rh); //maybe replace with single ray with custom layer?
-
-        var node = rh.transform.GetComponentInParent<NodeVisual>();
-        if (!node) return;
-        if (backend.DeleteNode(node.backendID)) Destroy(node.gameObject);
-    }
-
     public GUID? IsValidConduit(NodeVisual a, NodeVisual b, Vector2[] cellsOfConnection)
     {
         if (!a || !b || a == b) return null;

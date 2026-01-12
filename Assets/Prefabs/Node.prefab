@@ -160,7 +160,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7470352548723964567}
   - component: {fileID: 8288689213988257622}
-  - component: {fileID: 8493137014761539507}
+  - component: {fileID: 7323281664866462505}
   m_Layer: 0
   m_Name: Node
   m_TagString: Untagged
@@ -213,7 +213,7 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &8493137014761539507
+--- !u!114 &7323281664866462505
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -222,10 +222,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 6574809473556729728}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c4d1c1b6f5ece774583d275f72804c46, type: 3}
+  m_Script: {fileID: 11500000, guid: caaa7e3445a202a4999a1045a92af2c9, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Node
-  isSource: 0
+  m_EditorClassIdentifier: 
+  layerNum: 0
+  nodeScale: 0.75
+  attachPoint: {fileID: 7470352548723964567}
   energyType: 0
   greenGlowEffect: {fileID: 7615955434371999596}
   blueGlowEffect: {fileID: 1918619846962885237}
@@ -235,11 +237,8 @@ MonoBehaviour:
   blueGlowInactiveEffect: {fileID: 3800899669586093782}
   redGlowInactiveEffect: {fileID: 3357172085579997632}
   yellowGlowInactiveEffect: {fileID: 3242199454315143523}
-  nodeScale: 0.75
   ScreenEdgeIconPrefab: {fileID: 1225898907467027101, guid: c12da8f82d18fdf4896364294e880c33, type: 3}
-  spriteRenderer: {fileID: 0}
   hpBar: {fileID: 1787153165581330612}
-  attachPoint: {fileID: 7132188543664963030}
 --- !u!1 &7526577072401849257
 GameObject:
   m_ObjectHideFlags: 0

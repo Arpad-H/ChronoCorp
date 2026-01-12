@@ -118,43 +118,75 @@ public class CoordinatePlane : MonoBehaviour
         );
     }
 
-    /// <summary>
-    /// Instantiates a node inside the nodeContainer at plane coordinates.
-    /// </summary>
+    // /// <summary>
+    // /// Instantiates a node inside the nodeContainer at plane coordinates.
+    // /// </summary>
     public NodeVisual PlaceNode(NodeDTO nodeDTO, Vector3 planePos,GUID guid, EnergyType energyType)
     {
-        GameObject obj = null;
-        Vector3 localPos = ToPlaneLocal(planePos);
-        // if (! _backend.PlaceNode(prefab,layerNum, new Vector2(localPos.x,localPos.y))) return false;
-
-        
-        GameObject node = nodeDTO == NodeDTO.RIPPLE ? nodePrefab : generatorPrefab;
-        if (!IsWithinBounds(localPos) || IsPlaceOccupied(localPos)) return null;
-        obj = Instantiate(node, nodeContainer);
-        NodeVisual nv = obj.GetComponent<NodeVisual>();
-        if (nv)
+        NodeVisual nv = null;
+        switch (nodeDTO)
         {
-            nv.backendID = guid;
-            nv.SetEnergyType(energyType);
+            case NodeDTO.RIPPLE:
+            {
+                TimeRipple timeRipple = PlaceTimeRipple(planePos, energyType); 
+                if (timeRipple)
+                {
+                    timeRipple.backendID = guid;
+                    timeRipple.SetEnergyType(energyType);
+                  
+                }
+                nv = timeRipple;
+                break;
+            }
+            case NodeDTO.GENERATOR:
+            {
+                Generator generator = PlaceGenerator(planePos); 
+                if (generator)
+                {
+                    generator.backendID = guid;
+                }
+                nv = generator;
+                break;
+            }
+            
         }
-        obj.transform.localPosition = localPos;
-        nodes.Add(obj);
+        if(nv) nodes.Add(nv.gameObject);
         return nv;
     }
- public NodeVisual PlaceNodeFromBackend(NodeDTO nodeDTO, Vector2 planePos, EnergyType energyType)
+    
+    public NodeVisual PlaceNodeFromBackend(NodeDTO nodeDTO, Vector2 planePos, EnergyType energyType)
+    {
+        switch (nodeDTO)
+        {
+            case  NodeDTO.RIPPLE: return PlaceTimeRipple(planePos, energyType); break;
+            case NodeDTO.GENERATOR: return PlaceGenerator(planePos); break;
+        }
+        return null;
+    }
+    private Generator PlaceGenerator(Vector2 planePos)
     {
         GameObject obj;
         Vector3 localPos = ToPlaneLocal(planePos);
 
-        
-        GameObject node = nodeDTO == NodeDTO.RIPPLE ? nodePrefab : generatorPrefab;
         if (!IsWithinBounds(localPos) || IsPlaceOccupied(localPos)) return null;
-        obj = Instantiate(node, nodeContainer);
-        NodeVisual nv = obj.GetComponent<NodeVisual>();
-        if (nv) nv.SetEnergyType(energyType);
+        obj = Instantiate(generatorPrefab, nodeContainer);
         obj.transform.localPosition = localPos;
         nodes.Add(obj);
-        return nv;
+        return obj.GetComponent<Generator>();
+    }
+
+    private TimeRipple PlaceTimeRipple(Vector2 planePos, EnergyType energyType)
+    {
+        GameObject obj;
+        Vector3 localPos = ToPlaneLocal(planePos);
+
+        if (!IsWithinBounds(localPos) || IsPlaceOccupied(localPos)) return null;
+        obj = Instantiate(nodePrefab, nodeContainer);
+        obj.transform.localPosition = localPos;
+        TimeRipple timeRipple = obj.GetComponent<TimeRipple>();
+        timeRipple.SetEnergyType(energyType);
+        nodes.Add(obj);
+        return obj.GetComponent<TimeRipple>();
     }
 
     public Vector3 SnapToGrid(Vector3 position)
