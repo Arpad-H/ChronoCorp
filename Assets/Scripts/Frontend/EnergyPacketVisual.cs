@@ -44,15 +44,17 @@ public class EnergyPacketVisual : MonoBehaviour
         {
             return;
         }
-        Vector3? sourceNode;
-        Vector3? targetNode;
+        GUID? sourceNode;
+        GUID? targetNode;
         GUID? conduitID;
         if (!conduit) this.gameObject.SetActive(false);
         float progress = backend.GetEnergyPacketProgress(guid, out sourceNode, out targetNode, out conduitID);
         if (conduitID.HasValue)
         {
             conduit = ConduitVisualizer.Instance.GetConduitVisual(conduitID.Value);
-            conduit.bulgePos = progress;
+            if (conduit.sourceNodeVisual.backendID == sourceNode)  conduit.setBulgePos(progress);
+            else conduit.setBulgePos(1 - progress);
+           
         }
 
 

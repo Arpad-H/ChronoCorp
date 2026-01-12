@@ -140,7 +140,7 @@ namespace Backend.Simulation.World
             return false;
         }
 
-        public float GetEnergyPacketProgress(GUID packet, out Vector3? sourcePos, out Vector3? targetPos,
+        public float GetEnergyPacketProgress(GUID packet, out GUID? sourcePos, out GUID? targetPos,
             out GUID? connectionID)
         {
             if (!_storage.energyPackets.ContainsKey(packet))
@@ -169,8 +169,8 @@ namespace Backend.Simulation.World
                     return -1;
                 }
 
-                sourcePos = new Vector3(sourceNode.Pos.x, sourceNode.Pos.y, timeSliceSource.SliceNumber);
-                targetPos = new Vector3(targetNode.Pos.x, targetNode.Pos.y, timeSliceTarget.SliceNumber);
+                sourcePos = sourceNode.guid;
+                targetPos = targetNode.guid;
                 connectionID = foundPacket.currentStep().connection.guid;
                 return foundPacket.progressOnEdge;
             }

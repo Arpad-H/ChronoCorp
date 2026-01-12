@@ -14,8 +14,8 @@ using UnityEngine.Splines;
 [RequireComponent(typeof(LineRenderer))]
 public class ConduitVisual : MonoBehaviour, IPointerClickHandler
 {
-    [FormerlySerializedAs("nodeA")] public NodeVisual nodeVisualA;
-    [FormerlySerializedAs("nodeB")] public NodeVisual nodeVisualB;
+    public NodeVisual sourceNodeVisual;
+    public NodeVisual targetNodeVisual;
     public CoordinatePlane planeA;
     public CoordinatePlane planeB; //if seperate time slices
     private Vector3 dragPosition;
@@ -29,7 +29,7 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
     public GUID backendID;
     public String debugInfo;
     private float conduitLength;
-    public float bulgePos = 0f;
+    private float bulgePos = 0f; 
     public MeshRenderer mr;
     public Material mat;
     public Color invalidColor;
@@ -43,13 +43,13 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
 
    public void ConnectedNodeDestroyedConnection(NodeVisual nodeVisual)
     {
-        if (nodeVisualA == nodeVisual)
+        if (sourceNodeVisual == nodeVisual)
         {
-            nodeVisualA.RemoveConnectedConduit(this);
+            sourceNodeVisual.RemoveConnectedConduit(this);
         }
-        else if (nodeVisualB == nodeVisual)
+        else if (targetNodeVisual == nodeVisual)
         {
-            nodeVisualB.RemoveConnectedConduit(this);
+            targetNodeVisual.RemoveConnectedConduit(this);
         }
         Destroy(this.gameObject);
     }
@@ -57,21 +57,21 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
     public void FinalizeConduit(NodeVisual nodeVisual, GUID newBackendID)
     {
         backendID = newBackendID;
-        nodeVisualB = nodeVisual;
+        targetNodeVisual = nodeVisual;
         SetPreviewPosition(nodeVisual.GetAttachPosition(), GameFrontendManager.Instance.temporalLayerStack.GetLayerByNum(nodeVisual.layerNum));
         SetConduitEnergyType();
         path.Clear();
-        nodeVisualA.AddConnectedConduit(this);
-        nodeVisualB.AddConnectedConduit(this);
+        sourceNodeVisual.AddConnectedConduit(this);
+        targetNodeVisual.AddConnectedConduit(this);
         conduitLength = spline.GetLength();
     }
 
     private void SetConduitEnergyType()
     {
         EnergyType energyType = EnergyType.WHITE;
-        if (nodeVisualA is TimeRipple rippleA)
+        if (sourceNodeVisual is TimeRipple rippleA)
             energyType = rippleA.energyType;
-        else if (nodeVisualB is TimeRipple rippleB)
+        else if (targetNodeVisual is TimeRipple rippleB)
             energyType = rippleB.energyType;
         
         Color color = energyType.ToColor();
@@ -80,16 +80,16 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
 
     public void StartNewConduitAtNode(NodeVisual nodeVisual,CoordinatePlane plane)
     {
-        if (nodeVisualA != null) return; // Don't start a new drag if one is active
-        nodeVisualA = nodeVisual;
+        if (sourceNodeVisual != null) return; // Don't start a new drag if one is active
+        sourceNodeVisual = nodeVisual;
         planeA = plane;
     }
 
 
     public void SetPreviewPosition(Vector3 lineEnd, CoordinatePlane layerB)
     {
-        int layerA = nodeVisualA.layerNum;
-        Vector3 A = nodeVisualA.transform.position;
+        int layerA = sourceNodeVisual.layerNum;
+        Vector3 A = sourceNodeVisual.transform.position;
         Vector3 B = lineEnd;
         
         if (layerA == layerB.layerNum) //same time slice
@@ -197,7 +197,7 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
     private void SplineFromPath()
     {
         spline.Clear();
-        planeA.occupiedPositions.Add(nodeVisualA.GetAttachPosition());
+        planeA.occupiedPositions.Add(sourceNodeVisual.GetAttachPosition());
         for (int i = 0; i < path.Count; i++)
         {
             BezierKnot knot = new BezierKnot(path[i]);
@@ -209,7 +209,7 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
             if (!planeA.IsPlaceOccupied(planeLocalPos)) planeA.occupiedPositions.Add(planeLocalPos);
         }
 
-        if (sameLayerConnection && GameFrontendManager.Instance.IsConnectionPathValid(nodeVisualA.layerNum, GetCellsOfConnection()))
+        if (sameLayerConnection && GameFrontendManager.Instance.IsConnectionPathValid(sourceNodeVisual.layerNum, GetCellsOfConnection()))
         {
             mat.SetColor("_Color2", previewColor);
         }
@@ -228,8 +228,8 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
 
     public void Reset()
     {
-        nodeVisualA = null;
-        nodeVisualB = null;
+        sourceNodeVisual = null;
+        targetNodeVisual = null;
         path.Clear();
     }
 
@@ -268,12 +268,16 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
         {
             if(GameFrontendManager.Instance.UnlinkConduit(backendID))
             {
-                nodeVisualA.RemoveConnectedConduit(this);
-                nodeVisualB.RemoveConnectedConduit(this);
+                sourceNodeVisual.RemoveConnectedConduit(this);
+                targetNodeVisual.RemoveConnectedConduit(this);
                 Destroy(this.gameObject);
                 Destroy(deleteBtn.gameObject);
             }
           
         });
+    }
+    public void setBulgePos(float pos)
+    {
+        bulgePos = pos;
     }
 }

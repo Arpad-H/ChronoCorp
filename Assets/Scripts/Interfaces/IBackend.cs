@@ -47,7 +47,7 @@ namespace Interfaces
          * 
          * This function is called per FixedUpdate on a Frontend Energy Packet Game Object. Between frames interpolation might be needed
          */
-        float GetEnergyPacketProgress(GUID packetID, out Vector3? startPos, out Vector3? endPos, out GUID? conduitID);
+        float GetEnergyPacketProgress(GUID packetID, out GUID? sourcePos, out GUID? targetPos, out GUID? conduitID);
 
         /**
          * Asks the backend for the activation threshold value of a malus type.
