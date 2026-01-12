@@ -21,6 +21,9 @@ namespace Util
         [Header("Layer Settings")]
         [Tooltip("Ticks. For example 3000 ticks at 50 TPS = 60 seconds")]
         public int layerDuplicationTime;
+        [Tooltip("Number of Cells in X and Y direction per layer")]
+        public Vector2Int layerGridCellCount;
+        
         
         [Header("Inventory and Item Settings")]
         public int initialGeneratorCount;
@@ -38,5 +41,13 @@ namespace Util
         [Tooltip("How much stability this node drains by existing (base value=")]
         [Min(0)]
         public float nodeStableThresholdPercentage;
+        
+        [Header("Camera Settings")]
+        public float cameraZoomSpeed;
+        public float cameraPanSpeed;
+        
+
+        [Tooltip("Min and Max Camera Y for spiral Mode")]
+        public Vector2 spiralGridminMaxCameraY;
     }
 }

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using Util;
 
 
 public class TemporalLayerStack : MonoBehaviour
@@ -14,7 +15,7 @@ public class TemporalLayerStack : MonoBehaviour
 
     public CameraController cameraController;
     [SerializeField] public CameraMode cameraMode = CameraMode.IsoGlide;
-    private CameraMode previousMode = CameraMode.StackedTower;
+    private CameraMode previousMode;
 
     [Header("Stacked Tower Settings")] public float heightStep = 4.0f; // vertical distance between frames
     public float radius = 5.0f; // distance from center pillar
@@ -22,23 +23,32 @@ public class TemporalLayerStack : MonoBehaviour
     public float heightOffset = 5f;
     public float lookAheadAngle = 15f;
 
-    [Header("Cover Flow Settings")] public float spacing = 2f; // horizontal spacing
+    [Header("Cover Flow Settings")] public float coverFlowSpacing = 2f; // horizontal spacing
     public float sideAngle = 60f; // Y rotation for side planes
     public float sideZOffset = 0.5f; // depth offset for side planes
     public float sideScale = 0.8f; // scale for side planes
     public float scrollSpeed = 5f; // how fast scroll moves
     public float lerpSpeed = 10f; // how fast planes animate to positions
     private float centerIndex = 0f; // current "floating" center
-    private int half;
+
+    [Header("SpiralGrid Settings")] public float spiralSpacing = 10f; // spacing between frames in the grid
+    public Vector2Int debugCellCount = new Vector2Int(16, 9);
+
+
     private Vector3 baseScale = new Vector3(16, 9, 1);
+
+
     [Header("Cam Settings")] private List<CoordinatePlane> frames = new List<CoordinatePlane>();
-    
+
+    private void Awake()
+    {
+        previousMode = cameraMode;
+    }
+
     void Start()
     {
         GenerateFrames();
         OnCameraModeChanged?.Invoke(cameraMode);
-        half = numberOfFrames / 2;
-        ;
         baseScale = framePrefab.transform.localScale;
     }
 
@@ -132,7 +142,7 @@ public class TemporalLayerStack : MonoBehaviour
                     int offsetFromCenter = i - half;
 
                     // X position
-                    float xPos = offsetFromCenter * spacing;
+                    float xPos = offsetFromCenter * coverFlowSpacing;
 
                     // Z position: planes slightly behind as they go to the side
                     float zPos = Mathf.Abs(offsetFromCenter) * 0.5f;
@@ -147,12 +157,25 @@ public class TemporalLayerStack : MonoBehaviour
                 }
 
                 break;
+            case CameraMode.SpiralGrid:
+                for (int i = 0; i < numberOfFrames; i++)
+                {
+                    Vector2Int spiralPos = GetSpiralCoordinates(i);
+                    //  Vector2Int cellCount = BalanceProvider.Balance.layerGridCellCount;
+                    Vector3 pos = new Vector3(spiralPos.x * debugCellCount.x + spiralPos.x * spiralSpacing, 0,
+                        spiralPos.y * debugCellCount.y + spiralPos.y * spiralSpacing);
+                    Quaternion rot = Quaternion.Euler(90, 0, 0);
+                    CoordinatePlane frame =
+                        InstantiatePrefab(pos, rot, $"SpiralGridFrame_{i}");
+                }
+
+                break;
         }
     }
-  
+
     public CoordinatePlane AddNewFrame()
     {
-       // StartCoroutine(DelaySpawn());
+        // StartCoroutine(DelaySpawn());
         Vector3 pos;
         CoordinatePlane frame = null;
         Quaternion rot;
@@ -179,10 +202,6 @@ public class TemporalLayerStack : MonoBehaviour
                 rot = Quaternion.Euler(90f, 0f, numberOfFrames * angleStep);
 
                 frame = InstantiatePrefab(pos, rot, $"SpiralFrame_{numberOfFrames}");
-                frame.layerNum = numberOfFrames;
-                frames.Add(frame);
-
-
                 break;
 
             case CameraMode.CoverFlow:
@@ -193,7 +212,7 @@ public class TemporalLayerStack : MonoBehaviour
                 int offsetFromCenter = numberOfFrames - half;
 
                 // X position
-                float xPos = offsetFromCenter * spacing;
+                float xPos = offsetFromCenter * coverFlowSpacing;
 
                 // Z position: planes slightly behind as they go to the side
                 float zPos = Mathf.Abs(offsetFromCenter) * 0.5f;
@@ -208,9 +227,24 @@ public class TemporalLayerStack : MonoBehaviour
 
 
                 break;
+
+            case CameraMode.SpiralGrid:
+
+                Vector2Int spiralPos = GetSpiralCoordinates(numberOfFrames);
+                //  Vector2Int cellCount = BalanceProvider.Balance.layerGridCellCount;
+                pos = new Vector3(spiralPos.x * debugCellCount.x + spiralPos.x * spiralSpacing, 0,
+                    spiralPos.y * debugCellCount.y + spiralPos.y * spiralSpacing);
+                rot = Quaternion.Euler(90, 0, 0);
+                frame = InstantiatePrefab(pos, rot, $"SpiralGridFrame_{numberOfFrames}");
+                break;
         }
 
-        if (frame) numberOfFrames += 1;
+        if (frame)
+        {
+            frame.layerNum = numberOfFrames;
+            frames.Add(frame);
+            numberOfFrames += 1;
+        }
         return frame;
     }
 
@@ -231,7 +265,7 @@ public class TemporalLayerStack : MonoBehaviour
         return obj;
     }
 
-    public void UpdateFrames(float scrollDelta)
+    public void UpdateCoverFlowFrames(float scrollDelta)
     {
         if (cameraMode != CameraMode.CoverFlow) return;
 
@@ -244,7 +278,7 @@ public class TemporalLayerStack : MonoBehaviour
             float offset = i - centerIndex;
 
             // Target position
-            float targetX = offset * spacing;
+            float targetX = offset * coverFlowSpacing;
             float targetZ = Mathf.Abs(offset) * sideZOffset;
             Vector3 targetPos = new Vector3(targetX, 0, targetZ);
 
@@ -276,5 +310,45 @@ public class TemporalLayerStack : MonoBehaviour
         }
 
         return null;
+    }
+
+    private Vector2Int GetSpiralCoordinates(int n)
+    {
+        if (n == 0)
+            return Vector2Int.zero;
+        n += 1;//0 based makes it spawn in the corner first. like this it spanws on the right side first
+        int layer = Mathf.FloorToInt((Mathf.Sqrt(n) + 1f) / 2f);
+        int legLen = layer * 2;
+        int legPos = n - (2 * layer - 1) * (2 * layer - 1);
+
+        int x = 0;
+        int y = 0;
+
+        if (legPos < legLen)
+        {
+            // Right edge (going down)
+            x = layer;
+            y = layer - legPos;
+        }
+        else if (legPos < legLen * 2)
+        {
+            // Bottom edge (going left)
+            x = layer - (legPos - legLen);
+            y = -layer;
+        }
+        else if (legPos < legLen * 3)
+        {
+            // Left edge (going up)
+            x = -layer;
+            y = -layer + (legPos - legLen * 2);
+        }
+        else
+        {
+            // Top edge (going right)
+            x = -layer + (legPos - legLen * 3);
+            y = layer;
+        }
+
+        return new Vector2Int(x, y);
     }
 }

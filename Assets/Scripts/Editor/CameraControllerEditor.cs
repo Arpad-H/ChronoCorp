@@ -18,6 +18,8 @@ public class CameraControllerEditor : Editor
     SerializedProperty sideScaleProp;
     SerializedProperty scrollSpeedProp;
     SerializedProperty lerpSpeedPropl;
+    SerializedProperty spiralSpacing;
+    SerializedProperty debugCellCount;
 
     private void OnEnable()
     {
@@ -35,6 +37,8 @@ public class CameraControllerEditor : Editor
         sideScaleProp = serializedObject.FindProperty("sideScale");
         scrollSpeedProp = serializedObject.FindProperty("scrollSpeed");
         lerpSpeedPropl = serializedObject.FindProperty("lerpSpeed");
+        spiralSpacing = serializedObject.FindProperty("spiralSpacing");
+        debugCellCount = serializedObject.FindProperty("debugCellCount");
     }
 
     public override void OnInspectorGUI()
@@ -69,7 +73,11 @@ public class CameraControllerEditor : Editor
             EditorGUILayout.PropertyField(scrollSpeedProp);
             EditorGUILayout.PropertyField(lerpSpeedPropl);
         }
-
+        else if (mode == CameraMode.SpiralGrid)
+        {
+            EditorGUILayout.PropertyField(spiralSpacing);
+            EditorGUILayout.PropertyField(debugCellCount);
+        }
         // Apply changes and call OnValidate if anything changed
         if (serializedObject.ApplyModifiedProperties())
         {

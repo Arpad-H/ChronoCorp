@@ -44,7 +44,6 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
         backend = new BackendImpl(this);
         if (energyPacketVisualizer == null) energyPacketVisualizer = FindObjectOfType<EnergyPacketVisualizer>();
         if (cameraController == null) cameraController = FindObjectOfType<CameraController>();
-        InputManager.Instance.OnButtonX += () => DeleteNodeManually();
 
         //get all existing layers in scene
         var existingLayers = FindObjectsOfType<CoordinatePlane>();

@@ -1,22 +1,25 @@
 
+using System;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Util;
 
 public enum CameraMode
 {
     IsoGlide,
     StackedTower,
-    CoverFlow
+    CoverFlow,
+    SpiralGrid
 }
 
 public class CameraController : MonoBehaviour
 {
     
     [FormerlySerializedAs("camShowcase")] public TemporalLayerStack temporalLayerStack;
-    public float zoomSpeed = 3f;
     public Camera cam;
 
-    [Header("Stacked Tower Attributes")] private float currentAngle;
+    [Header("Stacked Tower Attributes")]
+    private float currentAngle;
     private float currentHeight;
 
 
@@ -30,20 +33,24 @@ public class CameraController : MonoBehaviour
     void Start()
     {
         if (cam == null) cam = FindObjectOfType<Camera>();
-        InputManager.Instance.OnLeftClick += HandleClickEvent;
+        InputManager.Instance.OnMouseRightDrag += HandleRightMouseDrag;
         InputManager.Instance.OnMouseScroll += HandleScrollEvent;
         temporalLayerStack.OnCameraModeChanged += CameraModeChanged;
         cameraMode = temporalLayerStack.cameraMode;
+       
     }
 
-    void OnDisable()
+    void HandleRightMouseDrag(Vector2 delta)
     {
-        InputManager.Instance.OnLeftClick -= HandleClickEvent;
-    }
-
-    void HandleClickEvent()
-    {
-        // Handle click event based on camera mode
+        // movement along x,z plane
+        Vector3 right = cam.transform.right;
+        right.y = 0;
+        right.Normalize();
+        Vector3 forward = cam.transform.forward;
+        forward.y = 0;
+        forward.Normalize();
+        Vector3 move = (right * delta.x + forward * delta.y) * BalanceProvider.Balance.cameraPanSpeed;
+        transform.position -= move; // subtract to counter drag direction
     }
 
     private void HandleScrollEvent(float scroll)
@@ -51,7 +58,7 @@ public class CameraController : MonoBehaviour
         switch (cameraMode)
         {
             case CameraMode.IsoGlide:
-                transform.position += new Vector3(0, 0, 1) * (scroll * zoomSpeed);
+                transform.position += new Vector3(0, 0, 1) * (scroll * BalanceProvider.Balance.cameraZoomSpeed);
                 break;
 
             case CameraMode.StackedTower:
@@ -89,7 +96,18 @@ public class CameraController : MonoBehaviour
                 break;
 
             case CameraMode.CoverFlow:
-                temporalLayerStack.UpdateFrames(scroll);
+                temporalLayerStack.UpdateCoverFlowFrames(scroll);
+                break;
+            case CameraMode.SpiralGrid:
+                Vector3 position = transform.position;
+                Vector3 offset =  transform.forward * (scroll * BalanceProvider.Balance.cameraZoomSpeed);
+                position += offset;
+                if (position.y < BalanceProvider.Balance.spiralGridminMaxCameraY.x || position.y > BalanceProvider.Balance.spiralGridminMaxCameraY.y)
+                {
+                    position.y = Math.Clamp(position.y, BalanceProvider.Balance.spiralGridminMaxCameraY.x, BalanceProvider.Balance.spiralGridminMaxCameraY.y);
+                    transform.position = new Vector3(transform.position.x, position.y, transform.position.z);
+                }
+                else transform.position = position;
                 break;
         }
     }
@@ -122,6 +140,9 @@ public class CameraController : MonoBehaviour
             case CameraMode.CoverFlow:
                 transform.position = new Vector3(0, 0, -20);
                 transform.rotation = Quaternion.Euler(0, 0, 0);
+                break;
+            case CameraMode.SpiralGrid:
+                transform.position = new Vector3(0, 10, 0);
                 break;
         }
     }

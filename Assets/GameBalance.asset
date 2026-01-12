@@ -22,6 +22,7 @@ MonoBehaviour:
   nodeSpawnIntervalPerSecond: 50
   noodeBlinkThreshhold: 0.25
   layerDuplicationTime: 500
+  layerGridCellCount: {x: 0, y: 0}
   initialGeneratorCount: 10
   stabilityMaxValue: 100
   stabilityMinValue: 0
@@ -30,3 +31,6 @@ MonoBehaviour:
   malusThresholds: []
   baseStabilityDecreasePerNode: 1
   nodeStableThresholdPercentage: 0.5
+  cameraZoomSpeed: 3
+  cameraPanSpeed: 0.03
+  spiralGridminMaxCameraY: {x: 3, y: 10}
