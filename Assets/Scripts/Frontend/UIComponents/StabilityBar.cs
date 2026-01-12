@@ -27,7 +27,7 @@ public class StabilityBar : MonoBehaviour
         }
         if (malusContainer)
         {
-            malusContainer.EvaluateMaluses(stabilityPercent);
+            malusContainer.EvaluateBuildupBar(stabilityPercent);
         }
     }
 }
