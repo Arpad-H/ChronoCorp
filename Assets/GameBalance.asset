@@ -36,7 +36,7 @@ MonoBehaviour:
   - 0.25
   cameraZoomSpeed: 3
   cameraPanSpeed: 0.03
-  spiralGridminMaxCameraY: {x: 3, y: 20}
+  spiralGridminMaxCameraY: {x: 2, y: 15}
   upgradeCards:
   - {fileID: 11400000, guid: 3e6946048bae4c94690eea42042ca0ca, type: 2}
   - {fileID: 11400000, guid: ee2634cc60134384e9c0f544514aa0c5, type: 2}
