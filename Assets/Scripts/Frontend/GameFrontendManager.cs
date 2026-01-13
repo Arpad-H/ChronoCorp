@@ -129,7 +129,7 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
     private bool SpawnOnHoveredFrame(NodeDTO nodeDto, EnergyType energyType)
     {
         RaycastHit rh;
-        cameraController.RaycastForFirst(out rh); //maybe replace with single ray with custom layer?
+        cameraController.RaycastForFirst(out rh); 
         var frame = rh.transform.GetComponentInParent<CoordinatePlane>();
         if (frame == null) return false; // Not hovering over a frame
 

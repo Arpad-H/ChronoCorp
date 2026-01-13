@@ -58,7 +58,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 56d6025d2453d464a89be9a78e065b31, type: 2}
+  - {fileID: 2100000, guid: b40b55549cbf64b449b198c66ff030b9, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -369,6 +369,7 @@ MonoBehaviour:
   cellHeight: 1
   showGrid: 1
   layerNum: 0
+  occupiedPositions: []
   vfxPrefab: {fileID: 5685577382097887799}
   meshRenderer: {fileID: 5746251869297445114}
   deco: {fileID: 8401970406535057862}
