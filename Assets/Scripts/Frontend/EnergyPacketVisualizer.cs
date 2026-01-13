@@ -29,11 +29,11 @@ public class EnergyPacketVisualizer : MonoBehaviour
     }
 
    
-    public void SpawnEnergyPacket(GUID guid,IBackend backend,EnergyType energyType) //TODO giga dirty. fix backend reference later
+    public void SpawnEnergyPacket(GUID guid,EnergyType energyType) //TODO giga dirty. fix backend reference later
     {
         EnergyPacketVisual ePVisual = pool.Get();
         ePVisual.guid = guid;
-        ePVisual.backend = backend;
+    
        // GUID? conduitID = backend.GetRippleConnectionOfEnergyPacket(guid);
        
        // // if (conduitID.HasValue)

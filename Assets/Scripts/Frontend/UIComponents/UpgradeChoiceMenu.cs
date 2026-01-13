@@ -13,24 +13,20 @@ public class UpgradeChoiceMenu : MonoBehaviour
         for (int i = 0; i < 3; i++)
         {
             //TODO decide if upgrades are random or sequential
-         //   UpgradeData upgrade = availableUpgrades[Random.Range(0, availableUpgrades.Count)];
+            //   UpgradeData upgrade = availableUpgrades[Random.Range(0, availableUpgrades.Count)];
             UpgradeData upgrade = availableUpgrades[i];
 
             UpgradeCard card = Instantiate(cardPrefab, cardParent);
             card.Init(upgrade, OnUpgradeSelected);
         }
-
-        gameObject.SetActive(true);
-        
     }
 
     void OnUpgradeSelected(UpgradeData upgrade)
     {
         
         gameObject.SetActive(false);
-        Debug.Log(upgrade.name);
-        gameObject.SetActive(false);
-       //TODO Apply the upgrade
+        GameFrontendManager.Instance.UpgradeCardSelected(upgrade);
+        //TODO Apply the upgrade
     }
 
     void Clear()
@@ -39,4 +35,3 @@ public class UpgradeChoiceMenu : MonoBehaviour
             Destroy(child.gameObject);
     }
 }
-
