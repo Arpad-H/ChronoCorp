@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace Util
 {
@@ -17,6 +18,13 @@ namespace Util
         public int nodeDrainTicks;
         public float nodeSpawnIntervalPerSecond;
         public float noodeBlinkThreshhold;
+        [Header("Node Stability Contribution")]
+        [Tooltip("How much stability this node drains by existing (base value=")]
+        public float baseStabilityDecreasePerNode;
+        [Tooltip("How much stability this node drains by existing (base value=")]
+        [Min(0)]
+        public float nodeStableThresholdPercentage;
+        
         
         [Header("Layer Settings")]
         [Tooltip("Ticks. For example 3000 ticks at 50 TPS = 60 seconds")]
@@ -28,6 +36,7 @@ namespace Util
         [Header("Inventory and Item Settings")]
         public int initialGeneratorCount;
         
+        
         [Header("Stability Bar Settings")]
         public int stabilityMaxValue;
         public int stabilityMinValue;
@@ -37,19 +46,14 @@ namespace Util
         [Range(0f, 1f)]
         public float[] malusThresholds;
         
-        [Header("Node Stability Contribution")]
-        [Tooltip("How much stability this node drains by existing (base value=")]
-        public float baseStabilityDecreasePerNode;
-        [Tooltip("How much stability this node drains by existing (base value=")]
-        [Min(0)]
-        public float nodeStableThresholdPercentage;
         
         [Header("Camera Settings")]
         public float cameraZoomSpeed;
         public float cameraPanSpeed;
-        
-
-        [Tooltip("Min and Max Camera Y for spiral Mode")]
+        [Tooltip("Min and Max Camera Y Coords. Adjust for zoom levels")]
         public Vector2 spiralGridminMaxCameraY;
+        
+        [Header("Upgrade Cards Settings")]
+        public List<UpgradeData> upgradeCards;
     }
 }
