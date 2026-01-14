@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: Card1
   m_EditorClassIdentifier: 
   upgradeName: Acceleration
-  description: Lower the Spawn Interval by 2
+  description: Lower the Spawn Interval by 2 adn lower energy packet speed to 50%
   icon: {fileID: 21300000, guid: f54aabf125452324995867c8f9ed5071, type: 3}
   effects:
   - {fileID: 11400000, guid: 2de29b2c78891894faf9203c446cf89d, type: 2}
+  - {fileID: 11400000, guid: 5426e0ccb81c0ac459fddd2cc042fd17, type: 2}

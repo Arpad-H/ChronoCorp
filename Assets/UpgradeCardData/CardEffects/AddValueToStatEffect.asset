@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e57b4992c0604f5a810567240ea72e10, type: 3}
   m_Name: AddValueToStatEffect
   m_EditorClassIdentifier: 
-  stat: 0
+  stat: 7
   amount: -2
