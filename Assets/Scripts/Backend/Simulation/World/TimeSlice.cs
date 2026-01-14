@@ -324,7 +324,7 @@ namespace Backend.Simulation.World
             {
                 return null;
             }
-            _simulationStorage.Frontend.deleteConnection(connection.guid);
+            _simulationStorage.Frontend.DeleteConnection(connection.guid);
 
             var newNode = new BlockadeNodeInstance(cellPos);
             newNode.currentTimeSlice = this;
@@ -332,10 +332,10 @@ namespace Backend.Simulation.World
             addNodeToMapping(newNode);
             
             var startConID = _simulationStorage.link(nodeStart.guid, newNode.guid, newConnectionStartToBlockade.ToArray());
-            _simulationStorage.Frontend.createConnection(connection.guid, newNode.guid, (GUID)startConID, newConnectionStartToBlockade.ToArray());
+            _simulationStorage.Frontend.CreateConnection(connection.guid, newNode.guid, (GUID)startConID, newConnectionStartToBlockade.ToArray());
             
             var endConID = _simulationStorage.link(newNode.guid, nodeFinish.guid, newConnectionBlockadeToFinish.ToArray());
-            _simulationStorage.Frontend.createConnection(newNode.guid, nodeFinish.guid, (GUID)endConID, newConnectionBlockadeToFinish.ToArray());
+            _simulationStorage.Frontend.CreateConnection(newNode.guid, nodeFinish.guid, (GUID)endConID, newConnectionBlockadeToFinish.ToArray());
 
             blockadeNodeInstance = newNode;
             return blockadeNodeInstance.guid;

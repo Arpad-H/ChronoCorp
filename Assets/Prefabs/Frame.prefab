@@ -360,14 +360,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80adcd04b4b36a943a9d63fa8d4965fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  frameMesh: {fileID: 8058484938478437209}
-  nodeContainer: {fileID: 377210291662841251}
-  nodePrefab: {fileID: 6574809473556729728, guid: 77295709e9e644f47a19b148f01342a6, type: 3}
-  generatorPrefab: {fileID: 6574809473556729728, guid: 71126fb5960374047b8269a6dbe614e0, type: 3}
-  cellWidth: 1
-  cellHeight: 1
   layerNum: 0
   occupiedPositions: []
+  nodePrefab: {fileID: 6574809473556729728, guid: 77295709e9e644f47a19b148f01342a6, type: 3}
+  generatorPrefab: {fileID: 6574809473556729728, guid: 71126fb5960374047b8269a6dbe614e0, type: 3}
+  blackHolePrefab: {fileID: 1577139832588222046, guid: 93c21ea2c1cab7648ad35d825e9f77e9, type: 3}
+  blockadePrefab: {fileID: 0}
+  frameMesh: {fileID: 8058484938478437209}
+  nodeContainer: {fileID: 377210291662841251}
+  cellWidth: 1
+  cellHeight: 1
   vfxPrefab: {fileID: 5685577382097887799}
   meshRenderer: {fileID: 5746251869297445114}
   deco: {fileID: 8401970406535057862}

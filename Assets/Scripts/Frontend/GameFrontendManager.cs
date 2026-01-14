@@ -11,6 +11,8 @@ using UnityEngine;
 public class GameFrontendManager : MonoBehaviour, IFrontend
 {
     public event Action GeneratorDeleted;
+    public event Action<GUID> BackendDeletesConnection;
+    public event Action<GUID,GUID,GUID,Vector2Int[]> BackendCreatesConnection;
     
     public static GameFrontendManager Instance;
     public CameraController cameraController;
@@ -28,6 +30,7 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
 
     public StabilityBar stabilityBar;
     private bool gameOver = false;
+    
 
     private void Awake()
     {
@@ -89,14 +92,14 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
         return false;
     }
 
-    public bool deleteConnection(GUID connectionId)
+    public void DeleteConnection(GUID connectionId)
     {
-        return UnlinkConduit(connectionId);
+        BackendDeletesConnection?.Invoke(connectionId);
     }
 
-    public bool createConnection(GUID backendIdA, GUID backendIdB, GUID connectionId, Vector2Int[] cellsOfConnection)
+    public void CreateConnection(GUID backendIdA, GUID backendIdB, GUID connectionId, Vector2Int[] cellsOfConnection)
     {
-        throw new NotImplementedException("NOT IMPLEMENTED YET!!!!!!");
+        BackendCreatesConnection?.Invoke(backendIdA, backendIdB, connectionId, cellsOfConnection);
     }
 
     public void SpawnEnergyPacket(GUID guid, EnergyType energyType)
@@ -218,5 +221,9 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
     public float GetEnergyPacketProgress(GUID guid, out GUID? sourceNode, out GUID? targetNode, out GUID? conduitID)
     {
         return backend.GetEnergyPacketProgress(guid, out sourceNode, out targetNode, out conduitID);
+    }
+    public NodeVisual GetNodeVisual(GUID nodeID) 
+    {
+        return nodeVisuals[nodeID];
     }
 }
