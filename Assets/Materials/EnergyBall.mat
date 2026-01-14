@@ -29,14 +29,14 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _DarkenStrength: 1
-    - _DistortionStrength: 0.12
-    - _NoiseScale: 0.85
-    - _NoiseSpeed: 0.17
-    - _Opacity: 0.48
-    - _RimPower: 2.78
+    - _DarkenStrength: 0.74
+    - _DistortionStrength: 0.25
+    - _NoiseScale: 4.11
+    - _NoiseSpeed: 1.27
+    - _Opacity: 1
+    - _RimPower: 2.7
     m_Colors:
-    - _Color: {r: 0.19999996, g: 0.8, b: 1, a: 1}
-    - _RimColor: {r: 0.3886792, g: 0.3886792, b: 0.3886792, a: 1}
+    - _Color: {r: 0, g: 0, b: 0, a: 1}
+    - _RimColor: {r: 0.06415099, g: 0.06415099, b: 0.06415099, a: 0.48235294}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

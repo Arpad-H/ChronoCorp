@@ -13,8 +13,6 @@ public class CoordinatePlane : MonoBehaviour
 {
     public Transform frameMesh; // scaled mesh
     public Transform nodeContainer; // unscaled coordinate space
-    public Material mGrid;
-    public Material mNormal;
     public GameObject nodePrefab;
     public GameObject generatorPrefab;
     [Header("Grid Settings")]
@@ -22,7 +20,6 @@ public class CoordinatePlane : MonoBehaviour
     // public int gridHeight = 10; //currently determined by frameMesh scale
     public int cellWidth = 1;
     public int cellHeight = 1;
-    public bool showGrid = false;
     private int numX, numY; // Number of cells in each direction
     private float maxX, maxY, minX, minY; // Max/min bounds (avoid placing outside frame)
     
@@ -99,8 +96,7 @@ public class CoordinatePlane : MonoBehaviour
   
     void Update()
     {
-        if (showGrid) frameMesh.GetComponent<MeshRenderer>().material = mGrid;
-        else frameMesh.GetComponent<MeshRenderer>().material = mNormal;
+      
     }
 
     /// <summary>
