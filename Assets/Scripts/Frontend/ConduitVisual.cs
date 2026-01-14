@@ -205,6 +205,7 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
         {
             BezierKnot knot = new BezierKnot(path[i]);
             // Tangents zero = straight, sharp bends (no curvature)
+            knot.Rotation = Quaternion.identity;
             knot.TangentIn = Vector3.zero;
             knot.TangentOut = Vector3.zero;
             spline.Add(knot);

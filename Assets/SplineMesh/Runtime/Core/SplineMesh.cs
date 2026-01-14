@@ -7,13 +7,13 @@ namespace SplineMeshTools.Core
 {
     public enum VectorAxis { X, Y }
 
-    [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer), typeof(SplineContainer)), DisallowMultipleComponent, ExecuteInEditMode]
+    [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer)), DisallowMultipleComponent, ExecuteInEditMode]
     public class SplineMesh : MonoBehaviour
     {
         [Tooltip("Generates mesh automatically when spline is modified." +
             " Set to 'false' to save in-editor performance and generate mesh manually")]      
         [SerializeField] protected bool autoGenerateMesh;
-
+        public SplineContainer splineContainer;
         [Space]
         [Header("Spline Mesh Settings")]
         [SerializeField] protected Mesh segmentMesh;
@@ -43,7 +43,7 @@ namespace SplineMeshTools.Core
         [SerializeField] protected Quaternion rotationAdjustment;
         [SerializeField] protected Vector3 scaleAdjustment = Vector3.one;
 
-        protected SplineContainer splineContainer;
+      
         protected MeshFilter meshFilter;
 
         private bool autoGenFlag;

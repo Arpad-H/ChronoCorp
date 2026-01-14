@@ -55,7 +55,7 @@ Material:
     - _BulgeWidth: 6
     - _QueueControl: 0
     - _QueueOffset: 0
-    - _bulgePos: -0.2
+    - _bulgePos: 1.4
     m_Colors:
     - _Color: {r: 1, g: 0.1113207, b: 0.3419982, a: 0}
     - _Color2: {r: 0.0660376, g: 0.5707732, b: 1, a: 0}
