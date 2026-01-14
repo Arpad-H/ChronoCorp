@@ -17,21 +17,18 @@ public class EnergyPacketVisual : MonoBehaviour
    
     //private readonly float speed = 0.2f;
 
-    public SpriteRenderer sprite;
-    public SplineAnimate splineAnimate;
-
+    
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private void Start()
     {
-        if (!sprite) sprite = GetComponent<SpriteRenderer>();
-        if (!splineAnimate) splineAnimate = GetComponent<SplineAnimate>();
+       
     }
 
     public void SetEnergyType(EnergyType newEnergyType)
     {
         Color color = newEnergyType.ToColor();
         energyType = newEnergyType;
-        sprite.color = color;
+     
     }
 
     private void LateUpdate()
