@@ -12,7 +12,7 @@ namespace Backend.Simulation.World
         public float valueDecreasePerTick = BalanceProvider.Balance.stabilityDecreaseValue;
         private readonly List<StabilityMalus> _activeMalusses = new();
 
-        private readonly Dictionary<StabilityMalusType, StabilityMalusRegistration> _malusRegistrations = new();
+        public readonly Dictionary<StabilityMalusType, StabilityMalusRegistration> _malusRegistrations = new();
         private long _lastTick;
 
         public StabilityBar(int maxValue, int minValue, int currentValue)
@@ -20,6 +20,10 @@ namespace Backend.Simulation.World
             this.maxValue = maxValue;
             this.minValue = minValue;
             this.currentValue = currentValue;
+            
+            AddMalus((int)(BalanceProvider.Balance.malusThresholds[0] * maxValue),new NodeDrainMalus());
+            AddMalus((int)(BalanceProvider.Balance.malusThresholds[1] * maxValue),new NodeSpawnMalus());
+            AddMalus((int)(BalanceProvider.Balance.malusThresholds[2] * maxValue),new StabilityDecrease(this));
         }
 
         public int maxValue { get; set; }
@@ -31,9 +35,12 @@ namespace Backend.Simulation.World
             if (tickCount - _lastTick < MALUS_TICK_SPEED) return;
             _lastTick = tickCount;
 
-            var amountRipplesInSimulation = storage.nodeTypeToNodesMapping.ContainsKey(NodeType.TIME_RIPPLE) ? storage.nodeTypeToNodesMapping[NodeType.TIME_RIPPLE].Count : 0;
-            valueDecreasePerTick = BalanceProvider.Balance.stabilityDecreaseValue + amountRipplesInSimulation * BalanceProvider.Balance.baseStabilityDecreasePerNode;
-            
+            var amountRipplesInSimulation = storage.nodeTypeToNodesMapping.ContainsKey(NodeType.TIME_RIPPLE)
+                ? storage.nodeTypeToNodesMapping[NodeType.TIME_RIPPLE].Count
+                : 0;
+            valueDecreasePerTick = BalanceProvider.Balance.stabilityDecreaseValue +
+                                   amountRipplesInSimulation * BalanceProvider.Balance.baseStabilityDecreasePerNode;
+
             decreaseStability(valueDecreasePerTick, storage);
 
             UpdateActiveMalusses(storage.Frontend);
@@ -44,28 +51,31 @@ namespace Backend.Simulation.World
             {
                 storage.Frontend.GameOver("Stability bar is zero! You have lost the game.");
             }
+
+
         }
 
         public void decreaseStability(float value, SimulationStorage storage)
         {
             updateStability(currentValue - value, storage);
         }
-        
+
         public void increaseStability(float value, SimulationStorage storage)
         {
             updateStability(currentValue + value, storage);
         }
-        
+
         public void updateStability(float newStabilityValue, SimulationStorage storage)
         {
             var oldValue = currentValue;
             setStability(newStabilityValue);
             var newValue = currentValue;
-            
+
             if (oldValue - newValue <= float.Epsilon)
             {
                 return;
             }
+
             storage.Frontend.OnStabilityBarUpdate(minValue, maxValue, (int)currentValue);
         }
 
@@ -107,50 +117,17 @@ namespace Backend.Simulation.World
                 {
                     registration.IsActive = true;
                     _activeMalusses.Add(registration.Malus);
+                    registration.Malus.onActivation();
                     frontend.OnActivateStabilityMalus(registration.Malus.StabilityMalusType);
                 }
                 else if (!shouldBeActive && registration.IsActive)
                 {
                     registration.IsActive = false;
                     _activeMalusses.Remove(registration.Malus);
+                    registration.Malus.onDeactivation();
                     frontend.OnDeactivateStabilityMalus(registration.Malus.StabilityMalusType);
                 }
             }
         }
-
-        private class StabilityMalusRegistration
-        {
-            public StabilityMalusRegistration(int activationThreshold, StabilityMalus malus)
-            {
-                ActivationThreshold = activationThreshold;
-                Malus = malus;
-            }
-
-            public StabilityMalus Malus { get; }
-            public int ActivationThreshold { get; }
-            public bool IsActive { get; set; }
-        }
-    }
-
-    public enum StabilityMalusType
-    {
-        MALUS1 = 0, //TODO rename
-        MALUS2 = 1,
-        MALUS3 = 2
-    }
-
-    public abstract class StabilityMalus
-    {
-        public readonly StabilityMalusType StabilityMalusType;
-
-        protected StabilityMalus(StabilityMalusType stabilityMalusType, string malusId)
-        {
-            StabilityMalusType = stabilityMalusType;
-            this.malusId = malusId;
-        }
-
-        public string malusId { get; private set; }
-
-        public abstract void tick(long tick);
     }
 }

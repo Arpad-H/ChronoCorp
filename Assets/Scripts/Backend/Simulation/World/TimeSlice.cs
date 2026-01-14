@@ -211,7 +211,7 @@ namespace Backend.Simulation.World
     public class TimeSlice : ITickable
     {
         private const int TOLERANCE = 0;
-        private readonly SimulationStorage _simulationStorage;
+        public readonly SimulationStorage _simulationStorage;
         public readonly int SliceNumber;
         private readonly long _tickPastDiff;
         public readonly NodeSpawner NodeSpawner;
