@@ -66,8 +66,6 @@ namespace Backend.Simulation.World
         {
             energyPackets[energyPacket.Guid] = energyPacket;
             Frontend.SpawnEnergyPacket(energyPacket.Guid, energyPacket.EnergyType); //inform frontend of new
-
-            Debug.Log("Created new energy packet " + energyPacket.Guid);
         }
 
         public void recalculatePaths()
@@ -111,7 +109,7 @@ namespace Backend.Simulation.World
             }
         }
 
-        public GUID? link(GUID idNode1, GUID idNode2)
+        public GUID? link(GUID idNode1, GUID idNode2, Vector2Int[] cellsOfConnection)
         {
             var canPlace = inventory.canPlaceNormalConnection();
             if (!canPlace)
@@ -140,7 +138,7 @@ namespace Backend.Simulation.World
                 if (ripple1.HasDirectConnectionTo(ripple2 as AbstractNodeInstance)) return null;
 
                 inventory.placeNormalConnection();
-                var rippleConnection = new Connection(ripple1 as AbstractNodeInstance, ripple2 as AbstractNodeInstance);
+                var rippleConnection = new Connection(ripple1 as AbstractNodeInstance, ripple2 as AbstractNodeInstance, cellsOfConnection);
                 ripple1.getConnections().Add(rippleConnection);
                 ripple2.getConnections().Add(rippleConnection);
                 guidToConnections[rippleConnection.guid] = rippleConnection;
@@ -172,7 +170,7 @@ namespace Backend.Simulation.World
                 }
 
                 inventory.placeNormalConnection();
-                var rippleConnection = new Connection(node1, node2);
+                var rippleConnection = new Connection(node1, node2, cellsOfConnection);
                 foundOutput.Connection = rippleConnection;
                 anyNode.getConnections().Add(rippleConnection);
                 guidToConnections[rippleConnection.guid] = rippleConnection;
