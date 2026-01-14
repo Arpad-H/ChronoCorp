@@ -13,9 +13,7 @@ public class MalusContainer : MonoBehaviour
    
     private void Start()
     {
-        
         malusConfig = BalanceProvider.Balance.malusThresholds;
-       
     }
 
     private void EvaluateIcons(float stability)

@@ -74,7 +74,7 @@ namespace Interfaces
         // TimeLayer GetTimeLayer(int layerNum); //change time layer to whatever applies
         bool IsConnectionPathOccupied(int layerNum, Vector2Int[] cellsOfConnection);
         
-        void UpgradeCardSelected(UpgradeData upgradeData);
+        // void UpgradeCardSelected(UpgradeData upgradeData);
     }
 
     public enum NodeDTO //TODO NodeType got renamed to NodeDTO to prevent double naming with Backend.NodeType

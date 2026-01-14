@@ -118,7 +118,7 @@ public class TimeRipple : NodeVisual
     public void UpdateHealthBar(float currentValue)
     { 
         hpBar.fillAmount = currentValue;
-        if (currentValue <= BalanceProvider.Balance.noodeBlinkThreshhold && !isEnergySupplied)
+        if (currentValue <= BalanceProvider.Balance.nodeBlinkThreshhold && !isEnergySupplied)
         {
             if(!screenEdgeIcon)
             {

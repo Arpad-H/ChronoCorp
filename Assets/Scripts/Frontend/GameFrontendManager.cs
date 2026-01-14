@@ -3,10 +3,12 @@
 using System;
 using System.Collections.Generic;
 using Backend.Simulation.World;
+using Frontend;
 using Interfaces;
 using NodeBase;
 using UnityEditor;
 using UnityEngine;
+using Util;
 
 public class GameFrontendManager : MonoBehaviour, IFrontend
 {
@@ -215,7 +217,7 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
 
     public void UpgradeCardSelected(UpgradeData upgrade)
     {
-        backend.UpgradeCardSelected(upgrade);
+        CardEffectEvaluator.ApplyEffect(upgrade);
     }
 
     public float GetEnergyPacketProgress(GUID guid, out GUID? sourceNode, out GUID? targetNode, out GUID? conduitID)

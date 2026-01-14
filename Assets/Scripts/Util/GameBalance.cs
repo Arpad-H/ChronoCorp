@@ -1,8 +1,44 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using System.Reflection;
 
 namespace Util
 {
+    public enum StatType
+    {
+        // Energy Packet Settings
+        EnergyPacketSpeed,
+        EnergyPacketSpawnIntervalPerSecond,
+        EnergyPacketRechargeAmount,
+
+        // Node Settings
+        NodeMaxHp,
+        NodeMinHp,
+        NodeDrainRate,
+        NodeDrainTicks,
+        NodeSpawnIntervalPerSecond,
+
+        // Node Stability Contribution
+        BaseStabilityDecreasePerNode,
+        NodeStableThresholdPercentage,
+
+        // Layer Settings
+        LayerDuplicationTime,
+
+        // Inventory and Item Settings
+        InitialGeneratorCount,
+
+        // Stability Bar Settings
+        StabilityMaxValue,
+        StabilityDecreaseValue,
+        StabilityDecreaseTicks,
+        MalusThreshold0,
+        MalusThreshold1,
+        MalusThreshold2, 
+
+        
+    }
+    
     [CreateAssetMenu(menuName = "Game/Balance")]
     public class GameBalance: ScriptableObject
     {
@@ -17,7 +53,7 @@ namespace Util
         public int nodeDrainRate;
         public int nodeDrainTicks;
         public float nodeSpawnIntervalPerSecond;
-        public float noodeBlinkThreshhold;
+        public float nodeBlinkThreshhold;
         [Header("Node Stability Contribution")]
         [Tooltip("How much stability this node drains by existing (base value=")]
         public float baseStabilityDecreasePerNode;
@@ -55,5 +91,36 @@ namespace Util
         
         [Header("Upgrade Cards Settings")]
         public List<UpgradeData> upgradeCards;
+        
+        
+        
+        public void Add(StatType type, float amount)
+        {
+            string fieldName = type.ToString();
+            FieldInfo field = typeof(GameBalance).GetField(fieldName, BindingFlags.Public | BindingFlags.Instance  | BindingFlags.IgnoreCase);
+            if (field != null)
+            {
+                if (field.FieldType == typeof(int))
+                    field.SetValue(this, (int)field.GetValue(this) + (int)amount);
+                else if (field.FieldType == typeof(float))
+                    field.SetValue(this, (float)field.GetValue(this) + amount);
+            }
+            else
+            {
+                Debug.LogError("Unknown StatType: " + type);
+            }
+        }
+        public void Multiply(StatType type, float factor)
+        {
+            string fieldName = type.ToString();
+            FieldInfo field = typeof(GameBalance).GetField(fieldName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+            if (field != null)
+            {
+                if (field.FieldType == typeof(int))
+                    field.SetValue(this, (int)(int)field.GetValue(this) * factor);
+                else if (field.FieldType == typeof(float))
+                    field.SetValue(this, (float)field.GetValue(this) * factor);
+            }
+        }
     }
 }

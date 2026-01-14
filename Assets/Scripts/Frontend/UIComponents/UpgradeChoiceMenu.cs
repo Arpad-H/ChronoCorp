@@ -24,9 +24,10 @@ public class UpgradeChoiceMenu : MonoBehaviour
     void OnUpgradeSelected(UpgradeData upgrade)
     {
         
-        gameObject.SetActive(false);
+       
         GameFrontendManager.Instance.UpgradeCardSelected(upgrade);
-        //TODO Apply the upgrade
+        gameObject.SetActive(false);
+      
     }
 
     void Clear()
