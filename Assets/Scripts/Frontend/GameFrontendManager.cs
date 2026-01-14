@@ -88,7 +88,17 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
 
         return false;
     }
-    
+
+    public bool deleteConnection(GUID connectionId)
+    {
+        return UnlinkConduit(connectionId);
+    }
+
+    public bool createConnection(GUID backendIdA, GUID backendIdB, GUID connectionId, Vector2Int[] cellsOfConnection)
+    {
+        throw new NotImplementedException("NOT IMPLEMENTED YET!!!!!!");
+    }
+
     public void SpawnEnergyPacket(GUID guid, EnergyType energyType)
     {
         energyPacketVisualizer.SpawnEnergyPacket(guid, energyType);

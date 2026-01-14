@@ -81,6 +81,11 @@ namespace Backend.Simulation.World
         {
             return x >= 0 && x < width && y >= 0 && y < height;
         }
+
+        public List<Vector2Int> getCellsOfConnection(GUID connectionId)
+        {
+            return _connectionCellsById.TryGetValue(connectionId, out var cells) ? cells : new List<Vector2Int>();
+        }
         
         private bool IsInside(Vector2Int cell)
         {

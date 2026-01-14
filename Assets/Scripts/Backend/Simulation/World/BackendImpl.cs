@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Interfaces;
 using JetBrains.Annotations;
 using NodeBase;
@@ -81,13 +82,13 @@ namespace Backend.Simulation.World
                 {
                     if (node != null && (!node.guid.Equals(a) && !node.guid.Equals(b)))
                     {
-                        Debug.Log("Cannot link because there is a node in its path");
+                        Debug.Log("Cannot link because there is a node in its path in slices: "+sliceA.SliceNumber+"-"+sliceB.SliceNumber);
                         return null;
                     }
 
                     if (connection != null)
                     {
-                        Debug.Log("Cannot link because there is a connection in its path");
+                        Debug.Log("Cannot link because there is a connection in its path in slices: "+sliceA.SliceNumber+"-"+sliceB.SliceNumber);
                         return null;
                     }
                 }
@@ -117,6 +118,17 @@ namespace Backend.Simulation.World
             }
             _storage.recalculatePaths();
             return connectionObj.guid;
+        }
+
+        public bool upgradeGeneartor(GUID generatorGUID)
+        {
+            _storage.guidToNodesMapping.TryGetValue(generatorGUID, out var foundNode);
+            if (foundNode != null && foundNode is GeneratorInstance generatorInstance && generatorInstance.totalOutputs.Count < 4)
+            {
+                generatorInstance.totalOutputs.Add(new Output());
+                return true;
+            }
+            return false;
         }
 
         public bool UnlinkNodes(GUID connectionId)
@@ -231,9 +243,11 @@ namespace Backend.Simulation.World
         [CanBeNull]
         private TimeSlice getTimeSliceOfNodeByGuid(GUID guid)
         {
-            foreach (var timeSlice in _storage.timeSlices)
-                if (timeSlice.isNodeKnown(guid))
-                    return timeSlice;
+            _storage.guidToNodesMapping.TryGetValue(guid, out var node);
+            if (node != null)
+            {
+                return node.currentTimeSlice;
+            }
 
             return null;
         }
