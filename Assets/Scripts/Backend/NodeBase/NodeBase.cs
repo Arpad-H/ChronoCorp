@@ -183,13 +183,12 @@ namespace NodeBase
      */
     public class Connection
     {
-        public Connection(AbstractNodeInstance node1, AbstractNodeInstance node2)
+        public Connection(AbstractNodeInstance node1, AbstractNodeInstance node2, Vector2Int[] cellsOfConnection)
         {
             guid = GUID.Generate();
             this.node1 = node1;
             this.node2 = node2;
-            var direction = node2.Pos - node1.Pos;
-            length = direction.magnitude;
+            length = cellsOfConnection.Length;
         }
 
         public GUID guid { get; }

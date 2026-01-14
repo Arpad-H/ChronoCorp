@@ -93,7 +93,7 @@ namespace Backend.Simulation.World
                 }
             }
 
-            var connectionId = _storage.link(a, b);
+            var connectionId = _storage.link(a, b, cellsOfConnection);
             if (connectionId == null)
             {
                 Debug.Log("Connection could not be created!");
