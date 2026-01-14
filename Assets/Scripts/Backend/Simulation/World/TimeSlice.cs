@@ -264,7 +264,8 @@ namespace Backend.Simulation.World
         {
             var canPlace = _simulationStorage.inventory.canPlaceGenerator();
 
-            if (TimeSliceGrid.HasNodeNear(pos, TOLERANCE) || !canPlace) return null;
+            
+            if (TimeSliceGrid.IsCellOccupied(new Vector2Int((int)pos.x, (int)pos.y)) || !canPlace) return null;
 
             _simulationStorage.inventory.placeGenerator();
             var newNode = new GeneratorInstance(pos, amountInitialOutputs);
