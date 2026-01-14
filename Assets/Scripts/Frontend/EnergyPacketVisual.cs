@@ -16,9 +16,6 @@ public class EnergyPacketVisual : MonoBehaviour
     public String debugconduitID;
    
     //private readonly float speed = 0.2f;
-   
-
-    public IBackend backend; //TODO giga dirty. fix backend reference later
 
     public SpriteRenderer sprite;
     public SplineAnimate splineAnimate;
@@ -40,15 +37,12 @@ public class EnergyPacketVisual : MonoBehaviour
     private void LateUpdate()
     {
         debugInfo = guid.ToString();
-        if (backend == null)
-        {
-            return;
-        }
+      
         GUID? sourceNode;
         GUID? targetNode;
         GUID? conduitID;
         if (!conduit) this.gameObject.SetActive(false);
-        float progress = backend.GetEnergyPacketProgress(guid, out sourceNode, out targetNode, out conduitID);
+        float progress = GameFrontendManager.Instance.GetEnergyPacketProgress(guid, out sourceNode, out targetNode, out conduitID);
         if (conduitID.HasValue)
         {
             conduit = ConduitVisualizer.Instance.GetConduitVisual(conduitID.Value);

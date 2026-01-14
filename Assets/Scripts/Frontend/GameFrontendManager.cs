@@ -27,6 +27,7 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
     private long fixedTickCount;
 
     public StabilityBar stabilityBar;
+    private bool gameOver = false;
 
     private void Awake()
     {
@@ -56,6 +57,7 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
 
     private void FixedUpdate()
     {
+        if (gameOver) return;
         backend.tick(fixedTickCount, this);
         fixedTickCount++;
     }
@@ -63,7 +65,10 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
 
     public void GameOver(string reason)
     {
-        Time.timeScale = 0f; // Pause game
+        gameOver = true;
+        
+        AudioManager.Instance.StopBackgroundMusic();
+        AudioManager.Instance.PlayLossAudio();
         UIManager.Instance.ShowGameOver(reason);
     }
 
@@ -86,7 +91,7 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
     
     public void SpawnEnergyPacket(GUID guid, EnergyType energyType)
     {
-        energyPacketVisualizer.SpawnEnergyPacket(guid, backend, energyType);
+        energyPacketVisualizer.SpawnEnergyPacket(guid, energyType);
     }
 
     public void DeleteEnergyPacket(GUID guid)
@@ -129,7 +134,7 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
     private bool SpawnOnHoveredFrame(NodeDTO nodeDto, EnergyType energyType)
     {
         RaycastHit rh;
-        cameraController.RaycastForFirst(out rh); //maybe replace with single ray with custom layer?
+        cameraController.RaycastForFirst(out rh); 
         var frame = rh.transform.GetComponentInParent<CoordinatePlane>();
         if (frame == null) return false; // Not hovering over a frame
 
@@ -193,5 +198,15 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
     public bool GetValuesForStabilityMalusType(StabilityMalusType type, out int threshold)
     {
         return backend.getValuesForStabilityMalusType(type, out threshold);
+    }
+
+    public void UpgradeCardSelected(UpgradeData upgrade)
+    {
+        backend.UpgradeCardSelected(upgrade);
+    }
+
+    public float GetEnergyPacketProgress(GUID guid, out GUID? sourceNode, out GUID? targetNode, out GUID? conduitID)
+    {
+        return backend.GetEnergyPacketProgress(guid, out sourceNode, out targetNode, out conduitID);
     }
 }

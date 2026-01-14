@@ -74,8 +74,11 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
         else if (targetNodeVisual is TimeRipple rippleB)
             energyType = rippleB.energyType;
         
-        Color color = energyType.ToColor();
-        mat.SetColor("_Color2", color);
+        Color color2 = energyType.ToColor();
+        float factor = Mathf.Pow(2,3);
+        Color color1 = new Color(color2.r*factor, color2.g*factor, color2.b*factor, 1f);
+        mat.SetColor("_Color", color1);
+        mat.SetColor("_Color2", color2);
     }
 
     public void StartNewConduitAtNode(NodeVisual nodeVisual,CoordinatePlane plane)

@@ -63,10 +63,12 @@ namespace Interfaces
         /**
          * returns the amount of the specific NodesDTO in the inventory
          */
-        public int GetAmountPlaceable(NodeDTO nodeDTO);
+        int GetAmountPlaceable(NodeDTO nodeDTO);
 
         // TimeLayer GetTimeLayer(int layerNum); //change time layer to whatever applies
         bool IsConnectionPathOccupied(int layerNum, Vector2Int[] cellsOfConnection);
+        
+        void UpgradeCardSelected(UpgradeData upgradeData);
     }
 
     public enum NodeDTO //TODO NodeType got renamed to NodeDTO to prevent double naming with Backend.NodeType

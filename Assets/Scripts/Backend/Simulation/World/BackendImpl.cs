@@ -237,5 +237,10 @@ namespace Backend.Simulation.World
 
             return null;
         }
+
+        public void UpgradeCardSelected(UpgradeData upgradeData)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

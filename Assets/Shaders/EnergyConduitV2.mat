@@ -39,15 +39,15 @@ Material:
     m_Ints: []
     m_Floats:
     - _BulgePos: 0.5
-    - _BulgePower: 0.21
-    - _BulgeWidth: 1.62
+    - _BulgePower: 0.17
+    - _BulgeWidth: 3
     - _Fill: 0
     - _FresnelPower: 0.59
     - _Panner: 3.66
     - _QueueControl: 0
     - _QueueOffset: 0
     - _WallThiccness: 0
-    - _bulgePos: 5.29
+    - _bulgePos: -0.34
     - _bulgeRadius: 0.05
     - _bulgeStrength: 0.08
     - _speed: 0.2

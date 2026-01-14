@@ -99,15 +99,8 @@ public class CameraController : MonoBehaviour
                 temporalLayerStack.UpdateCoverFlowFrames(scroll);
                 break;
             case CameraMode.SpiralGrid:
-                Vector3 position = transform.position;
-                Vector3 offset =  transform.forward * (scroll * BalanceProvider.Balance.cameraZoomSpeed);
-                position += offset;
-                if (position.y < BalanceProvider.Balance.spiralGridminMaxCameraY.x || position.y > BalanceProvider.Balance.spiralGridminMaxCameraY.y)
-                {
-                    position.y = Math.Clamp(position.y, BalanceProvider.Balance.spiralGridminMaxCameraY.x, BalanceProvider.Balance.spiralGridminMaxCameraY.y);
-                    transform.position = new Vector3(transform.position.x, position.y, transform.position.z);
-                }
-                else transform.position = position;
+                float newSize = cam.orthographicSize - scroll * BalanceProvider.Balance.cameraZoomSpeed;
+                cam.orthographicSize = Math.Clamp(newSize ,BalanceProvider.Balance.spiralGridminMaxCameraY.x, BalanceProvider.Balance.spiralGridminMaxCameraY.y);
                 break;
         }
     }
