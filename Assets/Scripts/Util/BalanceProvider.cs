@@ -16,7 +16,7 @@ namespace Util
                 return;
             }
 
-            Balance = balance;
+            Balance = Instantiate(balance);
             DontDestroyOnLoad(gameObject);
         }
     }
