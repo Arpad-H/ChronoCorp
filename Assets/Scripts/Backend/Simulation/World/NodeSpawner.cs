@@ -24,6 +24,7 @@ namespace Backend.Simulation.World
 
         public void Tick(long tickCount, SimulationStorage storage)
         {
+            TICK_SPAWN_COOLDOWN = (int)(SimulationStorage.TICKS_PER_SECOND * BalanceProvider.Balance.nodeSpawnIntervalPerSecond);
             if (tickCount - lastSpawnTick <= TICK_SPAWN_COOLDOWN) return;
             
             _random.InitState(storage.getTickSeed(tickCount));
@@ -38,6 +39,7 @@ namespace Backend.Simulation.World
                 storage.Frontend.PlaceNodeVisual(newTimeRipple.guid,newTimeRipple.NodeType.NodeDTO, _timeSlice.SliceNumber, cell, (EnergyType)energyTypeOfNewNode);
                 storage.log.Track(tickCount, new SpawnTimeRippleEvent(new Vector2(cell.x, cell.y), (EnergyType) energyTypeOfNewNode), SubTickTime.Zero);
             }
+            
         }
 
         private EnergyType? determineEnergyTypeForSpawning(SimulationStorage storage)
