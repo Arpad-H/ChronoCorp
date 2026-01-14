@@ -34,6 +34,15 @@ public class ConduitVisualizer : MonoBehaviour
     {
         //  InputManager.Instance.OnLeftClickUp += CancelDrag;
         if (cameraController == null) cameraController = FindObjectOfType<CameraController>();
+        GameFrontendManager.Instance.BackendDeletesConnection += OnDeleteConduit;
+        GameFrontendManager.Instance.BackendCreatesConnection += OnBackendCreatesConnection;
+    }
+
+    private void OnBackendCreatesConnection(GUID backendIdA, GUID backendIdB, GUID connectionId, Vector2Int[] cellsOfConnection)
+    {
+        ConduitVisual conduitVisual = pool.Get();
+        conduitVisual.InitializeNewConduit(backendIdA, backendIdB, connectionId, cellsOfConnection);
+        conduitVisuals.Add(connectionId, conduitVisual);
     }
 
 
@@ -66,12 +75,12 @@ public class ConduitVisualizer : MonoBehaviour
         pool.Release(conduitVisual);
     }
 
-    public void DeleteConduit(GUID guid)
+    public void OnDeleteConduit(GUID guid)
     {
-        // if (!conduitVisuals.ContainsKey(guid)) return;
-        // ConduitVisual conduitVisual = conduitVisuals[guid];
-        // ReleaseItem(conduitVisual);
-        // conduitVisuals.Remove(guid);
+        if (!conduitVisuals.ContainsKey(guid)) return;
+        ConduitVisual conduitVisual = conduitVisuals[guid];
+        ReleaseItem(conduitVisual);
+        conduitVisuals.Remove(guid);
     }
 
     public void StartDrag(NodeVisual nodeVisual)

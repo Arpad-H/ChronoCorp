@@ -284,4 +284,17 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
     {
         bulgePos = pos;
     }
+
+    public void InitializeNewConduit(GUID backendIdA, GUID backendIdB, GUID connectionId, Vector2Int[] cellsOfConnection) 
+    {
+        backendID = connectionId;
+        sourceNodeVisual = GameFrontendManager.Instance.GetNodeVisual(backendIdA);
+        targetNodeVisual = GameFrontendManager.Instance.GetNodeVisual(backendIdB);
+        SetPreviewPosition(targetNodeVisual.GetAttachPosition(), GameFrontendManager.Instance.temporalLayerStack.GetLayerByNum(targetNodeVisual.layerNum));
+        SetConduitEnergyType();
+        path.Clear();
+        sourceNodeVisual.AddConnectedConduit(this);
+        targetNodeVisual.AddConnectedConduit(this);
+        conduitLength = spline.GetLength();
+    }
 }

@@ -11,10 +11,23 @@ using UnityEngine.UI;
 
 public class CoordinatePlane : MonoBehaviour
 {
-    public Transform frameMesh; // scaled mesh
-    public Transform nodeContainer; // unscaled coordinate space
+    
+    public int layerNum = 0; //changed when bakcend spawns layer
+     private IBackend _backend;
+ 
+     private List<GameObject> nodes = new List<GameObject>();
+     public List<Vector3> occupiedPositions = new List<Vector3>();
+     
+    [Header("Prefabs")]
     public GameObject nodePrefab;
     public GameObject generatorPrefab;
+    public GameObject blackHolePrefab;
+    public GameObject blockadePrefab;
+
+    
+    public Transform frameMesh; // scaled mesh
+    public Transform nodeContainer; // unscaled coordinate space
+
     [Header("Grid Settings")]
     // public int gridWidth = 10;
     // public int gridHeight = 10; //currently determined by frameMesh scale
@@ -23,15 +36,8 @@ public class CoordinatePlane : MonoBehaviour
     private int numX, numY; // Number of cells in each direction
     private float maxX, maxY, minX, minY; // Max/min bounds (avoid placing outside frame)
     
-    [Header("Stabilitybar Settings")]
+        
    
-    
-    
-    public int layerNum = 0; //changed when bakcend spawns layer
-    private IBackend _backend;
-
-    private List<GameObject> nodes = new List<GameObject>();
-    public List<Vector3> occupiedPositions = new List<Vector3>();
     
     [Header("Spawn Effect")]
     public GameObject vfxPrefab;
@@ -156,8 +162,30 @@ public class CoordinatePlane : MonoBehaviour
         {
             case  NodeDTO.RIPPLE: return PlaceTimeRipple(planePos, energyType); break;
             case NodeDTO.GENERATOR: return PlaceGenerator(planePos); break;
+            case NodeDTO.BLACK_HOLE : return PlaceBlackHole(planePos); break;
+            case NodeDTO.BLOCKADE : return PlaceBlockade(planePos); break;
         }
         return null;
+    }
+    private BlackHole PlaceBlackHole(Vector2 planePos)
+    {
+        GameObject obj;
+        Vector3 localPos = ToPlaneLocal(planePos);
+        if (!IsWithinBounds(localPos) || IsPlaceOccupied(localPos)) return null;
+        obj = Instantiate(blackHolePrefab, nodeContainer);
+        obj.transform.localPosition = localPos;
+        nodes.Add(obj);
+        return obj.GetComponent<BlackHole>();
+    }
+    private Blockade PlaceBlockade(Vector2 planePos)
+    {
+        GameObject obj;
+        Vector3 localPos = ToPlaneLocal(planePos);
+        if (!IsWithinBounds(localPos) || IsPlaceOccupied(localPos)) return null;
+        obj = Instantiate(blockadePrefab, nodeContainer);
+        obj.transform.localPosition = localPos;
+        nodes.Add(obj);
+        return obj.GetComponent<Blockade>();
     }
     private Generator PlaceGenerator(Vector2 planePos)
     {
