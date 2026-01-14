@@ -14,6 +14,16 @@ namespace Interfaces
          * Tells the frontend about a node that was spawned by the backend at backend cellPos.
          */
         bool PlaceNodeVisual(GUID id,NodeDTO nodeDto, int layerNum, Vector2 cellPos, EnergyType energyType);
+
+        /**
+         * Tells the frontend to delete a connection
+         */
+        bool deleteConnection(GUID connectionId);
+        
+        /**
+         * Tells the frontend to connect two nodes
+         */
+        bool createConnection(GUID backendIdA, GUID backendIdB, GUID connectionId, Vector2Int[] cellsOfConnection);
         
         /**
          * Tells the frontend to spawn an energy packet visualizer for the packet with the given GUID and energy type.

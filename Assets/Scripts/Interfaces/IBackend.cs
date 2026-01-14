@@ -35,6 +35,12 @@ namespace Interfaces
         GUID? LinkNodes(GUID backendIdA, GUID backendIdB, Vector2Int[] cellsOfConnection);
 
         /**
+         * Upgrades a generator by adding an output. Maximum is 4. If 4 is already reached or the provided guid does not belong to a generator the method returns false.
+         * Else returns true.
+         */
+        bool upgradeGeneartor(GUID generatorGUID);
+
+        /**
          * Takes a connection id (NOT A NODE ID) to remove the connection and unlink the nodes that are connected.
          * Returns true if a connection with this id could be unlinked.
          */
@@ -75,6 +81,8 @@ namespace Interfaces
     {
         GENERATOR,
         RIPPLE,
+        BLACK_HOLE,
+        BLOCKADE,
         NORMALCONNECTION
     }
 }

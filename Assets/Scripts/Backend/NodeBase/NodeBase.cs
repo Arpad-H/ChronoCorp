@@ -24,6 +24,7 @@ namespace NodeBase
         public GUID guid { get; }
         public Vector2 Pos { get; set; }
         public NodeType NodeType { get; }
+        public TimeSlice currentTimeSlice { get; set; }
         public abstract void Tick(long tickCount, SimulationStorage storage);
     }
 
@@ -127,6 +128,44 @@ namespace NodeBase
         }
     }
 
+    public class BlackHoleInstance : AbstractNodeInstance, NodeWithConnections
+    {
+        public List<Connection> Connections;
+        public BlackHoleInstance(Vector2 pos) : base(pos, NodeType.BLACK_HOLE)
+        {
+            Connections = new List<Connection>();
+        }
+
+        public override void Tick(long tickCount, SimulationStorage storage)
+        {
+            
+        }
+
+        public List<Connection> getConnections()
+        {
+            return Connections;
+        }
+    }
+
+    public class BlockadeNodeInstance : AbstractNodeInstance, NodeWithConnections
+    {
+        public List<Connection> Connections;
+        public BlockadeNodeInstance(Vector2 pos) : base(pos, NodeType.BLACK_HOLE)
+        {
+            Connections = new List<Connection>();
+        }
+
+        public override void Tick(long tickCount, SimulationStorage storage)
+        {
+            
+        }
+
+        public List<Connection> getConnections()
+        {
+            return Connections;
+        }
+    }
+
     public interface NodeWithConnections
     {
         public List<Connection> getConnections();
@@ -165,6 +204,8 @@ namespace NodeBase
     {
         public static NodeType GENERATOR = new(Shape.CIRCLE, NodeDTO.GENERATOR);
         public static NodeType TIME_RIPPLE = new(Shape.SQUARE, NodeDTO.RIPPLE);
+        public static NodeType BLACK_HOLE = new(Shape.CIRCLE, NodeDTO.BLACK_HOLE);
+        public static NodeType BLOCKADE = new(Shape.CIRCLE, NodeDTO.BLOCKADE);
 
         public readonly Shape Shape; //  private Shape Shape { get; } only allows internal access
         public readonly NodeDTO NodeDTO;
@@ -174,8 +215,6 @@ namespace NodeBase
             Shape = shape;
             NodeDTO = nodeDTO;
         }
-        
-        
     }
 
     /**
@@ -183,13 +222,12 @@ namespace NodeBase
      */
     public class Connection
     {
-        public Connection(AbstractNodeInstance node1, AbstractNodeInstance node2)
+        public Connection(AbstractNodeInstance node1, AbstractNodeInstance node2, Vector2Int[] cellsOfConnection)
         {
             guid = GUID.Generate();
             this.node1 = node1;
             this.node2 = node2;
-            var direction = node2.Pos - node1.Pos;
-            length = direction.magnitude;
+            length = cellsOfConnection.Length;
         }
 
         public GUID guid { get; }

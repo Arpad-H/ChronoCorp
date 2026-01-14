@@ -66,8 +66,6 @@ namespace Backend.Simulation.World
         {
             energyPackets[energyPacket.Guid] = energyPacket;
             Frontend.SpawnEnergyPacket(energyPacket.Guid, energyPacket.EnergyType); //inform frontend of new
-
-            Debug.Log("Created new energy packet " + energyPacket.Guid);
         }
 
         public void recalculatePaths()
@@ -111,7 +109,7 @@ namespace Backend.Simulation.World
             }
         }
 
-        public GUID? link(GUID idNode1, GUID idNode2)
+        public GUID? link(GUID idNode1, GUID idNode2, Vector2Int[] cellsOfConnection)
         {
             var canPlace = inventory.canPlaceNormalConnection();
             if (!canPlace)
@@ -140,7 +138,7 @@ namespace Backend.Simulation.World
                 if (ripple1.HasDirectConnectionTo(ripple2 as AbstractNodeInstance)) return null;
 
                 inventory.placeNormalConnection();
-                var rippleConnection = new Connection(ripple1 as AbstractNodeInstance, ripple2 as AbstractNodeInstance);
+                var rippleConnection = new Connection(ripple1 as AbstractNodeInstance, ripple2 as AbstractNodeInstance, cellsOfConnection);
                 ripple1.getConnections().Add(rippleConnection);
                 ripple2.getConnections().Add(rippleConnection);
                 guidToConnections[rippleConnection.guid] = rippleConnection;
@@ -172,7 +170,7 @@ namespace Backend.Simulation.World
                 }
 
                 inventory.placeNormalConnection();
-                var rippleConnection = new Connection(node1, node2);
+                var rippleConnection = new Connection(node1, node2, cellsOfConnection);
                 foundOutput.Connection = rippleConnection;
                 anyNode.getConnections().Add(rippleConnection);
                 guidToConnections[rippleConnection.guid] = rippleConnection;
@@ -264,14 +262,83 @@ namespace Backend.Simulation.World
         {
             var canPlace = _simulationStorage.inventory.canPlaceGenerator();
 
-            if (TimeSliceGrid.HasNodeNear(pos, TOLERANCE) || !canPlace) return null;
+            
+            if (TimeSliceGrid.IsCellOccupied(new Vector2Int((int)pos.x, (int)pos.y)) || !canPlace) return null;
 
             _simulationStorage.inventory.placeGenerator();
             var newNode = new GeneratorInstance(pos, amountInitialOutputs);
+            newNode.currentTimeSlice = this;
             TimeSliceGrid.Add(newNode);
 
             addNodeToMapping(newNode);
             return newNode.guid;
+        }
+
+        public GUID? spawnBlackHole(Vector2 pos, out BlackHoleInstance blackHoleInstance)
+        {
+            blackHoleInstance = null;
+            if(TimeSliceGrid.IsCellOccupied(pos, out var node, out var connection)) return null;
+            var newNode = new TimeRippleInstance(pos, EnergyType.WHITE);
+            newNode.currentTimeSlice = this;
+            TimeSliceGrid.Add(newNode);
+            addNodeToMapping(newNode);
+            blackHoleInstance = new BlackHoleInstance(pos);
+            return blackHoleInstance.guid;
+        }
+        
+        public GUID? spawnBlockadeInConnection(Connection connection, Vector2 cellPos, out BlockadeNodeInstance blockadeNodeInstance )
+        {
+            blockadeNodeInstance = null;
+
+            var nodeStart = connection.node1;
+            var nodeFinish = connection.node2;
+            
+            var cellsOfConnection = TimeSliceGrid.getCellsOfConnection(connection.guid);
+            var newConnectionStartToBlockade = new List<Vector2Int>();
+            var newConnectionBlockadeToFinish = new List<Vector2Int>();
+
+            var foundMiddlePiece = false;
+            foreach (var cell in cellsOfConnection)
+            {
+                if (cell.Equals(new Vector2Int((int)cellPos.x, (int)cellPos.y)))
+                {
+                    foundMiddlePiece = true;
+                    continue;
+                }
+                
+                if (!foundMiddlePiece)
+                {
+                    newConnectionStartToBlockade.Add(cell);
+                }
+                else
+                {
+                    newConnectionBlockadeToFinish.Add(cell);
+                }
+            }
+            if (newConnectionBlockadeToFinish.Count == 0 || newConnectionStartToBlockade.Count == 0)
+            {
+                return null;
+            }
+
+            if (!_simulationStorage.unlink(connection.guid))
+            {
+                return null;
+            }
+            _simulationStorage.Frontend.deleteConnection(connection.guid);
+
+            var newNode = new BlockadeNodeInstance(cellPos);
+            newNode.currentTimeSlice = this;
+            TimeSliceGrid.Add(newNode);
+            addNodeToMapping(newNode);
+            
+            var startConID = _simulationStorage.link(nodeStart.guid, newNode.guid, newConnectionStartToBlockade.ToArray());
+            _simulationStorage.Frontend.createConnection(connection.guid, newNode.guid, (GUID)startConID, newConnectionStartToBlockade.ToArray());
+            
+            var endConID = _simulationStorage.link(newNode.guid, nodeFinish.guid, newConnectionBlockadeToFinish.ToArray());
+            _simulationStorage.Frontend.createConnection(newNode.guid, nodeFinish.guid, (GUID)endConID, newConnectionBlockadeToFinish.ToArray());
+
+            blockadeNodeInstance = newNode;
+            return blockadeNodeInstance.guid;
         }
 
         public GUID? spawnRipple(Vector2 pos, EnergyType energyType, out TimeRippleInstance timeRippleInstance)
@@ -279,6 +346,7 @@ namespace Backend.Simulation.World
             timeRippleInstance = null;
             if(TimeSliceGrid.IsCellOccupied(pos, out var node, out var connection)) return null;
             var newNode = new TimeRippleInstance(pos, energyType);
+            newNode.currentTimeSlice = this;
             TimeSliceGrid.Add(newNode);
             addNodeToMapping(newNode);
             timeRippleInstance = newNode;
@@ -320,7 +388,7 @@ namespace Backend.Simulation.World
 
         public bool isNodeKnown(GUID guid)
         {
-            return _simulationStorage.isNodeKnown(guid);
+            return _simulationStorage.guidToNodesMapping.TryGetValue(guid, out var nodeInstance) && nodeInstance.currentTimeSlice.SliceNumber == SliceNumber;
         }
 
         private void addNodeToMapping(AbstractNodeInstance newNode)
@@ -330,7 +398,7 @@ namespace Backend.Simulation.World
             if (!_simulationStorage.nodeTypeToNodesMapping.ContainsKey(newNode.NodeType))
                 _simulationStorage.nodeTypeToNodesMapping.Add(newNode.NodeType, new List<AbstractNodeInstance>());
             _simulationStorage.nodeTypeToNodesMapping[newNode.NodeType].Add(newNode);
-            Debug.Log("Created node " + newNode.guid);
+            Debug.Log("Placed node " + newNode.guid+" in slice "+SliceNumber);
         }
 
         private void removeNodeFromMapping(AbstractNodeInstance newNode)
@@ -338,7 +406,7 @@ namespace Backend.Simulation.World
             _simulationStorage.guidToNodesMapping.Remove(newNode.guid);
             if (_simulationStorage.nodeTypeToNodesMapping.ContainsKey(newNode.NodeType))
                 _simulationStorage.nodeTypeToNodesMapping.Remove(newNode.NodeType);
-            Debug.Log("Removed node " + newNode.guid);
+            Debug.Log("Removed node " + newNode.guid+" from slice "+SliceNumber);
         }
     }
 }
