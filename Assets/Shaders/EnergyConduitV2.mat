@@ -47,7 +47,7 @@ Material:
     - _QueueControl: 0
     - _QueueOffset: 0
     - _WallThiccness: 0
-    - _bulgePos: -0.34
+    - _bulgePos: 1.98
     - _bulgeRadius: 0.05
     - _bulgeStrength: 0.08
     - _speed: 0.2

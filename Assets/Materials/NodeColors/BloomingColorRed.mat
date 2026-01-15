@@ -21,7 +21,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: BloomingColorRed
-  m_Shader: {fileID: -6465566751694194690, guid: 0d6dd75931b8f1f4982aaa7583928cc8, type: 3}
+  m_Shader: {fileID: 4800000, guid: 8bd11a3ab2c47564898cf030125a2360, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -51,9 +51,15 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _EdgeSoftness: 0.01
+    - _Float: 0.5
+    - _HP: 0.42
     - _QueueControl: 0
     - _QueueOffset: 0
+    - _StartOffset: 0
     m_Colors:
     - _Color: {r: 6.8831816, g: 0.174678, b: 0.1081126, a: 1}
+    - _EmptyColor: {r: 0.12452829, g: 0.12452829, b: 0.12452829, a: 1}
+    - _FillColor: {r: 6.4387894, g: 0.061234202, b: 0, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

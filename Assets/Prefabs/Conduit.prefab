@@ -157,17 +157,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eff9473dc7a2d1948a5fe7bbf19be18f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Conduit
-  nodeVisualA: {fileID: 0}
-  nodeVisualB: {fileID: 0}
+  sourceNodeVisual: {fileID: 0}
+  targetNodeVisual: {fileID: 0}
   planeA: {fileID: 0}
   planeB: {fileID: 0}
   splineContainer: {fileID: 0}
-  splineExtrudeRound: {fileID: 0}
-  splineExtrudesquare: {fileID: 0}
-  debugInfo: 
-  bulgePos: 0
-  mr: {fileID: 4147508576704826286}
-  mat: {fileID: 0}
+  renderer: {fileID: 4147508576704826286}
+  positions: []
   invalidColor: {r: 0.83396226, g: 0.073955104, b: 0.073955104, a: 0.7176471}
   previewColor: {r: 0.6377357, g: 0.60043424, b: 0.60043424, a: 1}
 --- !u!114 &2781901633303892491
@@ -241,7 +237,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 1b4da212c357ccb468cd23ae07cde4cd, type: 2}
+  - {fileID: 2100000, guid: caee4523bd8ac204e9c3bdffca1413ee, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

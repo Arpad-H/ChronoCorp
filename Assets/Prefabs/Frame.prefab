@@ -364,8 +364,8 @@ MonoBehaviour:
   occupiedPositions: []
   nodePrefab: {fileID: 6574809473556729728, guid: 77295709e9e644f47a19b148f01342a6, type: 3}
   generatorPrefab: {fileID: 6574809473556729728, guid: 71126fb5960374047b8269a6dbe614e0, type: 3}
-  blackHolePrefab: {fileID: 1577139832588222046, guid: 93c21ea2c1cab7648ad35d825e9f77e9, type: 3}
-  blockadePrefab: {fileID: 0}
+  blackHolePrefab: {fileID: 7165242758216737357, guid: 03778818ccaa85f4caca079be4edcd5a, type: 3}
+  blockadePrefab: {fileID: 1577139832588222046, guid: 9321aea2050ab264e961d31acef482fd, type: 3}
   frameMesh: {fileID: 8058484938478437209}
   nodeContainer: {fileID: 377210291662841251}
   cellWidth: 1

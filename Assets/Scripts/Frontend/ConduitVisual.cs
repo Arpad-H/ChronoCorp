@@ -23,20 +23,23 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
     private bool sameLayerConnection = false;
     //  public LineRenderer lineRenderer;
     public SplineContainer splineContainer;
-    public SplineExtrude splineExtrudeRound;
-    public SplineExtrude splineExtrudesquare;
+    
     private Spline spline;
     public GUID backendID;
-    public String debugInfo;
+ 
     private float conduitLength;
-    private float bulgePos = 0f; 
-    public MeshRenderer mr;
-    public Material mat;
+    
+    public Renderer renderer;
+    private Material pipeMaterial;
+    public float[] positions = {}; 
+   
+   
     public Color invalidColor;
     public Color previewColor;
+
     void Awake()
     { 
-        mat = mr.material;
+         pipeMaterial = renderer.material;
         splineContainer = GetComponent<SplineContainer>();
         spline = splineContainer.Splines[0];
     }
@@ -110,8 +113,8 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
         Color color2 = energyType.ToColor();
         float factor = Mathf.Pow(2,3);
         Color color1 = new Color(color2.r*factor, color2.g*factor, color2.b*factor, 1f);
-        mat.SetColor("_Color", color1);
-        mat.SetColor("_Color2", color2);
+        // mat.SetColor("_Color", color1);
+        // mat.SetColor("_Color2", color2);
     }
 
     public void StartNewConduitAtNode(NodeVisual nodeVisual,CoordinatePlane plane)
@@ -248,19 +251,29 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
 
         if (sameLayerConnection && GameFrontendManager.Instance.IsConnectionPathValid(sourceNodeVisual.layerNum, GetCellsOfConnection()))
         {
-            mat.SetColor("_Color2", previewColor);
+     //       mat.SetColor("_Color2", previewColor);
         }
         else
         {
-            mat.SetColor("_Color2", invalidColor);
+     //       mat.SetColor("_Color2", invalidColor);
         }
     }
 
-   
+
     public void Update()
     {
-        debugInfo = backendID.ToString();
-        mat.SetFloat("_bulgePos", bulgePos*conduitLength); 
+        // debugInfo = backendID.ToString();
+        // mat.SetFloat("_bulgePos", bulgePos*conduitLength); 
+    }
+
+    private void LateUpdate()
+    {
+        if (positions.Length == 0) return;
+        // Pass the array to the shader
+        pipeMaterial.SetFloatArray("_BulgePositions", positions);
+        // Tell the shader how many elements in the array to actually loop through
+        pipeMaterial.SetInt("_BulgeCount", positions.Length);
+        positions = new float[] { };
     }
 
     public void Reset()
@@ -296,7 +309,7 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
         Vector3 clickPosWorld = eventData.pointerCurrentRaycast.worldPosition;
         SpawnDeleteButton( clickPosWorld);
     }
-    
+
     private void SpawnDeleteButton(Vector3 clickPosWorld)
     {
       
@@ -313,10 +326,11 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
           
         });
     }
-    public void setBulgePos(float pos)
-    {
-        bulgePos = pos;
-    }
+
+    // public void setBulgePos(float pos)
+    // {
+    //     bulgePos = pos;
+    // }
 
     public void InitializeNewConduit(GUID backendIdA, GUID backendIdB, GUID connectionId, Vector2Int[] cellsOfConnection) 
     {
@@ -330,5 +344,11 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
         sourceNodeVisual.AddConnectedConduit(this,dir);
         targetNodeVisual.AddConnectedConduit(this,dir);
         conduitLength = spline.GetLength();
+    }
+
+    public void AddBulge(float position)
+    {
+        Array.Resize(ref positions, positions.Length + 1);
+        positions[positions.Length - 1] = position * conduitLength;
     }
 }
