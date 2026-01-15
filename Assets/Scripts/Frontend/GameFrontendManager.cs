@@ -88,7 +88,6 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
             nv.backendID = id;
             nv.layerNum = layerNum;
             nodeVisuals.Add(id, nv);
-            Debug.Log("Spawned "+id);
             return true;
         }
 

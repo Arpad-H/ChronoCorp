@@ -25,8 +25,9 @@ public class TimeRipple : NodeVisual
     [Header("Other")]
     public Image hpBar;
     private bool isEnergySupplied = true;
-    void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         currentGlowEffect = greenGlowEffect;
         UpdateHealthBar(1f);
     }
@@ -182,14 +183,23 @@ public class TimeRipple : NodeVisual
     
     public override void RemoveConnectedConduit(ConduitVisual conduitVisual)
     {
+        foreach (var dir in isDirectionOccupied)
+        {
+            if (dir.Value == conduitVisual)
+            {
+                isDirectionOccupied[dir.Key] = null;
+                break;
+            }
+        }
         connectedConduits.Remove(conduitVisual);
         if (connectedConduits.Count == 0)
         {
             ChangeEnergySupplyState(false);
         }
     }
-    public override void AddConnectedConduit(ConduitVisual conduitVisual)
+    public override void AddConnectedConduit(ConduitVisual conduitVisual,Direction dir)
     {
+        isDirectionOccupied[dir] = conduitVisual;
         connectedConduits.Add(conduitVisual);
         ChangeEnergySupplyState(true);
     }

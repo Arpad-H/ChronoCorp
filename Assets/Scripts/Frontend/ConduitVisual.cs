@@ -41,7 +41,7 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
         spline = splineContainer.Splines[0];
     }
 
-   public void ConnectedNodeDestroyedConnection(NodeVisual nodeVisual)
+    public void ConnectedNodeDestroyedConnection(NodeVisual nodeVisual)
     {
         if (sourceNodeVisual == nodeVisual)
         {
@@ -58,12 +58,45 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
     {
         backendID = newBackendID;
         targetNodeVisual = nodeVisual;
-        SetPreviewPosition(nodeVisual.GetAttachPosition(), GameFrontendManager.Instance.temporalLayerStack.GetLayerByNum(nodeVisual.layerNum));
+        Direction dir = CalculateAttachDircection();
+        SetPreviewPosition(nodeVisual.GetAttachPosition(dir), GameFrontendManager.Instance.temporalLayerStack.GetLayerByNum(nodeVisual.layerNum));
         SetConduitEnergyType();
         path.Clear();
-        sourceNodeVisual.AddConnectedConduit(this);
-        targetNodeVisual.AddConnectedConduit(this);
+        sourceNodeVisual.AddConnectedConduit(this,dir);
+        targetNodeVisual.AddConnectedConduit(this,dir);
         conduitLength = spline.GetLength();
+    }
+
+    private Direction CalculateAttachDircection()
+    {
+        Vector3 lastSegment;
+        Vector3 secondLastSegment;
+        if (sourceNodeVisual is Generator)
+        {
+            lastSegment = path[0];
+            secondLastSegment = path[1];
+        }
+        else
+        {
+            lastSegment = path.Last();
+            secondLastSegment = path[path.Count - 2];
+        }
+        
+        Vector3 direction = (lastSegment - secondLastSegment).normalized;
+        Direction attachDirection = Direction.Down; // Default
+        float maxDot = -Mathf.Infinity;
+        foreach (Direction dir in Enum.GetValues(typeof(Direction)))
+        {
+            Vector3 dirVector = dir.DirectionToVector3();
+            float dot = Vector3.Dot(direction, dirVector);
+            if (dot > maxDot)
+            {
+                maxDot = dot;
+                attachDirection = dir;
+            }
+        }
+        Debug.Log("Attach Direction: " + attachDirection);
+        return attachDirection; 
     }
 
     private void SetConduitEnergyType()
@@ -103,7 +136,7 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
             
             if(layerB.IsPlaceOccupied(layerB.ToPlaneLocal(snappedLocalPos)))
             {
-             // return; works but need to handle overshooting occupied nodes
+                // return; works but need to handle overshooting occupied nodes
             }
             if (path.Count == 0)
             {
@@ -200,7 +233,7 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
     private void SplineFromPath()
     {
         spline.Clear();
-        planeA.occupiedPositions.Add(sourceNodeVisual.GetAttachPosition());
+        planeA.occupiedPositions.Add(sourceNodeVisual.GetAttachPosition(Direction.Down)); //TODO check which direction ctrl f for direction bcs hardcoded down appears at 3 spots incl this one
         for (int i = 0; i < path.Count; i++)
         {
             BezierKnot knot = new BezierKnot(path[i]);
@@ -290,11 +323,12 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
         backendID = connectionId;
         sourceNodeVisual = GameFrontendManager.Instance.GetNodeVisual(backendIdA);
         targetNodeVisual = GameFrontendManager.Instance.GetNodeVisual(backendIdB);
-        SetPreviewPosition(targetNodeVisual.GetAttachPosition(), GameFrontendManager.Instance.temporalLayerStack.GetLayerByNum(targetNodeVisual.layerNum));
+        Direction dir = CalculateAttachDircection();
+        SetPreviewPosition(targetNodeVisual.GetAttachPosition(dir), GameFrontendManager.Instance.temporalLayerStack.GetLayerByNum(targetNodeVisual.layerNum));
         SetConduitEnergyType();
         path.Clear();
-        sourceNodeVisual.AddConnectedConduit(this);
-        targetNodeVisual.AddConnectedConduit(this);
+        sourceNodeVisual.AddConnectedConduit(this,dir);
+        targetNodeVisual.AddConnectedConduit(this,dir);
         conduitLength = spline.GetLength();
     }
 }

@@ -227,7 +227,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layerNum: 0
   nodeScale: 0.75
-  attachPoint: {fileID: 7470352548723964567}
+  upPoint: {fileID: 7470352548723964567}
+  downPoint: {fileID: 7470352548723964567}
+  leftPoint: {fileID: 7470352548723964567}
+  rightPoint: {fileID: 7470352548723964567}
   energyType: 0
   greenGlowEffect: {fileID: 7615955434371999596}
   blueGlowEffect: {fileID: 1918619846962885237}
