@@ -70,6 +70,11 @@ namespace Interfaces
          * returns the amount of the specific NodesDTO in the inventory
          */
         int GetAmountPlaceable(InventoryItem item);
+        
+        /**
+         * Adds items to the inventory. Returns the new amount of the item in the inventory.
+         */
+        int AddItemToInventory(InventoryItem item, int amount); 
 
         // TimeLayer GetTimeLayer(int layerNum); //change time layer to whatever applies
         bool IsConnectionPathOccupied(int layerNum, Vector2Int[] cellsOfConnection);

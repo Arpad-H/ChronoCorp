@@ -19,6 +19,7 @@ public class DragableInventoyItem : MonoBehaviour, IBeginDragHandler, IDragHandl
     void Start()
     {
         GameFrontendManager.Instance.GeneratorDeleted += UpdateCountText;
+        GameFrontendManager.Instance.InventoryChanged += UpdateCountText;
         StartCoroutine(DelayedUpdate());
     }
     IEnumerator DelayedUpdate()
@@ -66,10 +67,5 @@ public class DragableInventoyItem : MonoBehaviour, IBeginDragHandler, IDragHandl
         {
             UpdateCountText();
         }
-    }
-
-    public void ToggleChanged()
-    {
-        UpdateCountText();
     }
 }

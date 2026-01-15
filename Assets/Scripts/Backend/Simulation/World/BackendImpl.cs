@@ -218,6 +218,10 @@ namespace Backend.Simulation.World
         {
             return _storage.inventory.getAmountPlaceable(item);
         }
+        public int AddItemToInventory (InventoryItem item, int amount)
+        {
+            return _storage.inventory.addItem(item, amount);
+        }
 
         public bool IsConnectionPathOccupied(int layerNum, Vector2Int[] cellsOfConnection)
         {

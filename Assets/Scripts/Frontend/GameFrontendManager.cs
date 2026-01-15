@@ -13,6 +13,7 @@ using Util;
 public class GameFrontendManager : MonoBehaviour, IFrontend
 {
     public event Action GeneratorDeleted;
+    public event Action InventoryChanged;
     public event Action<GUID> BackendDeletesConnection;
     public event Action<GUID,GUID,GUID,Vector2Int[]> BackendCreatesConnection;
     
@@ -244,5 +245,11 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
     public NodeVisual GetNodeVisual(GUID nodeID) 
     {
         return nodeVisuals[nodeID];
+    }
+
+    public void AddToInventory(InventoryItem item, float amount)
+    {
+        backend.AddItemToInventory(item, (int)amount);
+        InventoryChanged?.Invoke();
     }
 }

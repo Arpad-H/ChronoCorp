@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 379b75ec28ff439f9e04cd2a96c40ea3, type: 3}
   m_Name: ModifyInventoryEffect
   m_EditorClassIdentifier: 
-  stat: 0
-  amount: 0
+  item: 0
+  amount: 2

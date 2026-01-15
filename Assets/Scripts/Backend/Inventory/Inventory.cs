@@ -85,5 +85,13 @@ namespace Backend.Inv
         {
             return nodesAvailable[InventoryItem.GENERATOR] > 0;
         }
+
+        public int addItem(InventoryItem item, int amount)
+        {
+            if (!nodesAvailable.ContainsKey(item))
+                nodesAvailable[item] = 0;
+            nodesAvailable[item] += amount;
+            return nodesAvailable[item];
+        }
     }
 }
