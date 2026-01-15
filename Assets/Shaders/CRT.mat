@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: PP_CRT
+  m_Name: CRT
   m_Shader: {fileID: 4800000, guid: 7566503ba17f4b7a989259dc325b47fe, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -28,7 +28,9 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
-    m_Floats: []
+    m_Floats:
+    - _Curvature: 23.58
+    - _VignetteWidth: 0.531
     m_Colors: []
   m_BuildTextureStacks: []
   m_AllowLocking: 1

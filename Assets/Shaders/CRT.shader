@@ -1,59 +1,97 @@
-﻿Shader "Hidden/CRT" {
-    Properties {
-        _MainTex ("Texture", 2D) = "white" {}
+﻿Shader "Custom/URP_CRT"
+{
+    Properties
+    {
+        _Curvature ("Curvature", Float) = 5.0
+        _VignetteWidth ("Vignette Softness", Range(0,1)) = 0.1
     }
 
-    SubShader {
+    SubShader
+    {
+        Tags
+        {
+            "RenderPipeline"="UniversalPipeline"
+            "RenderType"="Opaque"
+        }
 
-        Pass {
-            CGPROGRAM
-            #pragma vertex vp
-            #pragma fragment fp
+        ZTest Always
+        ZWrite Off
+        Cull Off
 
-            #include "UnityCG.cginc"
+        Pass
+        {
+            Tags { "LightMode" = "UniversalForward" }
 
-            struct VertexData {
-                float4 vertex : POSITION;
+            HLSLPROGRAM
+            #pragma vertex vert
+            #pragma fragment frag
+
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+
+            struct Attributes
+            {
+                float4 positionOS : POSITION;
                 float2 uv : TEXCOORD0;
             };
 
-            struct v2f {
+            struct Varyings
+            {
+                float4 positionCS : SV_POSITION;
                 float2 uv : TEXCOORD0;
-                float4 vertex : SV_POSITION;
             };
 
-            v2f vp(VertexData v) {
-                v2f o;
-                o.vertex = UnityObjectToClipPos(v.vertex);
-                o.uv = v.uv;
-                return o;
-            }
+            // ✅ Correct texture for URP Full Screen Pass
+            TEXTURE2D(_CameraColorTexture);
+            SAMPLER(sampler_CameraColorTexture);
 
-            sampler2D _MainTex;
             float _Curvature;
             float _VignetteWidth;
 
-            fixed4 fp(v2f i) : SV_Target {
-                float2 uv = i.uv * 2.0f - 1.0f;
-                float2 offset = uv.yx / _Curvature;
-                uv = uv + uv * offset * offset;
-                uv = uv * 0.5f + 0.5f;
-
-                fixed4 col = tex2D(_MainTex, uv);
-                if (uv.x <= 0.0f || 1.0f <= uv.x || uv.y <= 0.0f || 1.0f <= uv.y)
-                    col = 0;
-
-                uv = uv * 2.0f - 1.0f;
-                float2 vignette = _VignetteWidth / _ScreenParams.xy;
-                vignette = smoothstep(0.0f, vignette, 1.0f - abs(uv));
-                vignette = saturate(vignette);
-
-                col.g *= (sin(i.uv.y * _ScreenParams.y * 2.0f) + 1.0f) * 0.15f + 1.0f;
-                col.rb *= (cos(i.uv.y * _ScreenParams.y * 2.0f) + 1.0f) * 0.135f + 1.0f; 
-
-                return saturate(col) * vignette.x * vignette.y;
+            Varyings vert (Attributes input)
+            {
+                Varyings output;
+                output.positionCS = TransformObjectToHClip(input.positionOS.xyz);
+                output.uv = input.uv;
+                return output;
             }
-            ENDCG
+
+            half4 frag (Varyings i) : SV_Target
+            {
+                // Convert to -1..1 space
+                float2 uv = i.uv * 2.0 - 1.0;
+
+                // ---- CRT curvature ----
+                float curvature = max(_Curvature, 0.01);
+                float2 offset = uv.yx / curvature;
+                uv += uv * offset * offset;
+
+                // Back to 0..1
+                uv = uv * 0.5 + 0.5;
+
+                // Clamp instead of hard discard
+                uv = saturate(uv);
+
+                // ---- Sample screen ----
+                half4 col = SAMPLE_TEXTURE2D(
+                    _CameraColorTexture,
+                    sampler_CameraColorTexture,
+                    uv
+                );
+
+                // ---- Scanlines ----
+                float scanline = sin(uv.y * _ScreenParams.y * 1.5);
+                col.rgb *= (scanline * 0.1) + 0.9;
+
+                // ---- Vignette ----
+                float2 vignette =
+                    smoothstep(0.0, _VignetteWidth, uv) *
+                    smoothstep(0.0, _VignetteWidth, 1.0 - uv);
+
+                col.rgb *= vignette.x * vignette.y;
+
+                return col;
+            }
+            ENDHLSL
         }
     }
 }

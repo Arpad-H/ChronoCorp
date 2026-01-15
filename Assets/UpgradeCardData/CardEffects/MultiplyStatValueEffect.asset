@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: MultiplyStatValueEffect
   m_EditorClassIdentifier: 
   stat: 0
-  factor: 0
+  factor: 0.5
