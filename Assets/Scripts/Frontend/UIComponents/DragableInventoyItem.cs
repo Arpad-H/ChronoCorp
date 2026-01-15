@@ -1,10 +1,11 @@
+using System.Collections;
 using Interfaces;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class DragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+public class DragableInventoyItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     public Sprite iconImage; // assign from inspector
     public Canvas canvas; // drag your UI canvas here
@@ -12,12 +13,18 @@ public class DragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
     private RectTransform dragRect;
     public int count = 0;
     public TextMeshProUGUI countText;
-    public NodeDTO item;
+    public InventoryItem item;
     public Image InventoryIcon;
 
     void Start()
     {
         GameFrontendManager.Instance.GeneratorDeleted += UpdateCountText;
+        StartCoroutine(DelayedUpdate());
+    }
+    IEnumerator DelayedUpdate()
+    {
+        yield return new WaitForEndOfFrame();
+        UpdateCountText();
     }
 
     private void UpdateCountText()
@@ -55,7 +62,7 @@ public class DragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
     {
         if (dragIcon != null)
             Destroy(dragIcon.gameObject);
-        if (GameFrontendManager.Instance.TryDrop(NodeDTO.GENERATOR))
+        if (GameFrontendManager.Instance.TryDrop(item))
         {
             UpdateCountText();
         }

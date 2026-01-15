@@ -187,9 +187,26 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
             : null;
     }
 
-    public bool TryDrop(NodeDTO nodeDTO)
+    public bool TryDrop(InventoryItem item)
     {
-        return SpawnOnHoveredFrame(nodeDTO, EnergyType.WHITE);
+        switch (item)
+        {
+            case InventoryItem.GENERATOR :
+                return SpawnOnHoveredFrame(NodeDTO.GENERATOR, EnergyType.WHITE);
+            case InventoryItem.UPGRADE_CARD : return UpgradeHoveredNode(); return false;
+        }
+        return false;
+    }
+
+    private bool UpgradeHoveredNode()
+    {
+        RaycastHit rh;
+        cameraController.RaycastForFirst(out rh); 
+        var nodeVisual = rh.collider.GetComponent<Generator>(); //TODO Currently only generators can be upgraded
+        if (nodeVisual == null) return false; // Not hovering over a node
+
+        nodeVisual.UpgradeNode();
+        return true;
     }
 
     public bool DestroyNode(GUID nodeID)
@@ -205,9 +222,9 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
         return backend.UnlinkNodes(backendID);
     }
 
-    public int GetInvetoryCount(NodeDTO item)
+    public int GetInvetoryCount(InventoryItem item)
     {
-       return backend.GetAmountPlaceable(item);
+        return backend.GetAmountPlaceable(item);
     }
 
     public bool GetValuesForStabilityMalusType(StabilityMalusType type, out int threshold)

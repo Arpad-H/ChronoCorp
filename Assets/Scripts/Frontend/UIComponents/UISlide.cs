@@ -12,7 +12,7 @@ public class UISlide : MonoBehaviour
     // public Sprite hideIcon;
     // public Image buttonIcon;
     public RectTransform buttonPosition;
-    public DragItem dragItem; 
+   // public DragableInventoyItem dragableInventoyItem; 
     public float speed = 8f;
 
     bool shown = false;
@@ -49,6 +49,5 @@ public class UISlide : MonoBehaviour
             ? new Vector2(buttonPosition.anchoredPosition.x,buttonShowHeight)
             : new Vector2(buttonPosition.anchoredPosition.x,buttonHhiddenHeight);
         // buttonIcon.sprite = shown ? hideIcon : showIcon;
-        dragItem.ToggleChanged();
     }
 }

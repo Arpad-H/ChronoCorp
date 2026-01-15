@@ -26,6 +26,7 @@ MonoBehaviour:
   layerDuplicationTime: 6000
   layerGridCellCount: {x: 0, y: 0}
   initialGeneratorCount: 10
+  initialUpgradeCardCount: 10
   stabilityMaxValue: 40
   stabilityMinValue: 0
   stabilityDecreaseValue: 0

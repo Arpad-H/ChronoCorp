@@ -9,15 +9,16 @@ namespace Backend.Inv
     {
         public const int STARTNUMBER_OF_CONNECTIONS = int.MaxValue;
 
-        public static Dictionary<NodeDTO, int> startConf = new()
+        public static Dictionary<InventoryItem, int> startConf = new()
         {
-            [NodeDTO.NORMALCONNECTION] = STARTNUMBER_OF_CONNECTIONS,
-            [NodeDTO.GENERATOR] = BalanceProvider.Balance.initialGeneratorCount
+            [InventoryItem.NORMALCONNECTION] = STARTNUMBER_OF_CONNECTIONS,
+            [InventoryItem.GENERATOR] = BalanceProvider.Balance.initialGeneratorCount,
+            [InventoryItem.UPGRADE_CARD] = BalanceProvider.Balance.initialUpgradeCardCount
         };
     }
     public class Inventory
     {
-        public Dictionary<NodeDTO, int> nodesAvailable = new();
+        public Dictionary<InventoryItem, int> nodesAvailable = new();
         public static GameFrontendManager Instance;
         
         public Inventory()
@@ -25,34 +26,34 @@ namespace Backend.Inv
             foreach (var key in InventoryConfig.startConf.Keys) nodesAvailable.Add(key, InventoryConfig.startConf[key]);
         }
 
-        private void place(NodeDTO node)
+        private void place(InventoryItem item)
         {
-            nodesAvailable[node]--;
+            nodesAvailable[item]--;
         }
 
-        private void remove(NodeDTO node)
+        private void remove(InventoryItem item)
         {
-            nodesAvailable[node]++;
+            nodesAvailable[item]++;
         }
 
 
-        public int getAmountPlaceable(NodeDTO nodeDTO)
+        public int getAmountPlaceable(InventoryItem item)
         {
-            if (nodesAvailable.ContainsKey(nodeDTO)) return nodesAvailable[nodeDTO];
+            if (nodesAvailable.ContainsKey(item)) return nodesAvailable[item];
 
             return 0;
         }
 
         public bool canPlaceNormalConnection()
         {
-            return nodesAvailable[NodeDTO.NORMALCONNECTION] > 0;
+            return nodesAvailable[InventoryItem.NORMALCONNECTION] > 0;
         }
 
         public bool placeNormalConnection()
         {
             if (canPlaceNormalConnection())
             {
-                place(NodeDTO.NORMALCONNECTION);
+                place(InventoryItem.NORMALCONNECTION);
                 return true;
             }
 
@@ -61,14 +62,14 @@ namespace Backend.Inv
 
         public void removeNormalConnection()
         {
-            remove(NodeDTO.NORMALCONNECTION);
+            remove(InventoryItem.NORMALCONNECTION);
         }
 
         public bool placeGenerator()
         {
             if (canPlaceGenerator())
             {
-                place(NodeDTO.GENERATOR);
+                place(InventoryItem.GENERATOR);
                 return true;
             }
 
@@ -77,12 +78,12 @@ namespace Backend.Inv
 
         public void removeGenerator()
         {
-            remove(NodeDTO.GENERATOR);
+            remove(InventoryItem.GENERATOR);
         }
 
         public bool canPlaceGenerator()
         {
-            return nodesAvailable[NodeDTO.GENERATOR] > 0;
+            return nodesAvailable[InventoryItem.GENERATOR] > 0;
         }
     }
 }

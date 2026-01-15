@@ -214,9 +214,9 @@ namespace Backend.Simulation.World
             _storage.tick(tickCount, frontend);
         }
 
-        public int GetAmountPlaceable(NodeDTO nodeDTO)
+        public int GetAmountPlaceable(InventoryItem item)
         {
-            return _storage.inventory.getAmountPlaceable(nodeDTO);
+            return _storage.inventory.getAmountPlaceable(item);
         }
 
         public bool IsConnectionPathOccupied(int layerNum, Vector2Int[] cellsOfConnection)

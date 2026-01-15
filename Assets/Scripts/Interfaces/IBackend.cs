@@ -69,7 +69,7 @@ namespace Interfaces
         /**
          * returns the amount of the specific NodesDTO in the inventory
          */
-        int GetAmountPlaceable(NodeDTO nodeDTO);
+        int GetAmountPlaceable(InventoryItem item);
 
         // TimeLayer GetTimeLayer(int layerNum); //change time layer to whatever applies
         bool IsConnectionPathOccupied(int layerNum, Vector2Int[] cellsOfConnection);
@@ -83,6 +83,11 @@ namespace Interfaces
         RIPPLE,
         BLACK_HOLE,
         BLOCKADE,
+    }
+    public enum InventoryItem
+    {
+        GENERATOR,
+        UPGRADE_CARD,
         NORMALCONNECTION
     }
 }

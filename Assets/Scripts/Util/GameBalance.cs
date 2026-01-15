@@ -27,6 +27,7 @@ namespace Util
 
         // Inventory and Item Settings
         InitialGeneratorCount,
+        InitialUpgradeCardCount,
 
         // Stability Bar Settings
         StabilityMaxValue,
@@ -71,6 +72,7 @@ namespace Util
         
         [Header("Inventory and Item Settings")]
         public int initialGeneratorCount;
+        public int initialUpgradeCardCount;
         
         
         [Header("Stability Bar Settings")]
