@@ -23,7 +23,7 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
 
     [Header("Layer Management")] public TemporalLayerStack temporalLayerStack;
     public float layerDuplicationTime = 60f;
-    private Dictionary<int, CoordinatePlane> layerToCoordinatePlane = new();
+  
     private Dictionary<GUID, NodeVisual> nodeVisuals = new();
 
     private IBackend backend; // Link to backend
@@ -51,10 +51,6 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
         backend = new BackendImpl(this);
         if (energyPacketVisualizer == null) energyPacketVisualizer = FindObjectOfType<EnergyPacketVisualizer>();
         if (cameraController == null) cameraController = FindObjectOfType<CameraController>();
-
-        //get all existing layers in scene
-        var existingLayers = FindObjectsOfType<CoordinatePlane>();
-        foreach (var layer in existingLayers) layerToCoordinatePlane[layer.layerNum] = layer;
     }
 
     private void Update()
@@ -130,9 +126,7 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
 
     public bool AddTimeSlice(int sliceNum)
     {
-        CoordinatePlane newLayer = temporalLayerStack.AddNewFrame();
-        newLayer.layerNum = sliceNum;
-        layerToCoordinatePlane[sliceNum] = newLayer;
+        CoordinatePlane newLayer = temporalLayerStack.AddNewFrame(sliceNum);
         return true;
     }
 
@@ -180,11 +174,9 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
         return !backend.IsConnectionPathOccupied(layerNum,cellsOfConnection);
     }
 
-    public CoordinatePlane GetCoordinatePlane(int startPosLayer)
+    public CoordinatePlane GetCoordinatePlane(int layerNum)
     {
-        return layerToCoordinatePlane.ContainsKey(startPosLayer)
-            ? layerToCoordinatePlane[startPosLayer]
-            : null;
+        return temporalLayerStack.GetLayerByNum(layerNum);
     }
 
     public bool TryDrop(InventoryItem item)
@@ -211,7 +203,8 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
 
     public bool DestroyNode(GUID nodeID)
     {
-        layerToCoordinatePlane[nodeVisuals[nodeID].layerNum].RemoveNodeVisual(nodeVisuals[nodeID]);
+        CoordinatePlane layer = temporalLayerStack.GetLayerByNum(nodeVisuals[nodeID].layerNum);
+        layer.RemoveNodeVisual(nodeVisuals[nodeID]);
         bool result = backend.DeleteNode(nodeID);
         if (result) GeneratorDeleted?.Invoke();
         return result;

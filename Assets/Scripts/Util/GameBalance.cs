@@ -14,8 +14,8 @@ namespace Util
         // Node Settings
         NodeMaxHp,
         NodeMinHp,
-        NodeDrainRate,
-        NodeDrainTicks,
+        NodeHealthDrainRate,
+        NodeDrainHealthEveryNTicks,
         NodeSpawnIntervalPerSecond,
 
         // Node Stability Contribution
@@ -51,14 +51,17 @@ namespace Util
         [Header("Node Settings")]
         public int nodeMaxHp;
         public int nodeMinHp;
-        public int nodeDrainRate;
-        public int nodeDrainTicks;
+        [Tooltip("How much health this node drains per tick")]
+        public int nodeHealthDrainRate;
+        [Tooltip("every n ticks, node drains health")]
+        public int nodeDrainHealthEveryNTicks; //TODO fact check if its actually what it does
         public float nodeSpawnIntervalPerSecond;
+        [Tooltip("HP percent Threshold below which node starts to blink")]
         public float nodeBlinkThreshhold;
+        
         [Header("Node Stability Contribution")]
         [Tooltip("How much stability this node drains by existing (base value=")]
         public float baseStabilityDecreasePerNode;
-        [Tooltip("How much stability this node drains by existing (base value=")]
         [Min(0)]
         public float nodeStableThresholdPercentage;
         
@@ -66,8 +69,11 @@ namespace Util
         [Header("Layer Settings")]
         [Tooltip("Ticks. For example 3000 ticks at 50 TPS = 60 seconds")]
         public int layerDuplicationTime;
+        [Tooltip("Maximum number of layers allowed in the game")]
+        public int maxLayerCount;
         [Tooltip("Number of Cells in X and Y direction per layer")]
         public Vector2Int layerGridCellCount;
+        public int cellSize;
         
         
         [Header("Inventory and Item Settings")]

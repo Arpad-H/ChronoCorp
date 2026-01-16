@@ -105,9 +105,9 @@ namespace NodeBase
 
         public override void Tick(long tickCount, SimulationStorage storage)
         {
-            if (tickCount - lastEnergyDrainTick >= BalanceProvider.Balance.nodeDrainTicks)
+            if (tickCount - lastEnergyDrainTick >= BalanceProvider.Balance.nodeDrainHealthEveryNTicks)
             {
-                currentStability -= BalanceProvider.Balance.nodeDrainRate;
+                currentStability -= BalanceProvider.Balance.nodeHealthDrainRate;
                 if (currentStability < minStability)
                 {
                     currentStability = minStability;

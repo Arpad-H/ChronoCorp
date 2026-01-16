@@ -58,14 +58,14 @@ namespace Backend.Simulation.World
 
         public override void onActivation()
         {
-            int addedAmount = (int)(BalanceProvider.Balance.nodeDrainRate * DRAINRATE_INCREASE);
+            int addedAmount = (int)(BalanceProvider.Balance.nodeDrainHealthEveryNTicks * DRAINRATE_INCREASE);
             change = addedAmount;
-            BalanceProvider.Balance.nodeDrainRate += addedAmount;
+            BalanceProvider.Balance.nodeDrainHealthEveryNTicks += addedAmount;
         }
 
         public override void onDeactivation()
         {
-            BalanceProvider.Balance.nodeDrainRate -= change;
+            BalanceProvider.Balance.nodeDrainHealthEveryNTicks -= change;
         }
     }
     

@@ -33,7 +33,8 @@ namespace Backend.Simulation.World
         {
             Frontend = frontend;
             //timeSlices[0] = new TimeSlice(this);
-            timeSlices.Add(new TimeSlice(this, timeSliceNumCounter++, 0)); //prevents out of bounds since starts of with count 0
+            timeSlices.Add(new TimeSlice(this, timeSliceNumCounter++, 0));//prevents out of bounds since starts of with count 0
+            Frontend.AddTimeSlice(timeSliceNumCounter-1); //pre increment otherwise it would be desynced
         }
 
         public uint getTickSeed(long tickCount)
@@ -101,9 +102,8 @@ namespace Backend.Simulation.World
             for (var i = 0; i < _removeBuffer.Count; i++)
                 energyPackets.Remove(_removeBuffer[i]);
 
-            if (tickCount == BalanceProvider.Balance.layerDuplicationTime)
+            if (tickCount % BalanceProvider.Balance.layerDuplicationTime == 0 && tickCount != 0)
             {
-                //TODO slice number was hardcoded. added counter as quick solution
                 timeSlices.Add(new TimeSlice(this, timeSliceNumCounter++, BalanceProvider.Balance.layerDuplicationTime));
                 Frontend.AddTimeSlice(timeSliceNumCounter-1); //pre increment otherwise it would be desynced
             }
@@ -215,7 +215,7 @@ namespace Backend.Simulation.World
         public readonly int SliceNumber;
         private readonly long _tickPastDiff;
         public readonly NodeSpawner NodeSpawner;
-        public readonly TimeSliceGrid TimeSliceGrid = new(16,9,1);
+        public readonly TimeSliceGrid TimeSliceGrid = new(BalanceProvider.Balance.layerGridCellCount.x, BalanceProvider.Balance.layerGridCellCount.y, BalanceProvider.Balance.cellSize);
         public Dictionary<EnergyType, int> energyTypesAvailableInSimulation = new();
         private TimeSliceRunner _runner;
 

@@ -37,8 +37,8 @@ public class TemporalLayerStack : MonoBehaviour
 
     private Vector3 baseScale = new Vector3(16, 9, 1);
 
-
-    [Header("Cam Settings")] private List<CoordinatePlane> frames = new List<CoordinatePlane>();
+    private Dictionary<int, CoordinatePlane> layerToCoordinatePlane = new();
+   
 
     private void Awake()
     {
@@ -47,7 +47,7 @@ public class TemporalLayerStack : MonoBehaviour
 
     void Start()
     {
-        GenerateFrames();
+        //GenerateFrames();
         OnCameraModeChanged?.Invoke(cameraMode);
         baseScale = framePrefab.transform.localScale;
     }
@@ -71,7 +71,7 @@ public class TemporalLayerStack : MonoBehaviour
 
     void HandleCameraModeChanged(CameraMode newMode)
     {
-        GenerateFrames();
+       // GenerateFrames();
     }
 
     private void Update()
@@ -97,7 +97,7 @@ public class TemporalLayerStack : MonoBehaviour
                 DestroyImmediate(child.gameObject);
         }
 
-        frames.Clear();
+        layerToCoordinatePlane.Clear();
 
 
         switch (cameraMode)
@@ -128,7 +128,7 @@ public class TemporalLayerStack : MonoBehaviour
 
                     CoordinatePlane frame = InstantiatePrefab(pos, rot, $"SpiralFrame_{i}");
                     frame.layerNum = i;
-                    frames.Add(frame);
+                    layerToCoordinatePlane.Add(i, frame);
                 }
 
                 break;
@@ -173,7 +173,7 @@ public class TemporalLayerStack : MonoBehaviour
         }
     }
 
-    public CoordinatePlane AddNewFrame()
+    public CoordinatePlane AddNewFrame(int sliceNum)
     {
         // StartCoroutine(DelaySpawn());
         Vector3 pos;
@@ -241,8 +241,8 @@ public class TemporalLayerStack : MonoBehaviour
 
         if (frame)
         {
-            frame.layerNum = numberOfFrames;
-            frames.Add(frame);
+            frame.layerNum = sliceNum;
+            layerToCoordinatePlane.Add(sliceNum, frame); 
             numberOfFrames += 1;
         }
         return frame;
@@ -260,54 +260,49 @@ public class TemporalLayerStack : MonoBehaviour
 
         obj.transform.SetLocalPositionAndRotation(pos, rot);
         obj.name = objName;
-
-        frames.Add(obj);
         return obj;
     }
 
     public void UpdateCoverFlowFrames(float scrollDelta)
     {
-        if (cameraMode != CameraMode.CoverFlow) return;
-
-        // Move center index
-        centerIndex -= scrollDelta * scrollSpeed;
-        centerIndex = Mathf.Clamp(centerIndex, 0, numberOfFrames - 1);
-
-        for (int i = 0; i < numberOfFrames; i++)
-        {
-            float offset = i - centerIndex;
-
-            // Target position
-            float targetX = offset * coverFlowSpacing;
-            float targetZ = Mathf.Abs(offset) * sideZOffset;
-            Vector3 targetPos = new Vector3(targetX, 0, targetZ);
-
-            // Target rotation
-            float targetYRot = (Mathf.Abs(offset) < 0.01f)
-                ? 0f
-                : sideAngle * Mathf.Sign(offset) * Mathf.Min(Mathf.Abs(offset), 1f);
-            Quaternion targetRot = Quaternion.Euler(0f, targetYRot, 0f);
-
-            // Target scale
-            float targetScale = (Mathf.Abs(offset) < 0.01f)
-                ? 1f
-                : Mathf.Lerp(1f, sideScale, Mathf.Min(Mathf.Abs(offset), 1f));
-            Vector3 targetScl = baseScale * targetScale;
-
-            // DIRECTLY APPLY (no smoothing)
-            frames[i].transform.localPosition = targetPos;
-            frames[i].transform.localRotation = targetRot;
-            frames[i].transform.localScale = targetScl;
-        }
+        // if (cameraMode != CameraMode.CoverFlow) return;
+        //
+        // // Move center index
+        // centerIndex -= scrollDelta * scrollSpeed;
+        // centerIndex = Mathf.Clamp(centerIndex, 0, numberOfFrames - 1);
+        //
+        // for (int i = 0; i < numberOfFrames; i++)
+        // {
+        //     float offset = i - centerIndex;
+        //
+        //     // Target position
+        //     float targetX = offset * coverFlowSpacing;
+        //     float targetZ = Mathf.Abs(offset) * sideZOffset;
+        //     Vector3 targetPos = new Vector3(targetX, 0, targetZ);
+        //
+        //     // Target rotation
+        //     float targetYRot = (Mathf.Abs(offset) < 0.01f)
+        //         ? 0f
+        //         : sideAngle * Mathf.Sign(offset) * Mathf.Min(Mathf.Abs(offset), 1f);
+        //     Quaternion targetRot = Quaternion.Euler(0f, targetYRot, 0f);
+        //
+        //     // Target scale
+        //     float targetScale = (Mathf.Abs(offset) < 0.01f)
+        //         ? 1f
+        //         : Mathf.Lerp(1f, sideScale, Mathf.Min(Mathf.Abs(offset), 1f));
+        //     Vector3 targetScl = baseScale * targetScale;
+        //
+        //     // DIRECTLY APPLY (no smoothing)
+        //     frames[i].transform.localPosition = targetPos;
+        //     frames[i].transform.localRotation = targetRot;
+        //     frames[i].transform.localScale = targetScl;
+        // }
     }
 
     public CoordinatePlane GetLayerByNum(int nodeVisualLayerNum)
     {
-        foreach (CoordinatePlane layer in frames)
-        {
-            if (layer.layerNum == nodeVisualLayerNum)
-                return layer;
-        }
+        if (layerToCoordinatePlane.ContainsKey(nodeVisualLayerNum))
+            return layerToCoordinatePlane[nodeVisualLayerNum];
 
         return null;
     }

@@ -52,7 +52,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _EdgeSoftness: 0.01
-    - _HP: 0.3
+    - _HP: 0.75
     - _QueueControl: 0
     - _QueueOffset: 0
     - _StartOffset: 0
