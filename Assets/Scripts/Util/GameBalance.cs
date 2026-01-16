@@ -17,7 +17,8 @@ namespace Util
         NodeHealthDrainRate,
         NodeDrainHealthEveryNTicks,
         NodeSpawnIntervalPerSecond,
-
+        LayerModifierToNodeSpawnInterval,
+        
         // Node Stability Contribution
         BaseStabilityDecreasePerNode,
         NodeStableThresholdPercentage,
@@ -55,7 +56,10 @@ namespace Util
         public int nodeHealthDrainRate;
         [Tooltip("every n ticks, node drains health")]
         public int nodeDrainHealthEveryNTicks; //TODO fact check if its actually what it does
+        [Tooltip("How many seconds between spawns")]
         public float nodeSpawnIntervalPerSecond;
+        [Tooltip("Each layer when spawned adds this in seconds to the node spawn interval")]
+        public float layerModifierToNodeSpawnInterval;
         [Tooltip("HP percent Threshold below which node starts to blink")]
         public float nodeBlinkThreshhold;
         
@@ -118,6 +122,7 @@ namespace Util
                 Debug.LogError("Unknown StatType: " + type);
             }
         }
+        
         public void Multiply(StatType type, float factor)
         {
             string fieldName = type.ToString();

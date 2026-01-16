@@ -23,6 +23,8 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
     private bool sameLayerConnection = false;
     //  public LineRenderer lineRenderer;
     public SplineContainer splineContainer;
+    private SplineExtrude splineExtrude;
+    private MeshCollider meshCollider;
     
     private Spline spline;
     public GUID backendID;
@@ -39,8 +41,10 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
 
     void Awake()
     { 
-         pipeMaterial = renderer.material;
+        pipeMaterial = renderer.material;
         splineContainer = GetComponent<SplineContainer>();
+        splineExtrude = GetComponent<SplineExtrude>();
+        meshCollider = GetComponent<MeshCollider>();
         spline = splineContainer.Splines[0];
     }
 
@@ -235,6 +239,16 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
 
     private void SplineFromPath()
     {
+        if (path.Count>= 2)
+        {
+            splineExtrude.enabled = true;
+            meshCollider.enabled = true;
+        }
+        else
+        {
+            splineExtrude.enabled = false;
+            meshCollider.enabled = false;
+        }
         spline.Clear();
         planeA.occupiedPositions.Add(sourceNodeVisual.GetAttachPosition(Direction.Down)); //TODO check which direction ctrl f for direction bcs hardcoded down appears at 3 spots incl this one
         for (int i = 0; i < path.Count; i++)
@@ -258,17 +272,11 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
      //       mat.SetColor("_Color2", invalidColor);
         }
     }
-
-
-    public void Update()
-    {
-        // debugInfo = backendID.ToString();
-        // mat.SetFloat("_bulgePos", bulgePos*conduitLength); 
-    }
+    
 
     private void LateUpdate()
     {
-        if (positions.Length == 0) return;
+        if (positions.Length == 0) AddBulge(-1); // Dummy value to avoid shader errors
         // Pass the array to the shader
         pipeMaterial.SetFloatArray("_BulgePositions", positions);
         // Tell the shader how many elements in the array to actually loop through
@@ -350,5 +358,10 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
     {
         Array.Resize(ref positions, positions.Length + 1);
         positions[positions.Length - 1] = position * conduitLength;
+    }
+
+    public void RemoveBulge()
+    {
+        // Currently does nothing; bulges are removed automatically each frame
     }
 }

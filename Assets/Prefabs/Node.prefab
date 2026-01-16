@@ -159,8 +159,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7470352548723964567}
-  - component: {fileID: 8288689213988257622}
   - component: {fileID: 7323281664866462505}
+  - component: {fileID: 8393058502439382757}
   m_Layer: 0
   m_Name: Node
   m_TagString: Untagged
@@ -192,27 +192,6 @@ Transform:
   - {fileID: 2728269419760991098}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &8288689213988257622
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6574809473556729728}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 0.44
-  m_Center: {x: 0, y: 0, z: -0.35}
 --- !u!114 &7323281664866462505
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -242,6 +221,27 @@ MonoBehaviour:
   yellowGlowInactiveEffect: {fileID: 2100000, guid: a9b996ab353cd084d84ff3095a6c5db3, type: 2}
   ScreenEdgeIconPrefab: {fileID: 1225898907467027101, guid: c12da8f82d18fdf4896364294e880c33, type: 3}
   _renderer: {fileID: 3664991402655252295}
+--- !u!65 &8393058502439382757
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6574809473556729728}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.72005844, y: 0.6780486, z: 0.15824491}
+  m_Center: {x: 0.023613751, y: -0.050596535, z: -0.10690877}
 --- !u!1 &7526577072401849257
 GameObject:
   m_ObjectHideFlags: 0

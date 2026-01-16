@@ -130,6 +130,7 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
         if (newLayer && sliceNum != 0)
         {
             UIManager.Instance.ShowUpgradeChoiceMenu(BalanceProvider.Balance.upgradeCards);
+            BalanceProvider.Balance.nodeSpawnIntervalPerSecond += BalanceProvider.Balance.layerModifierToNodeSpawnInterval;
             return true;
         }
         return false;

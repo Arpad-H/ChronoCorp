@@ -33,16 +33,6 @@ public class EnergyPacketVisualizer : MonoBehaviour
     {
         EnergyPacketVisual ePVisual = pool.Get();
         ePVisual.guid = guid;
-    
-       // GUID? conduitID = backend.GetRippleConnectionOfEnergyPacket(guid);
-       
-       // // if (conduitID.HasValue)
-       //  {
-       //     
-       //      ConduitVisual conduit = ConduitVisualizer.Instance.GetConduitVisual(conduitID);
-       //      ePVisual.SetConduit(conduit);
-       //  } 
-       
         ePVisual.SetEnergyType(energyType);
         ePVisuals.Add(guid,ePVisual);
      
@@ -79,6 +69,7 @@ public class EnergyPacketVisualizer : MonoBehaviour
     {
         if (!ePVisuals.ContainsKey(guid)) return;
         EnergyPacketVisual ePVisual = ePVisuals[guid];
+        ePVisual.RemoveConduitBulge();
         ReleaseItem(ePVisual);
         ePVisuals.Remove(guid);
     }

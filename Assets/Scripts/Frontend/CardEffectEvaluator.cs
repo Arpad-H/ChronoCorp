@@ -16,6 +16,7 @@ namespace Frontend
         {
             foreach (var effect in upgradeCard.effects)
             {
+                
                 effect.Apply(BalanceProvider.Balance);
             }
         }

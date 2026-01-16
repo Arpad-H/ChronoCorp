@@ -14,16 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   energyPacketSpeed: 0.1
   energyPacketSpawnIntervalPerSecond: 2
-  energyPacketRechargeAmount: 10
+  energyPacketRechargeAmount: 25
   nodeMaxHp: 100
   nodeMinHp: 0
   nodeHealthDrainRate: 5
   nodeDrainHealthEveryNTicks: 60
   nodeSpawnIntervalPerSecond: 15
+  layerModifierToNodeSpawnInterval: 2
   nodeBlinkThreshhold: 0.25
   baseStabilityDecreasePerNode: 1
   nodeStableThresholdPercentage: 0.5
-  layerDuplicationTime: 100
+  layerDuplicationTime: 3000
   maxLayerCount: 99
   layerGridCellCount: {x: 16, y: 9}
   cellSize: 1
