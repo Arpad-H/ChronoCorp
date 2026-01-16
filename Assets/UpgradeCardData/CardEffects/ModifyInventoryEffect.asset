@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: ModifyInventoryEffect
   m_EditorClassIdentifier: 
   item: 0
-  amount: 3
+  amount: 2

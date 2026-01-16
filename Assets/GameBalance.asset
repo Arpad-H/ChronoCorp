@@ -19,15 +19,15 @@ MonoBehaviour:
   nodeMinHp: 0
   nodeHealthDrainRate: 5
   nodeDrainHealthEveryNTicks: 60
-  nodeSpawnIntervalPerSecond: 10
+  nodeSpawnIntervalPerSecond: 15
   nodeBlinkThreshhold: 0.25
   baseStabilityDecreasePerNode: 1
   nodeStableThresholdPercentage: 0.5
-  layerDuplicationTime: 300
+  layerDuplicationTime: 3000
   maxLayerCount: 99
   layerGridCellCount: {x: 16, y: 9}
   cellSize: 1
-  initialGeneratorCount: 10
+  initialGeneratorCount: 3
   initialUpgradeCardCount: 10
   stabilityMaxValue: 100
   stabilityMinValue: 0

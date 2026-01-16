@@ -127,7 +127,12 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
     public bool AddTimeSlice(int sliceNum)
     {
         CoordinatePlane newLayer = temporalLayerStack.AddNewFrame(sliceNum);
-        return true;
+        if (newLayer && sliceNum != 0)
+        {
+            UIManager.Instance.ShowUpgradeChoiceMenu(BalanceProvider.Balance.upgradeCards);
+            return true;
+        }
+        return false;
     }
 
     public void onNodeHealthChange(GUID id, int minValue, int maxValue, int currentValue)

@@ -1,7 +1,9 @@
 using System.Collections.Generic;
+using Frontend.UIComponents;
 using NaughtyAttributes;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class Generator : NodeVisual
 {
@@ -23,6 +25,24 @@ public class Generator : NodeVisual
             {Direction.Left, leftConnector},
             {Direction.Right, rightConnector}
         };
+    }
+    
+    protected override void HandlePointerClick()
+    {
+        DeleteButton deleteBtn = UIManager.Instance.SpawnDeleteButton(transform.position + Vector3.up);
+        deleteBtn.Init(() =>
+        {
+            if (GameFrontendManager.Instance.DestroyNode(backendID))
+            {
+                foreach (ConduitVisual conduit in new List<ConduitVisual>(connectedConduits))
+                {
+                    conduit.ConnectedNodeDestroyedConnection(this);
+                }
+
+                Destroy(this.gameObject);
+                Destroy(deleteBtn.gameObject);
+            }
+        });
     }
 
     // Update is called once per frame

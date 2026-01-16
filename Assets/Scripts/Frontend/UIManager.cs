@@ -18,8 +18,7 @@ public class UIManager : MonoBehaviour
     private UpgradeChoiceMenu upgradeChoiceMenuComponent;
     public GameObject cardChoiceMenu;
     
-    public List<UpgradeData> upgrades;
-    
+  
 
     void Awake()
     {
@@ -29,8 +28,7 @@ public class UIManager : MonoBehaviour
 
     private void Start()
     {
-        cardChoiceMenu.SetActive(true);
-        upgradeChoiceMenuComponent.ShowChoices(upgrades);
+       
     }
 
     public void ShowGameOver(string reason)
