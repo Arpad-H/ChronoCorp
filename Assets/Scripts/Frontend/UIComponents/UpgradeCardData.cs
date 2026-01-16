@@ -5,11 +5,12 @@ using NaughtyAttributes;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Upgrade/Card" )]
-public class UpgradeData : ScriptableObject
+public class UpgradeCardData : ScriptableObject
 {
     public string upgradeName;
     [TextArea] public string description;
     public Sprite icon;
-    [Expandable]
+    [SubclassSelector]
+    [SerializeReference]
     public List<UpgradeEffect> effects;
 }

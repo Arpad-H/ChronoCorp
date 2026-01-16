@@ -23,7 +23,7 @@ MonoBehaviour:
   nodeBlinkThreshhold: 0.25
   baseStabilityDecreasePerNode: 1
   nodeStableThresholdPercentage: 0.5
-  layerDuplicationTime: 3000
+  layerDuplicationTime: 100
   maxLayerCount: 99
   layerGridCellCount: {x: 16, y: 9}
   cellSize: 1

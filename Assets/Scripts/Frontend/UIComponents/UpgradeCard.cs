@@ -10,17 +10,17 @@ public class UpgradeCard : MonoBehaviour
     public TMP_Text descriptionText;
     public Button button;
     
-    UpgradeData data;
-    System.Action<UpgradeData> onSelected;
+    UpgradeCardData _cardData;
+    System.Action<UpgradeCardData> onSelected;
 
-    public void Init(UpgradeData upgrade, System.Action<UpgradeData> onSelectedCallback)
+    public void Init(UpgradeCardData upgradeCard, System.Action<UpgradeCardData> onSelectedCallback)
     {
-        data = upgrade;
+        _cardData = upgradeCard;
         onSelected = onSelectedCallback;
 
-        icon.sprite = data.icon;
-        titleText.text = data.upgradeName;
-        descriptionText.text = data.description;
+        icon.sprite = _cardData.icon;
+        titleText.text = _cardData.upgradeName;
+        descriptionText.text = _cardData.description;
 
         button.onClick.RemoveAllListeners();
         button.onClick.AddListener(Select);
@@ -28,6 +28,6 @@ public class UpgradeCard : MonoBehaviour
 
     void Select()
     {
-        onSelected?.Invoke(data);
+        onSelected?.Invoke(_cardData);
     }
 }

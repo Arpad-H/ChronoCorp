@@ -6,7 +6,7 @@ public class UpgradeChoiceMenu : MonoBehaviour
     public UpgradeCard cardPrefab;
     public Transform cardParent;
 
-    public void ShowChoices(List<UpgradeData> availableUpgrades)
+    public void ShowChoices(List<UpgradeCardData> availableUpgrades)
     {
         Clear();
 
@@ -14,17 +14,17 @@ public class UpgradeChoiceMenu : MonoBehaviour
         {
             //TODO decide if upgrades are random or sequential
             //   UpgradeData upgrade = availableUpgrades[Random.Range(0, availableUpgrades.Count)];
-            UpgradeData upgrade = availableUpgrades[i];
+            UpgradeCardData upgradeCard = availableUpgrades[i];
 
             UpgradeCard card = Instantiate(cardPrefab, cardParent);
-            card.Init(upgrade, OnUpgradeSelected);
+            card.Init(upgradeCard, OnUpgradeSelected);
         }
     }
 
-    void OnUpgradeSelected(UpgradeData upgrade)
+    void OnUpgradeSelected(UpgradeCardData upgradeCard)
     {
         
-        GameFrontendManager.Instance.UpgradeCardSelected(upgrade);
+        GameFrontendManager.Instance.UpgradeCardSelected(upgradeCard);
         gameObject.SetActive(false);
       
     }

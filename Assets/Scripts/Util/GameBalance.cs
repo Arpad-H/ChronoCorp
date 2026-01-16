@@ -98,7 +98,7 @@ namespace Util
         public Vector2 spiralGridminMaxCameraY;
         
         [Header("Upgrade Cards Settings")]
-        public List<UpgradeData> upgradeCards;
+        public List<UpgradeCardData> upgradeCards;
         
         
         

@@ -1,8 +1,9 @@
-﻿using Frontend;
+﻿using System;
+using Frontend;
 using UnityEngine;
 using Util;
 
-[CreateAssetMenu(menuName = "Upgrade/Add Stat")]
+[Serializable]
 public class AddValueToStatEffect : UpgradeEffect
 {
     public StatType stat;

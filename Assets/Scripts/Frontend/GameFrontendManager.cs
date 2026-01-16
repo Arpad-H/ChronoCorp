@@ -230,9 +230,9 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
         return backend.getValuesForStabilityMalusType(type, out threshold);
     }
 
-    public void UpgradeCardSelected(UpgradeData upgrade)
+    public void UpgradeCardSelected(UpgradeCardData upgradeCard)
     {
-        CardEffectEvaluator.ApplyEffect(upgrade);
+        CardEffectEvaluator.ApplyEffect(upgradeCard);
     }
 
     public float GetEnergyPacketProgress(GUID guid, out GUID? sourceNode, out GUID? targetNode, out GUID? conduitID)

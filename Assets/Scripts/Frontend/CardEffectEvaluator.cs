@@ -1,18 +1,20 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using Util;
 
 namespace Frontend
 {
-    public abstract class UpgradeEffect : ScriptableObject
+    [Serializable]
+    public abstract class UpgradeEffect
     {
         public abstract void Apply(GameBalance balance);
     }
   
     public static class CardEffectEvaluator
     {
-        public static void ApplyEffect(UpgradeData upgrade)
+        public static void ApplyEffect(UpgradeCardData upgradeCard)
         {
-            foreach (var effect in upgrade.effects)
+            foreach (var effect in upgradeCard.effects)
             {
                 effect.Apply(BalanceProvider.Balance);
             }

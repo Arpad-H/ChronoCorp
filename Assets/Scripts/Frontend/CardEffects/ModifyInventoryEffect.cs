@@ -1,9 +1,10 @@
-﻿using Frontend;
+﻿using System;
+using Frontend;
 using Interfaces;
 using UnityEngine;
 using Util;
 
-[CreateAssetMenu(menuName = "Upgrade/ModifyInventoryEffect")]
+[Serializable]
     public class ModifyInventoryEffect : UpgradeEffect
     {
         public InventoryItem item;  

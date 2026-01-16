@@ -45,7 +45,7 @@ public class UIManager : MonoBehaviour
         deleteNodeButton = Instantiate(deleteButtonPrefab, position, Quaternion.identity);
         return deleteNodeButton.GetComponent<DeleteButton>();
     }
-    public void ShowUpgradeChoiceMenu(List<UpgradeData> availableUpgrades)
+    public void ShowUpgradeChoiceMenu(List<UpgradeCardData> availableUpgrades)
     {
         cardChoiceMenu.SetActive(true);
         upgradeChoiceMenuComponent.ShowChoices(availableUpgrades);
