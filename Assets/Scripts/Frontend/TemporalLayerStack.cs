@@ -230,7 +230,7 @@ public class TemporalLayerStack : MonoBehaviour
 
             case CameraMode.SpiralGrid:
 
-                Vector2Int spiralPos = GetSpiralCoordinates(numberOfFrames);
+                Vector2Int spiralPos = GetSpiralCoordinates(sliceNum);
                 //  Vector2Int cellCount = BalanceProvider.Balance.layerGridCellCount;
                 pos = new Vector3(spiralPos.x * debugCellCount.x + spiralPos.x * spiralSpacing, 0,
                     spiralPos.y * debugCellCount.y + spiralPos.y * spiralSpacing);
@@ -309,38 +309,44 @@ public class TemporalLayerStack : MonoBehaviour
 
     private Vector2Int GetSpiralCoordinates(int n)
     {
-        if (n == 0)
-            return Vector2Int.zero;
-        n += 1;//0 based makes it spawn in the corner first. like this it spanws on the right side first
-        int layer = Mathf.FloorToInt((Mathf.Sqrt(n) + 1f) / 2f);
-        int legLen = layer * 2;
-        int legPos = n - (2 * layer - 1) * (2 * layer - 1);
+        if (n == 0) return Vector2Int.zero;
 
-        int x = 0;
-        int y = 0;
+        // 1. Determine which "ring" or layer we are in
+        // Layer 1 is the 3x3 square, Layer 2 is 5x5, etc.
+        int layer = Mathf.CeilToInt((Mathf.Sqrt(n + 1) - 1) / 2f);
+    
+        // 2. Determine the side length of the current layer
+        int sideLen = 2 * layer;
+    
+        // 3. Find the position within the current layer
+        // This tells us how many steps we've taken in the current ring
+        int innerOffset = (2 * layer - 1) * (2 * layer - 1);
+        int posInLayer = n - innerOffset;
 
-        if (legPos < legLen)
+        int x, y;
+
+        if (posInLayer < sideLen) 
         {
-            // Right edge (going down)
+            // Leg 1: Down the Right side
             x = layer;
-            y = layer - legPos;
+            y = (layer - 1) - posInLayer;
         }
-        else if (legPos < legLen * 2)
+        else if (posInLayer < sideLen * 2) 
         {
-            // Bottom edge (going left)
-            x = layer - (legPos - legLen);
+            // Leg 2: Left along the Bottom
+            x = layer - (posInLayer - sideLen + 1);
             y = -layer;
         }
-        else if (legPos < legLen * 3)
+        else if (posInLayer < sideLen * 3) 
         {
-            // Left edge (going up)
+            // Leg 3: Up the Left side
             x = -layer;
-            y = -layer + (legPos - legLen * 2);
+            y = -layer + (posInLayer - sideLen * 2 + 1);
         }
-        else
+        else 
         {
-            // Top edge (going right)
-            x = -layer + (legPos - legLen * 3);
+            // Leg 4: Right along the Top
+            x = -layer + (posInLayer - sideLen * 3 + 1);
             y = layer;
         }
 

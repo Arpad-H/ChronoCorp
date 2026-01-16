@@ -12,6 +12,4 @@ public class UpgradeData : ScriptableObject
     public Sprite icon;
     [Expandable]
     public List<UpgradeEffect> effects;
-
-   
 }
