@@ -38,6 +38,7 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
    
     public Color invalidColor;
     public Color previewColor;
+    public Color validColor;
 
     void Awake()
     { 
@@ -117,8 +118,8 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
         Color color2 = energyType.ToColor();
         float factor = Mathf.Pow(2,3);
         Color color1 = new Color(color2.r*factor, color2.g*factor, color2.b*factor, 1f);
-        // mat.SetColor("_Color", color1);
-        // mat.SetColor("_Color2", color2);
+        pipeMaterial.SetColor("_Color", color1);
+        pipeMaterial.SetColor("_Color2", color2);
     }
 
     public void StartNewConduitAtNode(NodeVisual nodeVisual,CoordinatePlane plane)
@@ -262,14 +263,21 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
             Vector3 planeLocalPos = planeA.ToPlaneLocal(planeA.WorldToLocal(path[i]));
             if (!planeA.IsPlaceOccupied(planeLocalPos)) planeA.occupiedPositions.Add(planeLocalPos);
         }
-
-        if (sameLayerConnection && GameFrontendManager.Instance.IsConnectionPathValid(sourceNodeVisual.layerNum, GetCellsOfConnection()))
+       
+        if (GameFrontendManager.Instance.IsConnectionPathValid(sourceNodeVisual.layerNum, GetCellsOfConnection()))
         {
-     //       mat.SetColor("_Color2", previewColor);
+            pipeMaterial.SetColor("_Color", previewColor);
+            pipeMaterial.SetColor("_Color2", previewColor);
+        }
+        else if (planeA.IsPlaceOccupied(planeA.ToPlaneLocal(planeA.WorldToLocal(path.Last()))) is TimeRipple ripple)
+        {
+            pipeMaterial.SetColor("_Color", validColor);
+            pipeMaterial.SetColor("_Color2", validColor);
         }
         else
         {
-     //       mat.SetColor("_Color2", invalidColor);
+            pipeMaterial.SetColor("_Color", invalidColor);
+            pipeMaterial.SetColor("_Color2", invalidColor);
         }
     }
     

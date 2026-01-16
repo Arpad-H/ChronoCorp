@@ -227,9 +227,10 @@ namespace Backend.Simulation.World
         {
             var timeSlice = byLayerNum(layerNum);
             var grid = timeSlice.TimeSliceGrid;
-
-            foreach (var cell in cellsOfConnection)
+            
+            for (int i = 1; i < cellsOfConnection.Length; i++) 
             {
+                var cell = cellsOfConnection[i];
                 if (grid.IsCellOccupied(cell, out var node, out var connection))
                 {
                     return true;

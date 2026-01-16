@@ -15,7 +15,7 @@ public class CoordinatePlane : MonoBehaviour
     public int layerNum = 0; //changed when bakcend spawns layer
      private IBackend _backend;
  
-     private List<GameObject> nodes = new List<GameObject>();
+     private List<NodeVisual> nodes = new List<NodeVisual>();
      public List<Vector3> occupiedPositions = new List<Vector3>();
      
     [Header("Prefabs")]
@@ -152,7 +152,7 @@ public class CoordinatePlane : MonoBehaviour
             }
             
         }
-        if(nv) nodes.Add(nv.gameObject);
+        if(nv) nodes.Add(nv);
         return nv;
     }
     
@@ -174,8 +174,9 @@ public class CoordinatePlane : MonoBehaviour
         if (!IsWithinBounds(localPos) || IsPlaceOccupied(localPos)) return null;
         obj = Instantiate(blackHolePrefab, nodeContainer);
         obj.transform.localPosition = localPos;
-        nodes.Add(obj);
-        return obj.GetComponent<BlackHole>();
+        BlackHole blackHole = obj.GetComponent<BlackHole>();
+        nodes.Add(blackHole);
+        return blackHole;
     }
     private Blockade PlaceBlockade(Vector2 planePos)
     {
@@ -184,8 +185,9 @@ public class CoordinatePlane : MonoBehaviour
         if (!IsWithinBounds(localPos) || IsPlaceOccupied(localPos)) return null;
         obj = Instantiate(blockadePrefab, nodeContainer);
         obj.transform.localPosition = localPos;
-        nodes.Add(obj);
-        return obj.GetComponent<Blockade>();
+        Blockade blockade = obj.GetComponent<Blockade>();
+        nodes.Add(blockade);
+        return blockade;
     }
     private Generator PlaceGenerator(Vector2 planePos)
     {
@@ -195,8 +197,9 @@ public class CoordinatePlane : MonoBehaviour
         if (!IsWithinBounds(localPos) || IsPlaceOccupied(localPos)) return null;
         obj = Instantiate(generatorPrefab, nodeContainer);
         obj.transform.localPosition = localPos;
-        nodes.Add(obj);
-        return obj.GetComponent<Generator>();
+        Generator generator = obj.GetComponent<Generator>();
+        nodes.Add(generator);
+        return generator;
     }
 
     private TimeRipple PlaceTimeRipple(Vector2 planePos, EnergyType energyType)
@@ -209,8 +212,8 @@ public class CoordinatePlane : MonoBehaviour
         obj.transform.localPosition = localPos;
         TimeRipple timeRipple = obj.GetComponent<TimeRipple>();
         timeRipple.SetEnergyType(energyType);
-        nodes.Add(obj);
-        return obj.GetComponent<TimeRipple>();
+        nodes.Add(timeRipple);
+        return timeRipple;
     }
 
     public Vector3 SnapToGrid(Vector3 position)
@@ -225,17 +228,17 @@ public class CoordinatePlane : MonoBehaviour
         return position.x >= minX && position.x <= maxX && position.y >= minY && position.y <= maxY;
     }
 
-    public bool IsPlaceOccupied(Vector3 position)
+    public NodeVisual IsPlaceOccupied(Vector3 position)
     {
-        foreach (GameObject node in nodes)
+        foreach (NodeVisual node in nodes)
         {
             if ((node.transform.localPosition - position).magnitude < 0.1f)
             {
-                return true;
+                return node;
             }
         }
 
-        return false;
+        return null;
     }
 
     // public Vector3 LocalToWorldPosition(Vector3 localPos)
@@ -263,6 +266,6 @@ public class CoordinatePlane : MonoBehaviour
 
     public void RemoveNodeVisual(NodeVisual nodeVisual)
     {
-        nodes.Remove(nodeVisual.gameObject);
+        nodes.Remove(nodeVisual);
     }
 }
