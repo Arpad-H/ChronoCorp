@@ -158,7 +158,7 @@ namespace Backend.Simulation.World
             for (var i = 0; i < _removeBuffer.Count; i++)
                 energyPackets.Remove(_removeBuffer[i]);
 
-            if (tickCount % BalanceProvider.Balance.layerDuplicationTime == 0 && tickCount != 0)
+            if (tickCount % BalanceProvider.Balance.layerDuplicationTime == 0 && tickCount != 0 && timeSlices.Count < BalanceProvider.Balance.maxLayerCount)
             {
                 int newTimeSliceNumber = timeSliceNumCounter++;
                 timeSlices.Add(new TimeSlice(this, newTimeSliceNumber, newTimeSliceNumber * BalanceProvider.Balance.layerDuplicationTime));
