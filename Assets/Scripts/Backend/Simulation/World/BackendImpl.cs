@@ -72,7 +72,7 @@ namespace Backend.Simulation.World
             var sliceA = getTimeSliceOfNodeByGuid(a);
             var sliceB = getTimeSliceOfNodeByGuid(b);
 
-            if (sliceA == null || sliceA != sliceB)
+            if (sliceA == null || sliceB == null)
                 return null;
 
             var grid = sliceA.TimeSliceGrid;
