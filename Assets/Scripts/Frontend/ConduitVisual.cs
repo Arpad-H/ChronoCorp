@@ -249,6 +249,10 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
             spline.Add(startKnot);
             spline.Add(midKnot);
             spline.Add(endKnot);
+            path.Add(A);
+            path.Add(mid);
+            path.Add(B);
+            
 
         }
         
@@ -335,7 +339,7 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
             pipeMaterial.SetColor("_Color2", invalidColor);
         }
 
-        Debug.Log("Finalized conduit on same layer with cells: " + string.Join(", ", GetCellsOfConnection()));
+      //  Debug.Log("Finalized conduit on same layer with cells: " + string.Join(", ", GetCellsOfConnection()));
     }
 
 
@@ -375,6 +379,24 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
     public Vector2Int[] GetCellsOfConnection()
     {
         List<Vector2Int> cells = new List<Vector2Int>();
+        if (!sameLayerConnection)
+        {
+            Vector3 startPos =path [0];
+            Vector3 endPos = path [path.Count - 1];
+            Vector3 localStartPos = planeA.WorldToLocal(startPos);
+            Vector2 startCell = planeA.ToPlaneLocal(localStartPos);
+            Vector3 localEndPos = planeB.WorldToLocal(endPos);
+            Vector2 endCell = planeB.ToPlaneLocal(localEndPos);
+            localStartPos -= new Vector3(0.5f, 0.5f, 0); // Adjust for cell center
+            localEndPos -= new Vector3(0.5f, 0.5f, 0); // Adjust for cell center
+            int startX = Mathf.RoundToInt(localStartPos.x);
+            int startY = Mathf.RoundToInt(localStartPos.y);
+            int endX = Mathf.RoundToInt(localEndPos.x);
+            int endY = Mathf.RoundToInt(localEndPos.y);
+            cells.Add( new Vector2Int(startX, startY));
+            cells.Add( new Vector2Int(endX, endY));
+            return cells.ToArray();
+        }
         foreach (var worldPos in path)
         {
             Vector3 localPos = planeA.WorldToLocal(worldPos);
@@ -429,10 +451,35 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
         Direction dir = CalculateAttachDircection();
         SetPreviewPosition(targetNodeVisual.GetAttachPosition(dir), GameFrontendManager.Instance.temporalLayerStack.GetLayerByNum(targetNodeVisual.layerNum));
         SetConduitEnergyType();
-        path.Clear();
+        planeA = GameFrontendManager.Instance.temporalLayerStack.GetLayerByNum(sourceNodeVisual.layerNum);
+        planeB = GameFrontendManager.Instance.temporalLayerStack.GetLayerByNum(targetNodeVisual.layerNum);
+        sameLayerConnection = planeA.layerNum == planeB.layerNum;
+        path = CellsToWorldPositions(cellsOfConnection);
         sourceNodeVisual.AddConnectedConduit(this,dir);
         targetNodeVisual.AddConnectedConduit(this,dir);
         conduitLength = spline.GetLength();
+    }
+
+    private List<Vector3> CellsToWorldPositions(Vector2Int[] cellsOfConnection)
+    {
+        List<Vector3> worldPositions = new List<Vector3>();
+        if (!sameLayerConnection)
+        {
+            Vector2 startCell =cellsOfConnection [0];
+            Vector2 endCell = cellsOfConnection[cellsOfConnection.Length - 1];
+            Vector3 startWorldPos = planeA.GridToWorldPosition(startCell);
+            Vector3 endWorldPos = planeB.GridToWorldPosition(endCell);
+            worldPositions.Add(startWorldPos);
+            worldPositions.Add(endWorldPos);
+            return worldPositions;
+        }
+        foreach (var cell in cellsOfConnection)
+        {
+            Vector2 localPos = new Vector2(cell.x, cell.y ); 
+            Vector3 worldPos = planeA.GridToWorldPosition(localPos);
+            worldPositions.Add(worldPos);
+        }
+        return worldPositions;
     }
 
     public void AddBulge(float position)

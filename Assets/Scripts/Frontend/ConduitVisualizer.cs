@@ -116,6 +116,8 @@ public class ConduitVisualizer : MonoBehaviour
 
     private void CompleteConduit(NodeVisual endNodeVisual)
     {
+        previewConduitVisual.planeB =
+            GameFrontendManager.Instance.temporalLayerStack.GetLayerByNum(endNodeVisual.layerNum);
         GUID? conduitBackendID =
             GameFrontendManager.Instance.IsValidConduit(previewConduitVisual.sourceNodeVisual, endNodeVisual,
                 previewConduitVisual.GetCellsOfConnection(),previewConduitVisual.bridgesBuilt);
