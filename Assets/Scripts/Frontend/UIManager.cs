@@ -28,7 +28,15 @@ public class UIManager : MonoBehaviour
 
     private void Start()
     {
-       
+       InputManager.Instance.OnRightClick += CancelDeleteButton;
+    }
+
+    private void CancelDeleteButton()
+    {
+        if (deleteNodeButton != null)
+        {
+            Destroy(deleteNodeButton);
+        }
     }
 
     public void ShowGameOver(string reason)

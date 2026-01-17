@@ -22,9 +22,12 @@ MonoBehaviour:
   nodeSpawnIntervalPerSecond: 15
   layerModifierToNodeSpawnInterval: 2
   nodeBlinkThreshhold: 0.25
+  blackHoleStabilityDrainRate: 0
+  blackHoleDrainEveryNTicks: 0
+  blackHoleEnergyPacketConsumeAmount: 0
   baseStabilityDecreasePerNode: 1
   nodeStableThresholdPercentage: 0.5
-  layerDuplicationTime: 3000
+  layerDuplicationTime: 500
   maxLayerCount: 99
   layerGridCellCount: {x: 16, y: 9}
   cellSize: 1
