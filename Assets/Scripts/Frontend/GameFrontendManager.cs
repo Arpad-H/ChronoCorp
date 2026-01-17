@@ -97,8 +97,9 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
 
     public void DeleteNode(GUID nodeId)
     {
-       //TODO: Please implement!
-       throw new NotImplementedException("Please implement deleteNode on the frontend!");
+       CoordinatePlane layer = temporalLayerStack.GetLayerByNum(nodeVisuals[nodeId].layerNum);
+       layer.RemoveNodeVisual(nodeVisuals[nodeId]);
+       GeneratorDeleted?.Invoke();
     }
 
     public void CreateConnection(GUID backendIdA, GUID backendIdB, GUID connectionId, Vector2Int[] cellsOfConnection)
