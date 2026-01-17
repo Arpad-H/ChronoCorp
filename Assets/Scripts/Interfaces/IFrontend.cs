@@ -21,6 +21,11 @@ namespace Interfaces
         void DeleteConnection(GUID connectionId);
         
         /**
+         * Tells the frontend to delete a node
+         */
+        void DeleteNode(GUID nodeId);
+        
+        /**
          * Tells the frontend to connect two nodes
          */
         void CreateConnection(GUID backendIdA, GUID backendIdB, GUID connectionId, Vector2Int[] cellsOfConnection); 
