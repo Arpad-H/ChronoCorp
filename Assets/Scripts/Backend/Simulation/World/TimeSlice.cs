@@ -412,17 +412,22 @@ namespace Backend.Simulation.World
             }
             _simulationStorage.Frontend.DeleteConnection(connection.guid);
 
-            var newNode = new BlockadeNodeInstance(cellPos);
+            BlockadeNodeInstance newNode = new BlockadeNodeInstance(cellPos);
             newNode.currentTimeSlice = this;
             TimeSliceGrid.Add(newNode);
             addNodeToMapping(newNode);
-            
             var startConID = _simulationStorage.link(nodeStart.guid, newNode.guid, newConnectionStartToBlockade.ToArray());
-            _simulationStorage.Frontend.CreateConnection(connection.guid, newNode.guid, (GUID)startConID, newConnectionStartToBlockade.ToArray());
-            
             var endConID = _simulationStorage.link(newNode.guid, nodeFinish.guid, newConnectionBlockadeToFinish.ToArray());
-            _simulationStorage.Frontend.CreateConnection(newNode.guid, nodeFinish.guid, (GUID)endConID, newConnectionBlockadeToFinish.ToArray());
 
+            if (startConID == null || endConID == null)
+            {
+                throw new Exception("Could n't link node to start or end node!");
+            }
+
+            _simulationStorage.Frontend.PlaceNodeVisual(newNode.guid, newNode.NodeType.NodeDTO, this.SliceNumber, new Vector2(newNode.Pos.x, newNode.Pos.y), EnergyType.WHITE);
+            _simulationStorage.Frontend.CreateConnection(nodeStart.guid, newNode.guid, (GUID)startConID, newConnectionStartToBlockade.ToArray());
+            _simulationStorage.Frontend.CreateConnection(newNode.guid, nodeFinish.guid, (GUID)endConID, newConnectionBlockadeToFinish.ToArray());
+            
             blockadeNodeInstance = newNode;
             return blockadeNodeInstance.guid;
         }
