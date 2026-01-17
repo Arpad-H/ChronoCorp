@@ -49,6 +49,7 @@ namespace Backend.Simulation.World
                 return true;
 
             node = _nodes[cell.x, cell.y];
+            connection = _connections[cell.x, cell.y].Count == 0 ? null : _connections[cell.x, cell.y];
 
             return node != null || connection != null;
         }
