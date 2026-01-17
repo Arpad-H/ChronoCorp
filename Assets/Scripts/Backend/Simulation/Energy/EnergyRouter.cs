@@ -13,8 +13,6 @@ namespace Backend.Simulation.Energy
         {
             var result = new Dictionary<Output, OutputRouteStorage>();
 
-            Debug.Log("Creating energy routes for " + generator.guid);
-
             foreach (var output in generator.totalOutputs) result[output] = createEnergyRoute(output);
 
             return result;
