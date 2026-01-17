@@ -40,5 +40,10 @@ namespace NodeBase
         {
             return Connections;
         }
+
+        public EnergyType getAcceptedEnergyType()
+        {
+            return EnergyType.WHITE;
+        }
     }
 }

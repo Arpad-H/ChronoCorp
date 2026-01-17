@@ -186,8 +186,8 @@ namespace Backend.Simulation.World
             if (node1 is GeneratorInstance generator1 && node2 is GeneratorInstance generator2) return null;
             if (node1 is NodeWithConnections ripple1 && node2 is NodeWithConnections ripple2)
             {
-                var eType1 = ((TimeRippleInstance)ripple1).EnergyType;
-                var eType2 = ((TimeRippleInstance)ripple2).EnergyType;
+                var eType1 = ripple1.getAcceptedEnergyType();
+                var eType2 = ripple2.getAcceptedEnergyType();
 
                 if (!eType1.Equals(EnergyType.WHITE) && !eType2.Equals(EnergyType.WHITE) &&
                     !eType1.Equals(eType2)) return null;

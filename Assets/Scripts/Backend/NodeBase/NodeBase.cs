@@ -9,6 +9,7 @@ namespace NodeBase
     public interface NodeWithConnections
     {
         public List<Connection> getConnections();
+        public EnergyType getAcceptedEnergyType();
 
         public bool HasDirectConnectionTo(AbstractNodeInstance anyNode)
         {

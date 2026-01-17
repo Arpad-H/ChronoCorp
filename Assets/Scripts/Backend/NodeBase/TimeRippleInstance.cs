@@ -34,6 +34,11 @@ namespace NodeBase
             return Connections;
         }
 
+        public EnergyType getAcceptedEnergyType()
+        {
+            return EnergyType;
+        }
+
         public override void Tick(long tickCount, SimulationStorage storage)
         {
             if (tickCount - lastEnergyDrainTick >= BalanceProvider.Balance.nodeDrainHealthEveryNTicks)
