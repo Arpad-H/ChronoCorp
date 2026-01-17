@@ -28,7 +28,7 @@ MonoBehaviour:
   baseStabilityDecreasePerNode: 1
   nodeStableThresholdPercentage: 0.5
   layerDuplicationTime: 500
-  maxLayerCount: 99
+  maxLayerCount: 2
   layerGridCellCount: {x: 16, y: 9}
   cellSize: 1
   initialGeneratorCount: 3
