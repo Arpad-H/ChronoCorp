@@ -26,10 +26,6 @@ namespace Util
         // Layer Settings
         LayerDuplicationTime,
 
-        // Inventory and Item Settings
-        InitialGeneratorCount,
-        InitialUpgradeCardCount,
-
         // Stability Bar Settings
         StabilityMaxValue,
         StabilityDecreaseValue,
@@ -83,6 +79,7 @@ namespace Util
         [Header("Inventory and Item Settings")]
         public int initialGeneratorCount;
         public int initialUpgradeCardCount;
+        public int initialBridgeCount;
         
         
         [Header("Stability Bar Settings")]

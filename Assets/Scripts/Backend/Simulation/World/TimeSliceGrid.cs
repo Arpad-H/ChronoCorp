@@ -10,7 +10,7 @@ namespace Backend.Simulation.World
     public class TimeSliceGrid
     {
         private readonly AbstractNodeInstance[,] _nodes;
-        private readonly Connection[,] _connections;
+        private readonly List<Connection>[,] _connections;
         
         private readonly Dictionary<GUID, List<Vector2Int>> _connectionCellsById = new();
         private readonly int width;
@@ -23,17 +23,24 @@ namespace Backend.Simulation.World
             this.height = height;
             this.cellSize = cellSize;
             _nodes = new AbstractNodeInstance[width, height];
-            _connections = new Connection[width, height];
+            _connections = new List<Connection>[width, height];
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    _connections[x, y] = new List<Connection>();
+                }
+            }
         }
         
         #region Occupancy
 
-        public bool IsCellOccupied(Vector2 cell, out AbstractNodeInstance node, out Connection connection)
+        public bool IsCellOccupied(Vector2 cell, out AbstractNodeInstance node, out List<Connection> connection)
         {
             return IsCellOccupied(WorldToCell(cell), out node, out connection);
         }
 
-        public bool IsCellOccupied(Vector2Int cell, out AbstractNodeInstance node, out Connection connection)
+        public bool IsCellOccupied(Vector2Int cell, out AbstractNodeInstance node, out List<Connection> connection)
         {
             node = null;
             connection = null;
@@ -42,7 +49,6 @@ namespace Backend.Simulation.World
                 return true;
 
             node = _nodes[cell.x, cell.y];
-            connection = _connections[cell.x, cell.y];
 
             return node != null || connection != null;
         }
@@ -53,7 +59,7 @@ namespace Backend.Simulation.World
                 return true;
 
             var node = _nodes[cell.x, cell.y];
-            var connection = _connections[cell.x, cell.y];
+            var connection = _connections[cell.x, cell.y].Count == 0 ? null : _connections[cell.x, cell.y];
 
             return node != null || connection != null;
         }
@@ -151,8 +157,11 @@ namespace Backend.Simulation.World
             Connection connection,
             Vector2Int[] cells,
             AbstractNodeInstance endpointA,
-            AbstractNodeInstance endpointB)
+            AbstractNodeInstance endpointB,
+            int bridgesBuilt)
+            
         {
+            int numOfConnectionsCrossed = 0;
             foreach (var cell in cells)
             {
                 if (!IsInside(new Vector2Int((int)cell.x, (int)cell.y))) {
@@ -165,8 +174,12 @@ namespace Backend.Simulation.World
                     continue;
 
                 if (IsCellOccupied(cell, out _, out _)) {
-                    Debug.Log("A cell of the connection is occupied!");
-                    return false;
+                    numOfConnectionsCrossed++;
+                    if (numOfConnectionsCrossed > bridgesBuilt)
+                    {
+                        Debug.Log("A cell of the connection is occupied!");
+                        return false;
+                    }
                 }
             }
 
@@ -178,7 +191,7 @@ namespace Backend.Simulation.World
 
                 var cellInt = WorldToCell(cell);
                 
-                _connections[cellInt.x, cellInt.y] = connection;
+                _connections[cellInt.x, cellInt.y].Add( connection);
                 cellsToConnect.Add(cellInt);
             }
 
@@ -195,9 +208,14 @@ namespace Backend.Simulation.World
             {
                 if (!IsInside(cell))
                     continue;
-
-                if (_connections[cell.x, cell.y]?.guid == connectionId)
-                    _connections[cell.x, cell.y] = null;
+                foreach (var conn in _connections[cell.x, cell.y])
+                {
+                    if (conn.guid == connectionId)
+                    {
+                        _connections[cell.x, cell.y].Remove(conn);
+                        break;
+                    }
+                }
             }
 
             _connectionCellsById.Remove(connectionId);

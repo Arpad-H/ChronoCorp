@@ -38,7 +38,8 @@ public class ConduitVisualizer : MonoBehaviour
         GameFrontendManager.Instance.BackendCreatesConnection += OnBackendCreatesConnection;
     }
 
-    private void OnBackendCreatesConnection(GUID backendIdA, GUID backendIdB, GUID connectionId, Vector2Int[] cellsOfConnection)
+    private void OnBackendCreatesConnection(GUID backendIdA, GUID backendIdB, GUID connectionId,
+        Vector2Int[] cellsOfConnection)
     {
         ConduitVisual conduitVisual = pool.Get();
         conduitVisual.InitializeNewConduit(backendIdA, backendIdB, connectionId, cellsOfConnection);
@@ -54,6 +55,8 @@ public class ConduitVisualizer : MonoBehaviour
 
     private void OnGet(ConduitVisual conduitVisual)
     {
+        conduitVisual.Reset();
+        conduitVisual.conduitVisualizer = this;
         conduitVisual.gameObject.SetActive(true);
     }
 
@@ -87,7 +90,8 @@ public class ConduitVisualizer : MonoBehaviour
     {
         if (previewConduitVisual) return; // Already dragging
         previewConduitVisual = pool.Get();
-        previewConduitVisual.StartNewConduitAtNode(nodeVisual,GameFrontendManager.Instance.temporalLayerStack.GetLayerByNum(nodeVisual.layerNum));
+        previewConduitVisual.StartNewConduitAtNode(nodeVisual,
+            GameFrontendManager.Instance.temporalLayerStack.GetLayerByNum(nodeVisual.layerNum));
     }
 
     // Resets the drag state
@@ -105,7 +109,7 @@ public class ConduitVisualizer : MonoBehaviour
                 return;
             }
         }
-       
+
         ReleaseItem(previewConduitVisual);
         previewConduitVisual = null;
     }
@@ -113,16 +117,19 @@ public class ConduitVisualizer : MonoBehaviour
     private void CompleteConduit(NodeVisual endNodeVisual)
     {
         GUID? conduitBackendID =
-            GameFrontendManager.Instance.IsValidConduit(previewConduitVisual.sourceNodeVisual, endNodeVisual, previewConduitVisual.GetCellsOfConnection());
+            GameFrontendManager.Instance.IsValidConduit(previewConduitVisual.sourceNodeVisual, endNodeVisual,
+                previewConduitVisual.GetCellsOfConnection(),previewConduitVisual.bridgesBuilt);
         if (conduitBackendID != null)
         {
-            previewConduitVisual.FinalizeConduit(endNodeVisual, conduitBackendID.Value);
-            conduitVisuals.Add(conduitBackendID.Value, previewConduitVisual);
-            previewConduitVisual = null;
-            return;
+            if (previewConduitVisual.FinalizeConduit(endNodeVisual, conduitBackendID.Value))
+            {
+                conduitVisuals.Add(conduitBackendID.Value, previewConduitVisual);
+                previewConduitVisual = null;
+                return;
+            }
         }
 
-        //else invalid conduit, cancel
+        //else invalid conduit, cancel 
         ReleaseItem(previewConduitVisual);
         previewConduitVisual = null;
     }
@@ -139,7 +146,7 @@ public class ConduitVisualizer : MonoBehaviour
                 GameObject hitObject = raycastHit.collider.gameObject;
 
                 CoordinatePlane frame = hitObject.GetComponentInParent<CoordinatePlane>();
-                if (frame) previewConduitVisual.SetPreviewPosition(lineEnd, frame); 
+                if (frame) previewConduitVisual.SetPreviewPosition(lineEnd, frame);
             }
         }
     }

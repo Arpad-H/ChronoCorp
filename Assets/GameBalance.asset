@@ -30,6 +30,7 @@ MonoBehaviour:
   cellSize: 1
   initialGeneratorCount: 3
   initialUpgradeCardCount: 10
+  initialBridgeCount: 1
   stabilityMaxValue: 100
   stabilityMinValue: 0
   stabilityDecreaseValue: 0

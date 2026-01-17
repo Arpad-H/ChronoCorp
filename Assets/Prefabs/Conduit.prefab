@@ -161,6 +161,7 @@ MonoBehaviour:
   targetNodeVisual: {fileID: 0}
   planeA: {fileID: 0}
   planeB: {fileID: 0}
+  bridgePrefab: {fileID: 1577139832588222046, guid: 34fba79cbe42b1c4cb0f955b1036d087, type: 3}
   splineContainer: {fileID: 0}
   renderer: {fileID: 4147508576704826286}
   positions: []

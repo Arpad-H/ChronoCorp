@@ -54,7 +54,7 @@ Material:
     - _QueueControl: 0
     - _QueueOffset: 0
     m_Colors:
-    - _Color: {r: 0.5773585, g: 0.5773585, b: 0.5773585, a: 1}
-    - _ShadowColor: {r: 0.5018867, g: 0.5018867, b: 0.5018867, a: 0}
+    - _Color: {r: 0.3027767, g: 0.9169811, b: 0.38329166, a: 1}
+    - _ShadowColor: {r: 0, g: 0.6754716, b: 0.038533393, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

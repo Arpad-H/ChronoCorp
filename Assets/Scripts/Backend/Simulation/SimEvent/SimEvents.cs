@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Backend.Simulation.World;
 using NodeBase;
 using UnityEngine;
@@ -159,7 +160,12 @@ namespace Backend.Simulation.SimEvent
                     }
                     else if (connection != null)
                     {
-                        slice.spawnBlockadeInConnection(connection, _pos, out var newBlockade);
+                        if (connection.Count > 1)
+                        {
+                            Debug.LogWarning("Cannot spawn Blockade because connection is a bridge with 2 connections in the cell at "+_pos+" in slice "+slice.SliceNumber);
+                            return;
+                        }
+                        slice.spawnBlockadeInConnection(connection.First(), _pos, out var newBlockade);
                         storage.Frontend.PlaceNodeVisual(newBlockade.guid, newBlockade.NodeType.NodeDTO, slice.SliceNumber, new Vector2(_pos.x, _pos.y), _energyType);
                     }
                 }

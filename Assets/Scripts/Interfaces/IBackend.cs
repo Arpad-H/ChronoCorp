@@ -32,7 +32,7 @@ namespace Interfaces
          * Returns true and a connection uid if the nodes could be connected.
          * Otherwise, returns false and null.
          */
-        GUID? LinkNodes(GUID backendIdA, GUID backendIdB, Vector2Int[] cellsOfConnection);
+        GUID? LinkNodes(GUID backendIdA, GUID backendIdB, Vector2Int[] cellsOfConnection, int bridgesBuilt);
 
         /**
          * Upgrades a generator by adding an output. Maximum is 4. If 4 is already reached or the provided guid does not belong to a generator the method returns false.
@@ -93,6 +93,7 @@ namespace Interfaces
     {
         GENERATOR,
         UPGRADE_CARD,
-        NORMALCONNECTION
+        NORMALCONNECTION,
+        BRIDGE
     }
 }

@@ -19,7 +19,7 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
     
     public static GameFrontendManager Instance;
     public CameraController cameraController;
-
+   
 
     [Header("Layer Management")] public TemporalLayerStack temporalLayerStack;
     public float layerDuplicationTime = 60f;
@@ -170,10 +170,10 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
 
         return false;
     }
-    public GUID? IsValidConduit(NodeVisual a, NodeVisual b, Vector2Int[] cellsOfConnection)
+    public GUID? IsValidConduit(NodeVisual a, NodeVisual b, Vector2Int[] cellsOfConnection,int bridgesBuilt)
     {
         if (!a || !b || a == b) return null;
-        return backend.LinkNodes(a.backendID, b.backendID, cellsOfConnection);
+        return backend.LinkNodes(a.backendID, b.backendID, cellsOfConnection, bridgesBuilt);
     }
     public bool IsConnectionPathValid(int layerNum,  Vector2Int[] cellsOfConnection)
     {
@@ -202,7 +202,7 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
         cameraController.RaycastForFirst(out rh); 
         var nodeVisual = rh.collider.GetComponent<Generator>(); //TODO Currently only generators can be upgraded
         if (nodeVisual == null) return false; // Not hovering over a node
-
+        
         nodeVisual.UpgradeNode();
         return true;
     }

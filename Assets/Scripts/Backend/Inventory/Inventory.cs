@@ -13,40 +13,41 @@ namespace Backend.Inv
         {
             [InventoryItem.NORMALCONNECTION] = STARTNUMBER_OF_CONNECTIONS,
             [InventoryItem.GENERATOR] = BalanceProvider.Balance.initialGeneratorCount,
-            [InventoryItem.UPGRADE_CARD] = BalanceProvider.Balance.initialUpgradeCardCount
+            [InventoryItem.UPGRADE_CARD] = BalanceProvider.Balance.initialUpgradeCardCount,
+            [InventoryItem.BRIDGE] = BalanceProvider.Balance.initialBridgeCount
         };
     }
     public class Inventory
     {
-        public Dictionary<InventoryItem, int> nodesAvailable = new();
+        public Dictionary<InventoryItem, int> inventoryItemsAvailable = new();
         public static GameFrontendManager Instance;
         
         public Inventory()
         {
-            foreach (var key in InventoryConfig.startConf.Keys) nodesAvailable.Add(key, InventoryConfig.startConf[key]);
+            foreach (var key in InventoryConfig.startConf.Keys) inventoryItemsAvailable.Add(key, InventoryConfig.startConf[key]);
         }
 
         private void place(InventoryItem item)
         {
-            nodesAvailable[item]--;
+            inventoryItemsAvailable[item]--;
         }
 
         private void remove(InventoryItem item)
         {
-            nodesAvailable[item]++;
+            inventoryItemsAvailable[item]++;
         }
 
 
         public int getAmountPlaceable(InventoryItem item)
         {
-            if (nodesAvailable.ContainsKey(item)) return nodesAvailable[item];
+            if (inventoryItemsAvailable.ContainsKey(item)) return inventoryItemsAvailable[item];
 
             return 0;
         }
 
         public bool canPlaceNormalConnection()
         {
-            return nodesAvailable[InventoryItem.NORMALCONNECTION] > 0;
+            return inventoryItemsAvailable[InventoryItem.NORMALCONNECTION] > 0;
         }
 
         public bool placeNormalConnection()
@@ -83,15 +84,15 @@ namespace Backend.Inv
 
         public bool canPlaceGenerator()
         {
-            return nodesAvailable[InventoryItem.GENERATOR] > 0;
+            return inventoryItemsAvailable[InventoryItem.GENERATOR] > 0;
         }
 
         public int addItem(InventoryItem item, int amount)
         {
-            if (!nodesAvailable.ContainsKey(item))
-                nodesAvailable[item] = 0;
-            nodesAvailable[item] += amount;
-            return nodesAvailable[item];
+            if (!inventoryItemsAvailable.ContainsKey(item))
+                inventoryItemsAvailable[item] = 0;
+            inventoryItemsAvailable[item] += amount;
+            return inventoryItemsAvailable[item];
         }
     }
 }

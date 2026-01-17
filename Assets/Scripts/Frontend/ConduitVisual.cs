@@ -4,7 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Frontend.UIComponents;
+using Interfaces;
 using NodeBase;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -18,6 +20,8 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
     public NodeVisual targetNodeVisual;
     public CoordinatePlane planeA;
     public CoordinatePlane planeB; //if seperate time slices
+    public GameObject bridgePrefab;
+    private bool enoughBridgesToFinish = true;
     private Vector3 dragPosition;
     private List<Vector3> path = new List<Vector3>();
     private bool sameLayerConnection = false;
@@ -25,16 +29,16 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
     public SplineContainer splineContainer;
     private SplineExtrude splineExtrude;
     private MeshCollider meshCollider;
-    
+    public ConduitVisualizer conduitVisualizer;
     private Spline spline;
     public GUID backendID;
  
     private float conduitLength;
-    
+    public int bridgesBuilt = 0;
     public Renderer renderer;
     private Material pipeMaterial;
     public float[] positions = {}; 
-   
+    public List<GameObject> bridges;
    
     public Color invalidColor;
     public Color previewColor;
@@ -42,6 +46,7 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
 
     void Awake()
     { 
+        
         pipeMaterial = renderer.material;
         splineContainer = GetComponent<SplineContainer>();
         splineExtrude = GetComponent<SplineExtrude>();
@@ -62,17 +67,28 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
         Destroy(this.gameObject);
     }
 
-    public void FinalizeConduit(NodeVisual nodeVisual, GUID newBackendID)
+    public bool FinalizeConduit(NodeVisual nodeVisual, GUID newBackendID)
     {
-        backendID = newBackendID;
-        targetNodeVisual = nodeVisual;
         Direction dir = CalculateAttachDircection();
         SetPreviewPosition(nodeVisual.GetAttachPosition(dir), GameFrontendManager.Instance.temporalLayerStack.GetLayerByNum(nodeVisual.layerNum));
+        if (!enoughBridgesToFinish) return false;
+        backendID = newBackendID;
+        targetNodeVisual = nodeVisual;
         SetConduitEnergyType();
-        path.Clear();
         sourceNodeVisual.AddConnectedConduit(this,dir);
         targetNodeVisual.AddConnectedConduit(this,dir);
         conduitLength = spline.GetLength();
+        if (sameLayerConnection)
+        {
+            Vector2Int[] cells = GetCellsOfConnection();
+            int newLength = cells.Length - 2;
+            Vector2Int[] trimmedCells = new Vector2Int[newLength];
+            Array.Copy(cells, 1, trimmedCells, 0, newLength);
+            planeA.AddCellsOccupiedByConduits(trimmedCells);
+           
+        }
+        //path.Clear();
+        return true;
     }
 
     private Direction CalculateAttachDircection()
@@ -250,8 +266,12 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
             splineExtrude.enabled = false;
             meshCollider.enabled = false;
         }
+        foreach (var bridge in bridges)
+        {
+            Destroy(bridge);
+        }
         spline.Clear();
-        planeA.occupiedPositions.Add(sourceNodeVisual.GetAttachPosition(Direction.Down)); //TODO check which direction ctrl f for direction bcs hardcoded down appears at 3 spots incl this one
+        // planeA.occupiedPositions.Add(sourceNodeVisual.GetAttachPosition(Direction.Down)); //TODO check which direction ctrl f for direction bcs hardcoded down appears at 3 spots incl this one
         for (int i = 0; i < path.Count; i++)
         {
             BezierKnot knot = new BezierKnot(path[i]);
@@ -260,27 +280,64 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
             knot.TangentIn = Vector3.zero;
             knot.TangentOut = Vector3.zero;
             spline.Add(knot);
-            Vector3 planeLocalPos = planeA.ToPlaneLocal(planeA.WorldToLocal(path[i]));
-            if (!planeA.IsPlaceOccupied(planeLocalPos)) planeA.occupiedPositions.Add(planeLocalPos);
+            //  Vector3 planeLocalPos = planeA.ToPlaneLocal(planeA.WorldToLocal(path[i]));
+            //       if (!planeA.IsPlaceOccupied(planeLocalPos)) planeA.occupiedPositions.Add(planeLocalPos);
+        }
+
+        //Place bridges on cells that are already occupied by other conduits
+        if (sameLayerConnection)
+        {
+            //   Debug.Log("Finalized conduit on same layer with cells: " + string.Join(", ", GetCellsOfConnection()));
+            //  Debug.Log("Occupied positions before placing bridges: " + string.Join(", ", planeA.occupiedPositions));
+            var matches = planeA.GetMatchingOccupiedCellsByConduits(GetCellsOfConnection());
+            bridgesBuilt = 0;
+            foreach (var match in matches.AsEnumerable().Reverse())
+            {
+                Vector3 localPos = planeA.ToPlaneLocal(match);
+                Transform nodeContainer = planeA.nodeContainer;
+                GameObject obj = Instantiate(bridgePrefab, nodeContainer);
+                Bridge bridge = obj.GetComponent<Bridge>();
+                obj.transform.localPosition = localPos;
+                int bridgeCount = GameFrontendManager.Instance.GetInvetoryCount(InventoryItem.BRIDGE);
+                if (bridgesBuilt < bridgeCount)
+                {
+                    bridge.SetValidMaterial(true);
+                    enoughBridgesToFinish = true;
+                }
+                else
+                {
+                    bridge.SetValidMaterial(false);
+                    enoughBridgesToFinish = false;
+                }
+                bridges.Add(obj);
+                bridgesBuilt++;
+            }
         }
        
-        if (GameFrontendManager.Instance.IsConnectionPathValid(sourceNodeVisual.layerNum, GetCellsOfConnection()))
-        {
-            pipeMaterial.SetColor("_Color", previewColor);
-            pipeMaterial.SetColor("_Color2", previewColor);
-        }
-        else if (planeA.IsPlaceOccupied(planeA.ToPlaneLocal(planeA.WorldToLocal(path.Last()))) is TimeRipple ripple)
+        ColorSplineIfValid();
+    }
+
+    private void ColorSplineIfValid()
+    {
+        if (enoughBridgesToFinish &&  planeA.IsPlaceOccupied(planeA.ToPlaneLocal(planeA.WorldToLocal(path.Last()))) is TimeRipple ripple)
         {
             pipeMaterial.SetColor("_Color", validColor);
             pipeMaterial.SetColor("_Color2", validColor);
+        }
+        else  if (enoughBridgesToFinish && GameFrontendManager.Instance.IsConnectionPathValid(sourceNodeVisual.layerNum, GetCellsOfConnection()))
+        {
+            pipeMaterial.SetColor("_Color", previewColor);
+            pipeMaterial.SetColor("_Color2", previewColor);
         }
         else
         {
             pipeMaterial.SetColor("_Color", invalidColor);
             pipeMaterial.SetColor("_Color2", invalidColor);
         }
+
+        Debug.Log("Finalized conduit on same layer with cells: " + string.Join(", ", GetCellsOfConnection()));
     }
-    
+
 
     private void LateUpdate()
     {
@@ -294,9 +351,25 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
 
     public void Reset()
     {
+        if(planeA) CleanUpPlane();
+        bridgesBuilt = 0;
         sourceNodeVisual = null;
         targetNodeVisual = null;
         path.Clear();
+        spline.Clear();
+    }
+
+    private void CleanUpPlane()
+    {
+        foreach (var bridge in bridges)
+        {
+            Destroy(bridge);
+        }
+        bridges.Clear();
+        if (!targetNodeVisual) return;
+        Vector2Int[] cells = GetCellsOfConnection();
+        planeA.RemoveOccupiedByConduitCells(cells);
+      
     }
 
     public Vector2Int[] GetCellsOfConnection()
@@ -336,7 +409,7 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
             {
                 sourceNodeVisual.RemoveConnectedConduit(this);
                 targetNodeVisual.RemoveConnectedConduit(this);
-                Destroy(this.gameObject);
+                conduitVisualizer.ReleaseItem(this);
                 Destroy(deleteBtn.gameObject);
             }
           

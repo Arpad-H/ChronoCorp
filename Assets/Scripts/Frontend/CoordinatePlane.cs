@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Interfaces;
 using NodeBase;
 using Unity.VisualScripting.Dependencies.NCalc;
@@ -16,8 +17,8 @@ public class CoordinatePlane : MonoBehaviour
      private IBackend _backend;
  
      private List<NodeVisual> nodes = new List<NodeVisual>();
-     public List<Vector3> occupiedPositions = new List<Vector3>();
-     
+     private List<Vector2Int> occupiedPositionsByConduits = new List<Vector2Int>();
+    
     [Header("Prefabs")]
     public GameObject nodePrefab;
     public GameObject generatorPrefab;
@@ -267,5 +268,25 @@ public class CoordinatePlane : MonoBehaviour
     public void RemoveNodeVisual(NodeVisual nodeVisual)
     {
         nodes.Remove(nodeVisual);
+    }
+    public void AddCellsOccupiedByConduits(Vector2Int[] cells)
+    {
+        foreach (var cell in cells)
+        {
+            occupiedPositionsByConduits.Add(cell);
+        }
+    }
+
+    public void RemoveOccupiedByConduitCells(Vector2Int[] cells)
+    {
+        foreach (var cell in cells)
+        {
+            occupiedPositionsByConduits.Remove(cell);
+        }
+    }
+
+    public IEnumerable<Vector2Int> GetMatchingOccupiedCellsByConduits(Vector2Int[] cells)
+    {
+        return occupiedPositionsByConduits.Intersect(cells).ToList();
     }
 }

@@ -30,7 +30,11 @@ public class EnergyPacketVisual : MonoBehaviour
         GUID? sourceNode;
         GUID? targetNode;
         GUID? conduitID;
-        if (!conduit) this.gameObject.SetActive(false);
+        if (!conduit)
+        {
+            this.gameObject.SetActive(false) ;
+            return;
+        }
         float progress = GameFrontendManager.Instance.GetEnergyPacketProgress(guid, out sourceNode, out targetNode, out conduitID);
         if (conduitID.HasValue)
         {

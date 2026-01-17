@@ -69,7 +69,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layerNum: 0
   nodeScale: 0.75
-  attachPoint: {fileID: 0}
+  upPoint: {fileID: 0}
+  downPoint: {fileID: 0}
+  leftPoint: {fileID: 0}
+  rightPoint: {fileID: 0}
 --- !u!1 &4209950194793206074
 GameObject:
   m_ObjectHideFlags: 0
@@ -97,8 +100,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4209950194793206074}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.7293814, y: 0.2327461, z: 5.346783}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

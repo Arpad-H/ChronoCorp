@@ -66,7 +66,8 @@ namespace Backend.Simulation.World
         public GUID? LinkNodes(
             GUID a,
             GUID b,
-            Vector2Int[] cellsOfConnection)
+            Vector2Int[] cellsOfConnection,
+            int bridgesBuilt)
         {
             var sliceA = getTimeSliceOfNodeByGuid(a);
             var sliceB = getTimeSliceOfNodeByGuid(b);
@@ -75,7 +76,7 @@ namespace Backend.Simulation.World
                 return null;
 
             var grid = sliceA.TimeSliceGrid;
-
+            int numOfConnectionsCrossed = 0;
             foreach (var cell in cellsOfConnection)
             {
                 if (grid.IsCellOccupied(cell, out var node, out var connection))
@@ -88,8 +89,12 @@ namespace Backend.Simulation.World
 
                     if (connection != null)
                     {
-                        Debug.Log("Cannot link because there is a connection in its path in slices: "+sliceA.SliceNumber+"-"+sliceB.SliceNumber);
-                        return null;
+                        numOfConnectionsCrossed++;
+                        if (numOfConnectionsCrossed > bridgesBuilt)
+                        {
+                            Debug.Log("Cannot link because there are not enough bridges built to cross connections in slices: "+sliceA.SliceNumber+"-"+sliceB.SliceNumber);
+                            return null;
+                        }
                     }
                 }
             }
@@ -108,7 +113,8 @@ namespace Backend.Simulation.World
                 connectionObj,
                 cellsOfConnection,
                 _storage.guidToNodesMapping[a],
-                _storage.guidToNodesMapping[b]
+                _storage.guidToNodesMapping[b],
+                bridgesBuilt
                 );
 
             if (!reserved)

@@ -53,7 +53,7 @@ namespace Backend.Simulation.World
 
         public int getAmountOutputsTotal()
         {
-            return getAmountOutputsPlaced() + inventory.nodesAvailable[InventoryItem.GENERATOR];
+            return getAmountOutputsPlaced() + inventory.inventoryItemsAvailable[InventoryItem.GENERATOR];
         }
 
         public event Action<GUID> onPacketDeleted;
