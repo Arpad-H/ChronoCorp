@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-4130809588243648920
+--- !u!114 &-1449397651515961611
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}
@@ -20,8 +20,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: BloomingColorYellow 1
-  m_Shader: {fileID: 4800000, guid: 8bd11a3ab2c47564898cf030125a2360, type: 3}
+  m_Name: Shader Graphs_SimpleToonShade 1
+  m_Shader: {fileID: -6465566751694194690, guid: 07bea2e4fa5dca040bbfb14f32728f33, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -51,14 +51,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _EdgeSoftness: 0.01
-    - _HP: 0.85
     - _QueueControl: 0
     - _QueueOffset: 0
-    - _StartOffset: 0
     m_Colors:
-    - _Color: {r: 0.40138966, g: 0.31035906, b: 0.0063045383, a: 1}
-    - _EmptyColor: {r: 0.12452829, g: 0.12452829, b: 0.12452829, a: 1}
-    - _FillColor: {r: 0.6830188, g: 0.57718545, b: 0, a: 1}
+    - _Color: {r: 0.98490566, g: 0.18397287, b: 0.18397287, a: 1}
+    - _ShadowColor: {r: 0.4490565, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
