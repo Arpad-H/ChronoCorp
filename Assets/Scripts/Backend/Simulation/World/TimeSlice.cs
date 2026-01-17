@@ -46,6 +46,10 @@ namespace Backend.Simulation.World
         public bool deleteNode(GUID nodeBackendId)
         {
             var timeSlice = getTimeSliceOfNodeByGuid(nodeBackendId);
+            if (timeSlice == null)
+            {
+                return false;
+            }
             guidToNodesMapping.TryGetValue(nodeBackendId, out var foundNode);
             switch (foundNode)
             {

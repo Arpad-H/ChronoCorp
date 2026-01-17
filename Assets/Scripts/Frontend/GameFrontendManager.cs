@@ -95,6 +95,12 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
         BackendDeletesConnection?.Invoke(connectionId);
     }
 
+    public void DeleteNode(GUID nodeId)
+    {
+       //TODO: Please implement!
+       throw new NotImplementedException("Please implement deleteNode on the frontend!");
+    }
+
     public void CreateConnection(GUID backendIdA, GUID backendIdB, GUID connectionId, Vector2Int[] cellsOfConnection)
     {
         BackendCreatesConnection?.Invoke(backendIdA, backendIdB, connectionId, cellsOfConnection);
