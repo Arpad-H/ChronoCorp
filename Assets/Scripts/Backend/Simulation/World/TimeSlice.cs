@@ -346,7 +346,25 @@ namespace Backend.Simulation.World
         public GUID? spawnBlackHole(Vector2 pos, out BlackHoleInstance blackHoleInstance)
         {
             blackHoleInstance = null;
-            if(TimeSliceGrid.IsCellOccupied(pos, out var node, out var connection)) return null;
+            if (TimeSliceGrid.IsCellOccupied(pos, out var node, out var connection))
+            {
+                if (node != null)
+                {
+                    if (_simulationStorage.deleteNode(node.guid))
+                    {
+                        _simulationStorage.Frontend.DeleteNode(node.guid);
+                    }
+                    else
+                    {
+                        Debug.Log("Backend could not delete node to replace it with a black hole!");
+                        return null;
+                    }
+                }
+                else
+                {
+                    return null;
+                }
+            }
             blackHoleInstance = new BlackHoleInstance(pos);
             blackHoleInstance.currentTimeSlice = this;
             TimeSliceGrid.Add(blackHoleInstance);
