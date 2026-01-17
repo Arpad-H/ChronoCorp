@@ -13,7 +13,6 @@ using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
 using UnityEngine.Splines;
 
-[RequireComponent(typeof(LineRenderer))]
 public class ConduitVisual : MonoBehaviour, IPointerClickHandler
 {
     public NodeVisual sourceNodeVisual;
@@ -347,6 +346,7 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
     {
         if (positions.Length == 0) AddBulge(-1); // Dummy value to avoid shader errors
         // Pass the array to the shader
+//        Debug.Log("Passing bulge positions to shader: " + string.Join(", ", positions));
         pipeMaterial.SetFloatArray("_BulgePositions", positions);
         // Tell the shader how many elements in the array to actually loop through
         pipeMaterial.SetInt("_BulgeCount", positions.Length);
@@ -484,6 +484,7 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
 
     public void AddBulge(float position)
     {
+//        Debug.Log("Adding bulge at position: " + position);
         Array.Resize(ref positions, positions.Length + 1);
         positions[positions.Length - 1] = position * conduitLength;
     }
