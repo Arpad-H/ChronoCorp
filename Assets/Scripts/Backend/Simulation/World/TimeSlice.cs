@@ -278,11 +278,10 @@ namespace Backend.Simulation.World
         {
             blackHoleInstance = null;
             if(TimeSliceGrid.IsCellOccupied(pos, out var node, out var connection)) return null;
-            var newNode = new TimeRippleInstance(pos, EnergyType.WHITE);
-            newNode.currentTimeSlice = this;
-            TimeSliceGrid.Add(newNode);
-            addNodeToMapping(newNode);
             blackHoleInstance = new BlackHoleInstance(pos);
+            blackHoleInstance.currentTimeSlice = this;
+            TimeSliceGrid.Add(blackHoleInstance);
+            addNodeToMapping(blackHoleInstance);
             return blackHoleInstance.guid;
         }
         
