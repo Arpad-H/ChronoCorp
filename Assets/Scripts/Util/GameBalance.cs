@@ -51,13 +51,17 @@ namespace Util
         [Tooltip("How much health this node drains per tick")]
         public int nodeHealthDrainRate;
         [Tooltip("every n ticks, node drains health")]
-        public int nodeDrainHealthEveryNTicks; //TODO fact check if its actually what it does
+        public int nodeDrainHealthEveryNTicks;
         [Tooltip("How many seconds between spawns")]
         public float nodeSpawnIntervalPerSecond;
         [Tooltip("Each layer when spawned adds this in seconds to the node spawn interval")]
         public float layerModifierToNodeSpawnInterval;
         [Tooltip("HP percent Threshold below which node starts to blink")]
         public float nodeBlinkThreshhold;
+        [Tooltip("How much stability this blackhole drains per tick")]
+        public int blackHoleStabilityDrainRate;
+        [Tooltip("every n ticks, black hole drains stability")]
+        public int blackHoleDrainEveryNTicks;
         
         [Header("Node Stability Contribution")]
         [Tooltip("How much stability this node drains by existing (base value=")]

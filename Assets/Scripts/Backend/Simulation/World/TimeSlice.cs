@@ -5,6 +5,7 @@ using Backend.Inv;
 using Backend.Simulation.Energy;
 using Backend.Simulation.SimEvent;
 using Interfaces;
+using JetBrains.Annotations;
 using NodeBase;
 using UnityEditor;
 using UnityEngine;
@@ -40,6 +41,57 @@ namespace Backend.Simulation.World
         public uint getTickSeed(long tickCount)
         {
             return (uint)(simulationSeed % tickCount + tickCount);
+        }
+
+        public bool deleteNode(GUID nodeBackendId)
+        {
+            var timeSlice = getTimeSliceOfNodeByGuid(nodeBackendId);
+            guidToNodesMapping.TryGetValue(nodeBackendId, out var foundNode);
+            switch (foundNode)
+            {
+                case null:
+                    return false;
+                case GeneratorInstance generatorInstance:
+                {
+                    foreach (Output generatorInstanceTotalOutput in generatorInstance.totalOutputs)
+                    {
+                        if (generatorInstanceTotalOutput != null && generatorInstanceTotalOutput.Connection != null) //TODO did this as a quick fix when deleting a generator with no connecections
+                        {
+                            UnlinkNodes(generatorInstanceTotalOutput.Connection.guid, false);
+                        }
+                        
+                    }
+                    recalculatePaths();
+                    return timeSlice?.removeNode(nodeBackendId) ?? false;
+                }
+                case NodeWithConnections node:
+                {
+                    foreach (var connection in node.getConnections())
+                    {
+                        UnlinkNodes(connection.guid, false);
+                    }
+                    recalculatePaths();
+                    return timeSlice?.removeNode(nodeBackendId) ?? false;
+                }
+                default:
+                    return false;
+            }
+        }
+        
+        public bool UnlinkNodes(GUID connectionId, bool recalculatePaths)
+        {
+            foreach (var slice in timeSlices)
+            {
+                slice.TimeSliceGrid.RemoveConnectionCells(connectionId);
+            }
+
+            if (unlink(connectionId))
+            {
+                if(recalculatePaths) this.recalculatePaths();
+                return true;
+            }
+
+            return false;
         }
 
         public int getAmountOutputsPlaced()
@@ -205,6 +257,18 @@ namespace Backend.Simulation.World
                 if (anyNode is NodeWithConnections anyNodeWithConnections)
                     anyNodeWithConnections.getConnections().Remove(connection);
             }
+        }
+        
+        [CanBeNull]
+        public TimeSlice getTimeSliceOfNodeByGuid(GUID guid)
+        {
+            guidToNodesMapping.TryGetValue(guid, out var node);
+            if (node != null)
+            {
+                return node.currentTimeSlice;
+            }
+
+            return null;
         }
     }
 

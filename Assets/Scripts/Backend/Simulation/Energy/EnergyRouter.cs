@@ -1,9 +1,6 @@
 ﻿using System.Collections.Generic;
-using Backend.Simulation.World;
 using NodeBase;
-using UnityEditor;
 using UnityEngine;
-using Util;
 
 namespace Backend.Simulation.Energy
 {
@@ -137,115 +134,6 @@ namespace Backend.Simulation.Energy
                     }
                 }
             }
-        }
-    }
-
-    public class EnergyScheduler
-    {
-        private static int TickCooldownOutputs = (int)(SimulationStorage.TICKS_PER_SECOND * BalanceProvider.Balance.energyPacketSpawnIntervalPerSecond);
-
-        // For one output try to spawn a new packet via cooldown.
-        public static void tick(long currentTick, Output output, SimulationStorage storage)
-        {
-            output.RouteStorage ??= EnergyRouter.createEnergyRoute(output);
-
-            if (output.RouteStorage.savedRoutes == null || output.RouteStorage.savedRoutes.Count == 0) return;
-            var last = output.lastGenerationTick;
-
-            if (currentTick - last < TickCooldownOutputs) return;
-
-            var nextIndex = output.targetIndex++ % output.RouteStorage.savedRoutes.Count;
-            var nextRoute = output.RouteStorage.orderedListOfRoutes[nextIndex];
-
-            var stepsInRoute = nextRoute.steps.Count;
-            if (stepsInRoute == 0) return;
-            var startStep = nextRoute.steps[0];
-            var endStep = nextRoute.steps[stepsInRoute - 1];
-
-            var newEnergyPacket = new EnergyPacket(
-                ChooseEnergyType(endStep.getEnd()),
-                startStep.getStart() as EnergyPacketSpawner,
-                endStep.getEnd(),
-                nextRoute.steps
-            );
-
-            storage.registerEnergyPacket(newEnergyPacket);
-            output.lastGenerationTick = currentTick;
-        }
-
-        /**
-         * Used to determine which energy type to select for a new energy packet based on the energy type a node accepts.
-         */
-        private static EnergyType ChooseEnergyType(AbstractNodeInstance anyNode)
-        {
-            if (anyNode is TimeRippleInstance ripple) return ripple.EnergyType;
-            return EnergyType.WHITE;
-        }
-    }
-
-    public class EnergyPacket : ITickable
-    {
-        private float PacketTravelSpeedPerTick = 0.1f;
-
-        private int _currentEdgeIndex;
-        private float _travelledOnEdge;
-
-        public bool Delivered;
-
-        public EnergyPacket(
-            EnergyType energyType,
-            EnergyPacketSpawner source,
-            AbstractNodeInstance destination,
-            List<EnergyStep> steps)
-        {
-            Guid = GUID.Generate();
-            EnergyType = energyType;
-            Source = source;
-            Destination = destination;
-            Steps = steps;
-            PacketTravelSpeedPerTick = BalanceProvider.Balance.energyPacketSpeed;
-        }
-
-        public GUID Guid { get; }
-
-        // Units traveled along the edge
-        public float progressOnEdge { get; set; }
-
-        public EnergyType EnergyType { get; }
-
-        public EnergyPacketSpawner Source { get; set; }
-        public AbstractNodeInstance Destination { get; set; }
-        private List<EnergyStep> Steps { get; }
-
-        public void Tick(long tick, SimulationStorage storage)
-        {
-            if (Delivered) return;
-            _travelledOnEdge += PacketTravelSpeedPerTick;
-            progressOnEdge = _travelledOnEdge / currentStep().connection.length;
-            if (progressOnEdge < 1.0f) return;
-
-            progressOnEdge = 0;
-            _travelledOnEdge = 0;
-            _currentEdgeIndex++;
-            if (_currentEdgeIndex >= Steps.Count)
-            {
-                Delivered = true;
-
-                if (Destination is TimeRippleInstance timeRipple)
-                {
-                    timeRipple.currentStability += BalanceProvider.Balance.energyPacketRechargeAmount;
-                    if (timeRipple.currentStability > timeRipple.maxStability)
-                    {
-                        timeRipple.currentStability = timeRipple.maxStability;
-                    }
-                    storage.Frontend.onNodeHealthChange(timeRipple.guid, timeRipple.minStability, timeRipple.maxStability, timeRipple.currentStability);
-                }
-            }
-        }
-
-        public EnergyStep currentStep()
-        {
-            return Steps[_currentEdgeIndex];
         }
     }
 
