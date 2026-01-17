@@ -35,6 +35,11 @@ public class EnergyPacketVisual : MonoBehaviour
         if (conduitID.HasValue)
         {
             conduit = ConduitVisualizer.Instance.GetConduitVisual(conduitID.Value);
+            if (conduit == null || conduit.sourceNodeVisual == null)
+            {
+                debugconduitID = "conduit is null for ID: " + conduitID.Value.ToString();
+                return;
+            }
             if (conduit.sourceNodeVisual.backendID == sourceNode)  conduit.AddBulge(progress);
             else conduit.AddBulge(1 - progress);
            

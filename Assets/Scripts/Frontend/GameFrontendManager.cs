@@ -33,6 +33,7 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
 
     public StabilityBar stabilityBar;
     private bool gameOver = false;
+    public bool gameRunning = false;
     
 
     private void Awake()
@@ -59,7 +60,7 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
 
     private void FixedUpdate()
     {
-        if (gameOver) return;
+        if (gameOver || !gameRunning) return;
         backend.tick(fixedTickCount, this);
         fixedTickCount++;
     }
@@ -267,5 +268,10 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
     {
         backend.AddItemToInventory(item, (int)amount);
         InventoryChanged?.Invoke();
+    }
+
+    public void EndTutorial()
+    {
+        gameRunning = true;
     }
 }
