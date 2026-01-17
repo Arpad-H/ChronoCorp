@@ -95,6 +95,13 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
         BackendDeletesConnection?.Invoke(connectionId);
     }
 
+    public void DeleteNode(GUID nodeId)
+    {
+       CoordinatePlane layer = temporalLayerStack.GetLayerByNum(nodeVisuals[nodeId].layerNum);
+       layer.RemoveNodeVisual(nodeVisuals[nodeId]);
+       GeneratorDeleted?.Invoke();
+    }
+
     public void CreateConnection(GUID backendIdA, GUID backendIdB, GUID connectionId, Vector2Int[] cellsOfConnection)
     {
         BackendCreatesConnection?.Invoke(backendIdA, backendIdB, connectionId, cellsOfConnection);

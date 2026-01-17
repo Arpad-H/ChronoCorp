@@ -39,28 +39,7 @@ namespace Backend.Simulation.World
 
         public bool DeleteNode(GUID nodeBackendId)
         {
-            var timeSlice = getTimeSliceOfNodeByGuid(nodeBackendId);
-            _storage.guidToNodesMapping.TryGetValue(nodeBackendId, out var foundNode);
-            switch (foundNode)
-            {
-                case null:
-                    return false;
-                case GeneratorInstance generatorInstance:
-                {
-                    foreach (Output generatorInstanceTotalOutput in generatorInstance.totalOutputs)
-                    {
-                        if (generatorInstanceTotalOutput != null && generatorInstanceTotalOutput.Connection != null) //TODO did this as a quick fix when deleting a generator with no connecections
-                        {
-                            UnlinkNodes(generatorInstanceTotalOutput.Connection.guid, false);
-                        }
-                        
-                    }
-                    _storage.recalculatePaths();
-                    return timeSlice?.removeNode(nodeBackendId) ?? false;
-                }
-                default:
-                    return false;
-            }
+            return _storage.deleteNode(nodeBackendId);
         }
         
         public GUID? LinkNodes(
@@ -72,7 +51,7 @@ namespace Backend.Simulation.World
             var sliceA = getTimeSliceOfNodeByGuid(a);
             var sliceB = getTimeSliceOfNodeByGuid(b);
 
-            if (sliceA == null || sliceA != sliceB)
+            if (sliceA == null || sliceB == null)
                 return null;
 
             var grid = sliceA.TimeSliceGrid;
@@ -144,18 +123,7 @@ namespace Backend.Simulation.World
 
         public bool UnlinkNodes(GUID connectionId, bool recalculatePaths)
         {
-            foreach (var slice in _storage.timeSlices)
-            {
-                slice.TimeSliceGrid.RemoveConnectionCells(connectionId);
-            }
-
-            if (_storage.unlink(connectionId))
-            {
-                if(recalculatePaths) _storage.recalculatePaths();
-                return true;
-            }
-
-            return false;
+            return _storage.UnlinkNodes(connectionId, recalculatePaths);
         }
 
         public float GetEnergyPacketProgress(GUID packet, out GUID? sourcePos, out GUID? targetPos,
@@ -254,13 +222,7 @@ namespace Backend.Simulation.World
         [CanBeNull]
         private TimeSlice getTimeSliceOfNodeByGuid(GUID guid)
         {
-            _storage.guidToNodesMapping.TryGetValue(guid, out var node);
-            if (node != null)
-            {
-                return node.currentTimeSlice;
-            }
-
-            return null;
+            return _storage.getTimeSliceOfNodeByGuid(guid);
         }
 
         // public void UpgradeCardSelected(UpgradeData upgradeData)
