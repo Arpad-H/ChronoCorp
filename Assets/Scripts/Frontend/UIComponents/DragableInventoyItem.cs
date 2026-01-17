@@ -7,6 +7,7 @@ using UnityEngine.UI;
 
 public class DragableInventoyItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
+    public bool isDraggable = true;
     public Sprite iconImage; // assign from inspector
     public Canvas canvas; // drag your UI canvas here
     private Image dragIcon;
@@ -44,6 +45,7 @@ public class DragableInventoyItem : MonoBehaviour, IBeginDragHandler, IDragHandl
 
     public void OnBeginDrag(PointerEventData eventData)
     {
+        if (!isDraggable || count <= 0) return;
         dragIcon = new GameObject("DragIcon").AddComponent<Image>();
         dragIcon.sprite = iconImage;
         dragIcon.raycastTarget = false;
@@ -55,12 +57,14 @@ public class DragableInventoyItem : MonoBehaviour, IBeginDragHandler, IDragHandl
 
     public void OnDrag(PointerEventData eventData)
     {
+        if (!isDraggable || count <= 0) return;
         if (dragRect != null)
             dragRect.position = eventData.position;
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
+        if (!isDraggable || count <= 0) return;
         if (dragIcon != null)
             Destroy(dragIcon.gameObject);
         if (GameFrontendManager.Instance.TryDrop(item))

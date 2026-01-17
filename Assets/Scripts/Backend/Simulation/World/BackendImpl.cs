@@ -126,7 +126,7 @@ namespace Backend.Simulation.World
             return connectionObj.guid;
         }
 
-        public bool upgradeGeneartor(GUID generatorGUID)
+        public bool upgradeGenerator(GUID generatorGUID)
         {
             _storage.guidToNodesMapping.TryGetValue(generatorGUID, out var foundNode);
             if (foundNode != null && foundNode is GeneratorInstance generatorInstance && generatorInstance.totalOutputs.Count < 4)

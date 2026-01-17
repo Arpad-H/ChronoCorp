@@ -195,6 +195,11 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
         }
         return false;
     }
+    public void ConsumeInventoryItem(InventoryItem item, int amount = 1)
+    {
+        backend.AddItemToInventory(item, -amount);
+        InventoryChanged?.Invoke();
+    }
 
     private bool UpgradeHoveredNode()
     {
@@ -202,7 +207,7 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
         cameraController.RaycastForFirst(out rh); 
         var nodeVisual = rh.collider.GetComponent<Generator>(); //TODO Currently only generators can be upgraded
         if (nodeVisual == null) return false; // Not hovering over a node
-        
+        backend.upgradeGenerator(nodeVisual.backendID);
         nodeVisual.UpgradeNode();
         return true;
     }

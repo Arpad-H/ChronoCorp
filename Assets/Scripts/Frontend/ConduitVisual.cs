@@ -85,7 +85,7 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
             Vector2Int[] trimmedCells = new Vector2Int[newLength];
             Array.Copy(cells, 1, trimmedCells, 0, newLength);
             planeA.AddCellsOccupiedByConduits(trimmedCells);
-           
+            GameFrontendManager.Instance.ConsumeInventoryItem(InventoryItem.BRIDGE, bridgesBuilt);
         }
         //path.Clear();
         return true;
