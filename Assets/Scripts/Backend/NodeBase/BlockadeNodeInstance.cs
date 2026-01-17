@@ -8,7 +8,7 @@ namespace NodeBase
     public class BlockadeNodeInstance : AbstractNodeInstance, NodeWithConnections
     {
         public List<Connection> Connections;
-        public BlockadeNodeInstance(Vector2 pos) : base(pos, NodeType.BLACK_HOLE)
+        public BlockadeNodeInstance(Vector2 pos) : base(pos, NodeType.BLOCKADE)
         {
             Connections = new List<Connection>();
         }
