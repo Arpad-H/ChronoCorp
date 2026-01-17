@@ -160,7 +160,8 @@ namespace Backend.Simulation.World
 
             if (tickCount % BalanceProvider.Balance.layerDuplicationTime == 0 && tickCount != 0)
             {
-                timeSlices.Add(new TimeSlice(this, timeSliceNumCounter++, BalanceProvider.Balance.layerDuplicationTime));
+                int newTimeSliceNumber = timeSliceNumCounter++;
+                timeSlices.Add(new TimeSlice(this, newTimeSliceNumber, newTimeSliceNumber * BalanceProvider.Balance.layerDuplicationTime));
                 Frontend.AddTimeSlice(timeSliceNumCounter-1); //pre increment otherwise it would be desynced
             }
         }
