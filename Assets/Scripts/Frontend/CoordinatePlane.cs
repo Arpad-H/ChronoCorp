@@ -268,7 +268,9 @@ public class CoordinatePlane : MonoBehaviour
     public void RemoveNodeVisual(NodeVisual nodeVisual)
     {
         nodes.Remove(nodeVisual);
+        Destroy(nodeVisual.gameObject);
     }
+    
     public void AddCellsOccupiedByConduits(Vector2Int[] cells)
     {
         foreach (var cell in cells)
