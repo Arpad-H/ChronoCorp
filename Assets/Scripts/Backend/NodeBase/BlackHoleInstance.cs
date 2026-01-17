@@ -11,7 +11,7 @@ namespace NodeBase
         public List<Connection> Connections;
         private long lastDrain;
         public long energyConsumed = 0;
-        private long energyToBeDestroyed = 100;
+        private long energyToBeDestroyed = BalanceProvider.Balance.blackHoleEnergyPacketConsumeAmount;
         public BlackHoleInstance(Vector2 pos) : base(pos, NodeType.BLACK_HOLE)
         {
             Connections = new List<Connection>();

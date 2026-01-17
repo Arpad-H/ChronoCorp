@@ -62,6 +62,8 @@ namespace Util
         public int blackHoleStabilityDrainRate;
         [Tooltip("every n ticks, black hole drains stability")]
         public int blackHoleDrainEveryNTicks;
+        [Tooltip("How much energy packets a black hole consumes until it gets destroyed")]
+        public int blackHoleEnergyPacketConsumeAmount;
         
         [Header("Node Stability Contribution")]
         [Tooltip("How much stability this node drains by existing (base value=")]
