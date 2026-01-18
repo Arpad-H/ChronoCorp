@@ -54,6 +54,7 @@ namespace Backend.Simulation.World
 
         public uint getTickSeed(long tickCount)
         {
+            tickCount = tickCount == 0 ? 1 : tickCount;
             return (uint)(simulationSeed % tickCount + tickCount);
         }
 
