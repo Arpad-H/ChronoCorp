@@ -19,11 +19,11 @@ namespace NodeBase
 
         public override void Tick(long tickCount, SimulationStorage storage)
         {
-            if (lastDrain - tickCount < BalanceProvider.Balance.blackHoleStabilityDrainRate)
+            if (tickCount - lastDrain < BalanceProvider.Balance.blackHoleDrainEveryNTicks)
             {
                 return;
             }
-            storage.StabilityBar.decreaseStability(BalanceProvider.Balance.blackHoleDrainEveryNTicks, storage);
+            storage.StabilityBar.decreaseStability(BalanceProvider.Balance.blackHoleStabilityDrainRate, storage);
         }
 
         public override void onReceiveEnergyPacket(long tickCount, EnergyPacket energyPacket, SimulationStorage storage)
