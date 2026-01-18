@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c2cdb254c7864dcfba5d46c782c46a57, type: 3}
   m_Name: GameBalance
   m_EditorClassIdentifier: 
+  useAutoBalance: 0
   energyPacketSpeed: 0.1
   energyPacketSpawnIntervalPerSecond: 2
   energyPacketRechargeAmount: 25
@@ -27,13 +28,13 @@ MonoBehaviour:
   blackHoleEnergyPacketConsumeAmount: 100
   baseStabilityDecreasePerNode: 1
   nodeStableThresholdPercentage: 0.5
-  layerDuplicationTime: 3000
+  layerDuplicationTime: 1000
   maxLayerCount: 99
   layerGridCellCount: {x: 16, y: 9}
   cellSize: 1
-  initialGeneratorCount: 100
+  initialGeneratorCount: 10
   initialUpgradeCardCount: 10
-  initialBridgeCount: 1
+  initialBridgeCount: 2
   stabilityMaxValue: 100
   stabilityMinValue: 0
   stabilityDecreaseValue: 0
