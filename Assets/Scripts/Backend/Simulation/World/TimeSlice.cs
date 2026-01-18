@@ -29,6 +29,19 @@ namespace Backend.Simulation.World
         public Dictionary<NodeType, List<AbstractNodeInstance>> nodeTypeToNodesMapping = new();
         private int timeSliceNumCounter = 0;
         public SimEventLog log = new();
+        
+        private DifficultyTargets targets = new DifficultyTargets
+        {
+            roundLengthSeconds = 12 * 60,
+            easyPhaseSeconds = 1 * 60,
+            ripplesAtEasyEnd = 6,
+            ripplesAtRoundEnd = 40,
+            stabilityFractionAtEasyEnd = 0.90f,
+            stabilityFractionAtRoundEnd = 0.15f,
+            ripplesSustainablePerOutput = 1.5f,
+            minSpawnIntervalSeconds = 7.0f,
+            maxSpawnIntervalSeconds = 15.0f
+        };
 
         public SimulationStorage(IFrontend frontend)
         {
@@ -36,6 +49,7 @@ namespace Backend.Simulation.World
             //timeSlices[0] = new TimeSlice(this);
             timeSlices.Add(new TimeSlice(this, timeSliceNumCounter++, 0));//prevents out of bounds since starts of with count 0
             Frontend.AddTimeSlice(timeSliceNumCounter-1); //pre increment otherwise it would be desynced
+            BalanceAutoTuner.ApplyAutoTune(BalanceProvider.Balance, targets);
         }
 
         public uint getTickSeed(long tickCount)
