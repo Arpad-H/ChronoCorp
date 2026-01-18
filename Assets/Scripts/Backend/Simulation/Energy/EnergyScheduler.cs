@@ -6,17 +6,17 @@ namespace Backend.Simulation.Energy
 {
     public class EnergyScheduler
     {
-        private static int TickCooldownOutputs = (int)(SimulationStorage.TICKS_PER_SECOND * BalanceProvider.Balance.energyPacketSpawnIntervalPerSecond);
 
         // For one output try to spawn a new packet via cooldown.
         public static void tick(long currentTick, Output output, SimulationStorage storage)
         {
+            var tickCooldownOutputs = (int)(SimulationStorage.TICKS_PER_SECOND * BalanceProvider.Balance.energyPacketSpawnIntervalPerSecond);
             output.RouteStorage ??= EnergyRouter.createEnergyRoute(output);
 
             if (output.RouteStorage.savedRoutes == null || output.RouteStorage.savedRoutes.Count == 0) return;
             var last = output.lastGenerationTick;
 
-            if (currentTick - last < TickCooldownOutputs) return;
+            if (currentTick - last < tickCooldownOutputs) return;
 
             var nextIndex = output.targetIndex++ % output.RouteStorage.savedRoutes.Count;
             var nextRoute = output.RouteStorage.orderedListOfRoutes[nextIndex];
