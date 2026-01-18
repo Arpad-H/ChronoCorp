@@ -170,6 +170,7 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
     {
         RaycastHit rh;
         cameraController.RaycastForFirst(out rh); 
+       if (rh.collider == null) return false; // Not hovering over anything
         var frame = rh.transform.GetComponentInParent<CoordinatePlane>();
         if (frame == null) return false; // Not hovering over a frame
 

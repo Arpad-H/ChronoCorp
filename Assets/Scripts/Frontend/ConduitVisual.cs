@@ -136,6 +136,11 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
     {
         Vector3 lastSegment;
         Vector3 secondLastSegment;
+        if (path.Count < 2)
+        {
+            Debug.LogError("Path has less than 2 points, cannot calculate attach direction. Using default");
+            return Direction.Down; // Default fallback
+        }
         if (sourceNodeVisual is Generator)
         {
             lastSegment = path[0];
