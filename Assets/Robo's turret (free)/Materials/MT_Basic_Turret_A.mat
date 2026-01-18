@@ -235,8 +235,8 @@ Material:
     - _Desaturationaffectsemission: 1
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
-    - _FlickerIntensity: 1
-    - _FlickerSpeed: 1
+    - _FlickerIntensity: 2.2
+    - _FlickerSpeed: 0.92
     - _Flickering: 0
     - _Flickeringintensity: 1
     - _Float0: 1

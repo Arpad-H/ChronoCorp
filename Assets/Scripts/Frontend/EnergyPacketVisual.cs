@@ -30,15 +30,16 @@ public class EnergyPacketVisual : MonoBehaviour
         GUID? sourceNode;
         GUID? targetNode;
         GUID? conduitID;
-        if (!conduit)
-        {
-            this.gameObject.SetActive(false) ;
-            return;
-        }
         float progress = GameFrontendManager.Instance.GetEnergyPacketProgress(guid, out sourceNode, out targetNode, out conduitID);
+
         if (conduitID.HasValue)
         {
             conduit = ConduitVisualizer.Instance.GetConduitVisual(conduitID.Value);
+            if (conduit == null || conduit.sourceNodeVisual == null)
+            {
+                debugconduitID = "conduit is null for ID: " + conduitID.Value.ToString();
+                return;
+            }
             if (conduit.sourceNodeVisual.backendID == sourceNode)  conduit.AddBulge(progress);
             else conduit.AddBulge(1 - progress);
            
@@ -47,6 +48,7 @@ public class EnergyPacketVisual : MonoBehaviour
 
     public void Reset()
     {
+        RemoveConduitBulge();
         conduit = null;
         energyType = EnergyType.WHITE;
     }

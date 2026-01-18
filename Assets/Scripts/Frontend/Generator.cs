@@ -9,7 +9,6 @@ public class Generator : NodeVisual
 {
     private int generatorTier = 1;
     public GameObject[] generatorTiers;
-    
     [Label("Up Direction")] public GameObject upConnector;
     [Label("Down Direction")] public GameObject downConnector;
     [Label("Left Direction")] public GameObject leftConnector;
@@ -71,6 +70,7 @@ public class Generator : NodeVisual
     }
     private void SetGeneratorTier(int tier)
     {
+        generatorTiers[generatorTier-1].SetActive(false);
         generatorTier = tier;
         generatorTiers[tier-1].SetActive(true);
     }

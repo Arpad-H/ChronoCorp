@@ -33,6 +33,7 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
 
     public StabilityBar stabilityBar;
     private bool gameOver = false;
+    public bool gameRunning = false;
     
 
     private void Awake()
@@ -59,7 +60,7 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
 
     private void FixedUpdate()
     {
-        if (gameOver) return;
+        if (gameOver || !gameRunning) return;
         backend.tick(fixedTickCount, this);
         fixedTickCount++;
     }
@@ -94,12 +95,24 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
     {
         BackendDeletesConnection?.Invoke(connectionId);
     }
-
+    // Called by the backend to delete a node visual
     public void DeleteNode(GUID nodeId)
     {
-       CoordinatePlane layer = temporalLayerStack.GetLayerByNum(nodeVisuals[nodeId].layerNum);
-       layer.RemoveNodeVisual(nodeVisuals[nodeId]);
-       GeneratorDeleted?.Invoke();
+        CoordinatePlane layer = temporalLayerStack.GetLayerByNum(nodeVisuals[nodeId].layerNum);
+        layer.RemoveNodeVisual(nodeVisuals[nodeId]);
+        nodeVisuals.Remove(nodeId);
+        GeneratorDeleted?.Invoke();
+    }
+
+    // Called when player deletes a node
+    public bool DestroyNode(GUID nodeID)
+    {
+        CoordinatePlane layer = temporalLayerStack.GetLayerByNum(nodeVisuals[nodeID].layerNum);
+        layer.RemoveNodeVisual(nodeVisuals[nodeID]);
+        bool result = backend.DeleteNode(nodeID);
+        if (result) GeneratorDeleted?.Invoke();
+        nodeVisuals.Remove(nodeID);
+        return result;
     }
 
     public void CreateConnection(GUID backendIdA, GUID backendIdB, GUID connectionId, Vector2Int[] cellsOfConnection)
@@ -177,11 +190,13 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
 
         return false;
     }
+
     public GUID? IsValidConduit(NodeVisual a, NodeVisual b, Vector2Int[] cellsOfConnection,int bridgesBuilt)
     {
         if (!a || !b || a == b) return null;
         return backend.LinkNodes(a.backendID, b.backendID, cellsOfConnection, bridgesBuilt);
     }
+
     public bool IsConnectionPathValid(int layerNum,  Vector2Int[] cellsOfConnection)
     {
         return !backend.IsConnectionPathOccupied(layerNum,cellsOfConnection);
@@ -202,6 +217,7 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
         }
         return false;
     }
+
     public void ConsumeInventoryItem(InventoryItem item, int amount = 1)
     {
         backend.AddItemToInventory(item, -amount);
@@ -217,15 +233,6 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
         backend.upgradeGenerator(nodeVisual.backendID);
         nodeVisual.UpgradeNode();
         return true;
-    }
-
-    public bool DestroyNode(GUID nodeID)
-    {
-        CoordinatePlane layer = temporalLayerStack.GetLayerByNum(nodeVisuals[nodeID].layerNum);
-        layer.RemoveNodeVisual(nodeVisuals[nodeID]);
-        bool result = backend.DeleteNode(nodeID);
-        if (result) GeneratorDeleted?.Invoke();
-        return result;
     }
 
     public bool UnlinkConduit(GUID backendID)
@@ -261,5 +268,10 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
     {
         backend.AddItemToInventory(item, (int)amount);
         InventoryChanged?.Invoke();
+    }
+
+    public void EndTutorial()
+    {
+        gameRunning = true;
     }
 }

@@ -153,7 +153,6 @@ public class CoordinatePlane : MonoBehaviour
             }
             
         }
-        if(nv) nodes.Add(nv);
         return nv;
     }
     
