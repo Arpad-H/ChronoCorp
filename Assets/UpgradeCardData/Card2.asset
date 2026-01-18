@@ -19,12 +19,9 @@ MonoBehaviour:
   effects:
   - rid: 2503110066700550325
   - rid: 2503110095526952960
-  - rid: -2
   references:
     version: 2
     RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
     - rid: 2503110066700550325
       type: {class: ModifyInventoryEffect, ns: , asm: Assembly-CSharp}
       data:

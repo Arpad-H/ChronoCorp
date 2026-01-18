@@ -29,7 +29,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Curvature: 27.43
+    - _ChromaticOffset: 1.02
+    - _Curvature: 4.9
+    - _ScanlineStrength: 0.16
+    - _VignetteSoftness: 0.107
     - _VignetteWidth: 0.451
     m_Colors: []
   m_BuildTextureStacks: []

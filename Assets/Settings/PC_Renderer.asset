@@ -89,8 +89,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Active: 1
   injectionPoint: 600
-  fetchColorBuffer: 0
-  requirements: 0
+  fetchColorBuffer: 1
+  requirements: 4
   passMaterial: {fileID: 2100000, guid: 63fbfac7eb7b65c4fbec8555e9faf968, type: 2}
   passIndex: 0
   bindDepthStencilAttachment: 0

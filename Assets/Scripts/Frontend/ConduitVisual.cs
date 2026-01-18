@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Frontend.UIComponents;
 using Interfaces;
+using NaughtyAttributes;
 using NodeBase;
 using Unity.VisualScripting;
 using UnityEditor;
@@ -43,6 +44,8 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
     public Color invalidColor;
     public Color previewColor;
     public Color validColor;
+    
+    public AudioSource audioSource;
 
     void Awake()
     {
@@ -65,6 +68,15 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
         }
 
         conduitVisualizer.ReleaseItem(this);
+    }
+    [Button]
+    private void PlayBuildSound()
+    {
+        if (audioSource )
+        {
+            audioSource.pitch = 0.8f + conduitLength/10f * 0.4f;
+            audioSource.Play();
+        }
     }
 
     public bool FinalizeConduit(NodeVisual nodeVisual, GUID newBackendID)
@@ -292,6 +304,8 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
         }
 
         ColorSplineIfValid();
+        conduitLength = spline.GetLength();
+        PlayBuildSound();
     }
 
     private void PlaceBridgesOnIntersections()
