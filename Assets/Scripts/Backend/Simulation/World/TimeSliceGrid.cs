@@ -65,23 +65,6 @@ namespace Backend.Simulation.World
             return node != null || connection != null;
         }
         
-        public bool HasOccupiedNear(Vector2Int center, int radius)
-        {
-            for (int x = center.x - radius; x <= center.x + radius; x++)
-            {
-                for (int y = center.y - radius; y <= center.y + radius; y++)
-                {
-                    var c = new Vector2Int(x, y);
-                    if (!IsInside(c))
-                        continue;
-
-                    if (_nodes[x, y] != null || _connections[x, y] != null)
-                        return true;
-                }
-            }
-            return false;
-        }
-        
         #endregion
 
         private bool IsInside(int x, int y)
@@ -189,11 +172,9 @@ namespace Backend.Simulation.World
             {
                 if (cell == WorldToCell(endpointA.Pos) || cell == WorldToCell(endpointB.Pos))
                     continue;
-
-                var cellInt = WorldToCell(cell);
                 
-                _connections[cellInt.x, cellInt.y].Add( connection);
-                cellsToConnect.Add(cellInt);
+                _connections[cell.x, cell.y].Add( connection);
+                cellsToConnect.Add(cell);
             }
 
             _connectionCellsById[connection.guid] = cellsToConnect;
@@ -209,13 +190,12 @@ namespace Backend.Simulation.World
             {
                 if (!IsInside(cell))
                     continue;
-                foreach (var conn in _connections[cell.x, cell.y])
+
+                var list = _connections[cell.x, cell.y];
+                for (int i = list.Count - 1; i >= 0; i--)
                 {
-                    if (conn.guid == connectionId)
-                    {
-                        _connections[cell.x, cell.y].Remove(conn);
-                        break;
-                    }
+                    if (list[i].guid == connectionId)
+                        list.RemoveAt(i);
                 }
             }
 
@@ -223,70 +203,6 @@ namespace Backend.Simulation.World
         }
 
         #endregion
-
-        /// <summary>
-        /// Gibt true zurück, wenn in der Nähe der Position
-        /// (Radius = tolerance) irgendein Node existiert.
-        /// </summary>
-        public bool HasNodeNear(Vector2 pos, float tolerance)
-        {
-            return GetNodesInRadius(pos, tolerance).Count > 0;
-        }
-
-        /// <summary>
-        /// Liefert alle Nodes innerhalb eines Radius r um pos.
-        /// </summary>
-        public List<AbstractNodeInstance> GetNodesInRadius(Vector2 pos, float radius)
-        {
-            var result = new List<AbstractNodeInstance>();
-
-            var cellRadius = Mathf.CeilToInt(radius / cellSize);
-            var centerCell = WorldToCell(pos);
-            var radiusSqr = radius * radius;
-
-            for (var dx = -cellRadius; dx <= cellRadius; dx++)
-            for (var dy = -cellRadius; dy <= cellRadius; dy++)
-            {
-                var cx = centerCell.x + dx;
-                var cy = centerCell.y + dy;
-                if (!IsInside(cx, cy))
-                    continue;
-
-                var node = _nodes[cx, cy];
-                if (node == null)
-                    continue;
-
-                if ((node.Pos - pos).sqrMagnitude <= radiusSqr)
-                    result.Add(node);
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Gibt den "besten" Node unter dem Cursor zurück (z.B. den nächsten).
-        /// </summary>
-        public AbstractNodeInstance GetBestMatchNode(Vector2 pos, float tolerance)
-        {
-            var candidates = GetNodesInRadius(pos, tolerance);
-            if (candidates.Count == 0)
-                return null;
-
-            AbstractNodeInstance best = null;
-            var bestSqrDist = float.MaxValue;
-
-            foreach (var node in candidates)
-            {
-                var sqrDist = (node.Pos - pos).sqrMagnitude;
-                if (sqrDist < bestSqrDist)
-                {
-                    bestSqrDist = sqrDist;
-                    best = node;
-                }
-            }
-
-            return best;
-        }
 
         // --------------------------------------------------
         // Neue Methode: zufällige leere Zelle mit Gewichten
