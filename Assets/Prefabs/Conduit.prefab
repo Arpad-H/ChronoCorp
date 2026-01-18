@@ -55,7 +55,7 @@ MonoBehaviour:
   planeA: {fileID: 0}
   planeB: {fileID: 0}
   bridgePrefab: {fileID: 1577139832588222046, guid: 34fba79cbe42b1c4cb0f955b1036d087, type: 3}
-  verticalOffset: 0.582
+  verticalOffset: 0
   splineContainer: {fileID: 0}
   conduitVisualizer: {fileID: 0}
   bridgesBuilt: 0

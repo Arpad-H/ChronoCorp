@@ -163,6 +163,10 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
         {
             ((TimeRipple)nodeVisual).UpdateHealthBar((float)(currentValue - minValue) / (maxValue - minValue));
         }
+        if (nodeVisual.GetType() == typeof(BlackHole))
+        {
+            ((BlackHole)nodeVisual).UpdateHealthBar((float)(currentValue - minValue) / (maxValue - minValue));
+        }
     }
 
     //Spawn Nodes from inventory or other manual placement
