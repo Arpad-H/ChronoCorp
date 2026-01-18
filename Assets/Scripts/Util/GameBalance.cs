@@ -33,6 +33,9 @@ namespace Util
         MalusThreshold0,
         MalusThreshold1,
         MalusThreshold2, 
+        
+        // Upgrade Cards Settings
+        CardsShownPerUpgradeChoice
 
         
     }
@@ -105,7 +108,7 @@ namespace Util
         public Vector2 spiralGridminMaxCameraY;
         
         [Header("Upgrade Cards Settings")]
-        public List<UpgradeCardData> upgradeCards;
+        public int cardsShownPerUpgradeChoice;
         
         
         

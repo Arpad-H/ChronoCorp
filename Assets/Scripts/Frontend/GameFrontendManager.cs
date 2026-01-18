@@ -149,7 +149,7 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
         CoordinatePlane newLayer = temporalLayerStack.AddNewFrame(sliceNum);
         if (newLayer && sliceNum != 0)
         {
-            UIManager.Instance.ShowUpgradeChoiceMenu(BalanceProvider.Balance.upgradeCards);
+            UIManager.Instance.ShowUpgradeChoiceMenu();
             BalanceProvider.Balance.nodeSpawnIntervalPerSecond += BalanceProvider.Balance.layerModifierToNodeSpawnInterval;
             return true;
         }

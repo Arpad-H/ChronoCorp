@@ -17,13 +17,14 @@ public class UIManager : MonoBehaviour
     
     private UpgradeChoiceMenu upgradeChoiceMenuComponent;
     public GameObject cardChoiceMenu;
-    
+    private UpgradeCardData[] allUpgrades;
   
 
     void Awake()
     {
         Instance = this;
         upgradeChoiceMenuComponent = cardChoiceMenu.GetComponent<UpgradeChoiceMenu>();
+        LoadAllCards();
     }
 
     private void Start()
@@ -53,9 +54,34 @@ public class UIManager : MonoBehaviour
         deleteNodeButton = Instantiate(deleteButtonPrefab, position, Quaternion.identity);
         return deleteNodeButton.GetComponent<DeleteButton>();
     }
-    public void ShowUpgradeChoiceMenu(List<UpgradeCardData> availableUpgrades)
+    public void ShowUpgradeChoiceMenu()
     {
+        List<UpgradeCardData> availableUpgrades = GetRandomUpgrades(BalanceProvider.Balance.cardsShownPerUpgradeChoice);
         cardChoiceMenu.SetActive(true);
         upgradeChoiceMenuComponent.ShowChoices(availableUpgrades);
+    }
+
+    private List<UpgradeCardData> GetRandomUpgrades(int i)
+    {
+        List<UpgradeCardData> selectedUpgrades = new List<UpgradeCardData>();
+        List<int> usedIndices = new List<int>();
+
+        System.Random rand = new System.Random();
+
+        while (selectedUpgrades.Count < i && selectedUpgrades.Count < allUpgrades.Length)
+        {
+            int index = rand.Next(allUpgrades.Length);
+            if (!usedIndices.Contains(index))
+            {
+                usedIndices.Add(index);
+                selectedUpgrades.Add(allUpgrades[index]);
+            }
+        }
+        return selectedUpgrades;
+    }
+
+    private void LoadAllCards()
+    {
+       allUpgrades = Resources.LoadAll<UpgradeCardData>("UpgradeCardData");
     }
 }
