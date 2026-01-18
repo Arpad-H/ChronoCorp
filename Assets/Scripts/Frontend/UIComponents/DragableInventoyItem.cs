@@ -16,11 +16,13 @@ public class DragableInventoyItem : MonoBehaviour, IBeginDragHandler, IDragHandl
     public TextMeshProUGUI countText;
     public InventoryItem item;
     public Image InventoryIcon;
-
+    public UISlide uiSlide;
     void Start()
     {
+       
         GameFrontendManager.Instance.GeneratorDeleted += UpdateCountText;
         GameFrontendManager.Instance.InventoryChanged += UpdateCountText;
+        InputManager.Instance.OnRightClick += CancelDrag;
         StartCoroutine(DelayedUpdate());
     }
     IEnumerator DelayedUpdate()
@@ -46,6 +48,7 @@ public class DragableInventoyItem : MonoBehaviour, IBeginDragHandler, IDragHandl
     public void OnBeginDrag(PointerEventData eventData)
     {
         if (!isDraggable || count <= 0) return;
+        if (uiSlide) uiSlide.Toggle();
         dragIcon = new GameObject("DragIcon").AddComponent<Image>();
         dragIcon.sprite = iconImage;
         dragIcon.raycastTarget = false;
@@ -67,9 +70,15 @@ public class DragableInventoyItem : MonoBehaviour, IBeginDragHandler, IDragHandl
         if (!isDraggable || count <= 0) return;
         if (dragIcon != null)
             Destroy(dragIcon.gameObject);
+        else return;
         if (GameFrontendManager.Instance.TryDrop(item))
         {
             UpdateCountText();
         }
+    }
+    public void CancelDrag() 
+    {
+        if (dragIcon != null)
+            Destroy(dragIcon.gameObject);
     }
 }

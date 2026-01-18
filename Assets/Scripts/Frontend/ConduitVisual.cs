@@ -33,7 +33,7 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
     public ConduitVisualizer conduitVisualizer;
     private Spline spline;
     public GUID backendID;
-
+    public float  glowIntensity = 1f;
     private float conduitLength;
     public int bridgesBuilt = 0;
     public Renderer renderer;
@@ -179,7 +179,7 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
             energyType = rippleB.energyType;
 
         Color color2 = energyType.ToColor();
-        float factor = Mathf.Pow(2, 3);
+        float factor = Mathf.Pow(2, glowIntensity);
         Color color1 = new Color(color2.r * factor, color2.g * factor, color2.b * factor, 1f);
         pipeMaterial.SetColor("_Color", color1);
         pipeMaterial.SetColor("_Color2", color2);

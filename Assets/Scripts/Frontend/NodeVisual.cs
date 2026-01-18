@@ -102,11 +102,15 @@ public class NodeVisual : MonoBehaviour, IPointerClickHandler, IPointerEnterHand
 
     public void OnBeginDrag(PointerEventData eventData)
     {
+        if (eventData.button != PointerEventData.InputButton.Left)
+            return;
         ConduitVisualizer.Instance.StartDrag(this);
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
+        if (eventData.button != PointerEventData.InputButton.Left)
+            return;
         ConduitVisualizer.Instance.CancelDrag();
     }
 

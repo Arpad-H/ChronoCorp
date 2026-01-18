@@ -23,13 +23,13 @@ public class InputManager : MonoBehaviour
     {
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
-        
     }
 
     void Start()
     {
         if (cameraController == null) cameraController = FindObjectOfType<CameraController>();
     }
+  
 
     void Update()
     {

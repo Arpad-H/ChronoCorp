@@ -162,4 +162,8 @@ public class ConduitVisualizer : MonoBehaviour
 
         return null;
     }
+    public bool IsDraggingConduit()
+    {
+        return previewConduitVisual != null;
+    }
 }

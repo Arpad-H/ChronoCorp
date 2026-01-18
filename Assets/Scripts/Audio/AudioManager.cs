@@ -4,8 +4,10 @@ public class AudioManager : MonoBehaviour
 {
     public static AudioManager Instance;
     public AdaptiveAudioTrack adaptiveAudioTrack;
-    public AudioSource winAudioSource;
-    public AudioSource lossAudioSource;
+    [SerializeField] private AudioSource winAudioSource;
+    [SerializeField] private AudioSource lossAudioSource;
+    [SerializeField] private AudioSource invalidActionAudioSource;
+    [SerializeField] private AudioSource playerActionSuccessAudioSource;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
@@ -41,5 +43,13 @@ public class AudioManager : MonoBehaviour
         if (enable)
             adaptiveAudioTrack.ToggleState(intensity, AdaptiveAudioTrack.LayerState.UNMUTED);
         else adaptiveAudioTrack.ToggleState(intensity, AdaptiveAudioTrack.LayerState.MUTED);
+    }
+    public void PlayInvalidActionSound()
+    {
+        invalidActionAudioSource.Play();
+    }
+    public void PlayPlayerActionSuccessSound()
+    {
+        playerActionSuccessAudioSource.Play();
     }
 }

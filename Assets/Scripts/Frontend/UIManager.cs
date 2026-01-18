@@ -1,6 +1,7 @@
 // UIManager.cs
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Frontend.UIComponents;
 using UnityEngine;
@@ -14,11 +15,12 @@ public class UIManager : MonoBehaviour
     public GameObject deleteButtonPrefab;
     private GameObject deleteNodeButton;
     public GameObject gameOverScreen;
+    public ConduitVisualizer conduitVisualizer;
     
     private UpgradeChoiceMenu upgradeChoiceMenuComponent;
     public GameObject cardChoiceMenu;
     private UpgradeCardData[] allUpgrades;
-  
+    public ScoreDisplay scoreDisplay;
 
     void Awake()
     {
@@ -56,11 +58,25 @@ public class UIManager : MonoBehaviour
     }
     public void ShowUpgradeChoiceMenu()
     {
+        StartCoroutine(QueueUpgradeMenu());
+    }
+    private IEnumerator QueueUpgradeMenu()
+    {
+        // This loop stays active as long as it is NOT safe
+        while (!SafeToShowUpgradeUI())
+        {
+            yield return null; // Wait for the next frame and check again
+        }
+
+        // Once the loop breaks, it's safe!
+        ExecuteShowMenu();
+    }
+    private void ExecuteShowMenu()
+    {
         List<UpgradeCardData> availableUpgrades = GetRandomUpgrades(BalanceProvider.Balance.cardsShownPerUpgradeChoice);
         cardChoiceMenu.SetActive(true);
         upgradeChoiceMenuComponent.ShowChoices(availableUpgrades);
     }
-
     private List<UpgradeCardData> GetRandomUpgrades(int i)
     {
         List<UpgradeCardData> selectedUpgrades = new List<UpgradeCardData>();
@@ -84,4 +100,18 @@ public class UIManager : MonoBehaviour
     {
        allUpgrades = Resources.LoadAll<UpgradeCardData>("UpgradeCardData");
     }
+    
+    private bool SafeToShowUpgradeUI()
+    {
+        return !conduitVisualizer.IsDraggingConduit();
+    }
+    public void SetScore(int score)
+    {
+        scoreDisplay.SetCurrentScore(score);
+    }
+    public void SetTargetScore(int score)
+    {
+        scoreDisplay.SetTargetScore(score);
+    }
+    
 }

@@ -8,6 +8,7 @@ using UnityEngine.EventSystems;
 public class Generator : NodeVisual
 {
     private int generatorTier = 1;
+    private int maxTier = 4;
     public GameObject[] generatorTiers;
     [Label("Up Direction")] public GameObject upConnector;
     [Label("Down Direction")] public GameObject downConnector;
@@ -77,6 +78,9 @@ public class Generator : NodeVisual
 
     public void UpgradeNode()
     {
-        SetGeneratorTier (generatorTier + 1);
+        if (generatorTier < maxTier)
+        {
+            SetGeneratorTier(generatorTier + 1);
+        }
     }
 }
