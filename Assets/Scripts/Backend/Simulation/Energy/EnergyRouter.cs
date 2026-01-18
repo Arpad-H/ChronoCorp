@@ -28,14 +28,14 @@ namespace Backend.Simulation.Energy
             var potentialConnection = output.Connection;
             if (potentialConnection == null) return routesForOutput;
 
-            var startRipple = potentialConnection.node1 is TimeRippleInstance
-                ? potentialConnection.node1
-                : potentialConnection.node2;
+            NodeWithConnections startRipple = potentialConnection.node1 is NodeWithConnections
+                ? potentialConnection.node1 as  NodeWithConnections
+                : potentialConnection.node2 as NodeWithConnections;
 
             var alreadyVisitedNodes = new Dictionary<AbstractNodeInstance, NodeWithConnections>();
             var alreadyVisitedConnections = new Dictionary<AbstractNodeInstance, Connection>();
 
-            BfsFromRipple((TimeRippleInstance)startRipple, alreadyVisitedConnections, alreadyVisitedNodes);
+            BfsFromRipple(startRipple, alreadyVisitedConnections, alreadyVisitedNodes);
 
             var generatorToRippleConnection = output.Connection;
             if (generatorToRippleConnection == null) return routesForOutput;
@@ -54,7 +54,7 @@ namespace Backend.Simulation.Energy
             );
 
             firstRoute.addStep(firstStep);
-            routesForOutput.addRoute(startRipple, firstRoute);
+            routesForOutput.addRoute(startRipple as AbstractNodeInstance, firstRoute);
 
             // Für alle anderen Knoten den Pfad Generator -> startRipple -> ... -> Node aufbauen
             foreach (var kv in alreadyVisitedConnections)
@@ -103,13 +103,13 @@ namespace Backend.Simulation.Energy
             return routesForOutput;
 
             void BfsFromRipple(
-                TimeRippleInstance start,
+                NodeWithConnections start,
                 IDictionary<AbstractNodeInstance, Connection> alreadyVisitedConnectionsInner,
                 IDictionary<AbstractNodeInstance, NodeWithConnections> alreadyVisitedNodesInner)
             {
                 var queue = new Queue<NodeWithConnections>();
                 queue.Enqueue(start);
-                alreadyVisitedNodesInner[start] = null;
+                alreadyVisitedNodesInner[start as AbstractNodeInstance] = null;
 
                 while (queue.Count > 0)
                 {
