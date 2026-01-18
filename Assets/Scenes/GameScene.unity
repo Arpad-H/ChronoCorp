@@ -211,6 +211,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: TutorialScreen
       objectReference: {fileID: 0}
+    - target: {fileID: 7430349554148220362, guid: 2156b5cb4300d4c43b85c66c2a03a465, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1932,7 +1936,7 @@ MonoBehaviour:
   temporalLayerStack: {fileID: 116617658}
   layerDuplicationTime: 60
   stabilityBar: {fileID: 1156959565}
-  gameRunning: 0
+  gameRunning: 1
 --- !u!114 &1224639838
 MonoBehaviour:
   m_ObjectHideFlags: 0

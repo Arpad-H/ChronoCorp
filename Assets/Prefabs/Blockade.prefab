@@ -69,10 +69,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layerNum: 0
   nodeScale: 0.75
-  upPoint: {fileID: 0}
-  downPoint: {fileID: 0}
-  leftPoint: {fileID: 0}
-  rightPoint: {fileID: 0}
+  upPoint: {fileID: 7973942758334576708}
+  downPoint: {fileID: 7973942758334576708}
+  leftPoint: {fileID: 7973942758334576708}
+  rightPoint: {fileID: 7973942758334576708}
 --- !u!1 &4209950194793206074
 GameObject:
   m_ObjectHideFlags: 0
