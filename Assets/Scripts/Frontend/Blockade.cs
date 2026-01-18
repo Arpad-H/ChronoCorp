@@ -1,7 +1,9 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Blockade : NodeVisual
 {
+    public Image hpImage; 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -12,5 +14,9 @@ public class Blockade : NodeVisual
     void Update()
     {
         
+    }
+    public void UpdateHealthBar(float hp)
+    {
+        hpImage.fillAmount = hp;
     }
 }

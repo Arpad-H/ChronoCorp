@@ -49,7 +49,7 @@ namespace Backend.Simulation.World
             //timeSlices[0] = new TimeSlice(this);
             timeSlices.Add(new TimeSlice(this, timeSliceNumCounter++, 0));//prevents out of bounds since starts of with count 0
             Frontend.AddTimeSlice(timeSliceNumCounter-1); //pre increment otherwise it would be desynced
-            BalanceAutoTuner.ApplyAutoTune(BalanceProvider.Balance, targets);
+            if (BalanceProvider.Balance.useAutoBalance)BalanceAutoTuner.ApplyAutoTune(BalanceProvider.Balance, targets);
         }
 
         public uint getTickSeed(long tickCount)
