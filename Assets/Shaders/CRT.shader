@@ -1,9 +1,11 @@
-﻿Shader "Custom/URP_CRT"
+﻿Shader "Custom/URP_CRT_Fullscreen"
 {
     Properties
     {
-        _Curvature ("Curvature", Float) = 5.0
-        _VignetteWidth ("Vignette Softness", Range(0,1)) = 0.1
+        _Curvature ("Curvature", Range(1, 20)) = 6
+        _ScanlineStrength ("Scanline Strength", Range(0, 1)) = 0.15
+        _VignetteSoftness ("Vignette Softness", Range(0.01, 0.5)) = 0.15
+        _ChromaticOffset ("Chromatic Offset", Range(0, 3)) = 1
     }
 
     SubShader
@@ -11,7 +13,6 @@
         Tags
         {
             "RenderPipeline"="UniversalPipeline"
-            "RenderType"="Opaque"
         }
 
         ZTest Always
@@ -20,7 +21,11 @@
 
         Pass
         {
-            Tags { "LightMode" = "UniversalForward" }
+            Name "CRT"
+            Tags
+            {
+                "LightMode"="UniversalForward"
+            }
 
             HLSLPROGRAM
             #pragma vertex vert
@@ -28,68 +33,83 @@
 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 
-            struct Attributes
-            {
-                float4 positionOS : POSITION;
-                float2 uv : TEXCOORD0;
-            };
-
+            // -------- Fullscreen triangle --------
             struct Varyings
             {
                 float4 positionCS : SV_POSITION;
                 float2 uv : TEXCOORD0;
             };
 
-            // ✅ Correct texture for URP Full Screen Pass
-            TEXTURE2D(_CameraColorTexture);
-            SAMPLER(sampler_CameraColorTexture);
-
-            float _Curvature;
-            float _VignetteWidth;
-
-            Varyings vert (Attributes input)
+            Varyings vert(uint vertexID : SV_VertexID)
             {
-                Varyings output;
-                output.positionCS = TransformObjectToHClip(input.positionOS.xyz);
-                output.uv = input.uv;
-                return output;
+                Varyings o;
+
+                float2 pos[3] =
+                {
+                    float2(-1, -1),
+                    float2(-1, 3),
+                    float2(3, -1)
+                };
+
+                float2 uv[3] =
+                {
+                    float2(0, 0),
+                    float2(0, 2),
+                    float2(2, 0)
+                };
+
+                o.positionCS = float4(pos[vertexID], 0, 1);
+                o.uv = uv[vertexID];
+
+                return o;
             }
 
-            half4 frag (Varyings i) : SV_Target
+            // -------- Inputs --------
+            TEXTURE2D(_BlitTexture);
+            SAMPLER(sampler_BlitTexture);
+
+            float _Curvature;
+            float _ScanlineStrength;
+            float _VignetteSoftness;
+            float _ChromaticOffset;
+
+            // -------- CRT Distortion --------
+            float2 CRTCurve(float2 uv)
             {
-                // Convert to -1..1 space
-                float2 uv = i.uv * 2.0 - 1.0;
-
-                // ---- CRT curvature ----
-                float curvature = max(_Curvature, 0.01);
-                float2 offset = uv.yx / curvature;
+                uv = uv * 2.0 - 1.0;
+                float2 offset = uv.yx / _Curvature;
                 uv += uv * offset * offset;
+                return uv * 0.5 + 0.5;
+            }
 
-                // Back to 0..1
-                uv = uv * 0.5 + 0.5;
-
-                // Clamp instead of hard discard
+            // -------- Fragment --------
+            half4 frag(Varyings i) : SV_Target
+            {
+                float2 uv = CRTCurve(i.uv);
+                uv.y = 1.0 - uv.y;
                 uv = saturate(uv);
 
-                // ---- Sample screen ----
-                half4 col = SAMPLE_TEXTURE2D(
-                    _CameraColorTexture,
-                    sampler_CameraColorTexture,
-                    uv
-                );
+                // ---- Chromatic aberration ----
+                float2 pixel = 1.0 / _ScreenParams.xy;
+                float chroma = _ChromaticOffset * pixel.x;
+
+                half r = SAMPLE_TEXTURE2D(_BlitTexture, sampler_BlitTexture, uv + float2(chroma, 0)).r;
+                half g = SAMPLE_TEXTURE2D(_BlitTexture, sampler_BlitTexture, uv).g;
+                half b = SAMPLE_TEXTURE2D(_BlitTexture, sampler_BlitTexture, uv - float2(chroma, 0)).b;
+
+                half3 col = half3(r, g, b);
 
                 // ---- Scanlines ----
-                float scanline = sin(uv.y * _ScreenParams.y * 1.5);
-                col.rgb *= (scanline * 0.1) + 0.9;
+                float scan = sin(uv.y * _ScreenParams.y * 1.5);
+                col *= lerp(1.0, scan * 0.5 + 0.5, _ScanlineStrength);
 
                 // ---- Vignette ----
-                float2 vignette =
-                    smoothstep(0.0, _VignetteWidth, uv) *
-                    smoothstep(0.0, _VignetteWidth, 1.0 - uv);
+                float2 v = smoothstep(0.0, _VignetteSoftness, uv)
+                    * smoothstep(0.0, _VignetteSoftness, 1.0 - uv);
 
-                col.rgb *= vignette.x * vignette.y;
+                col *= v.x * v.y;
 
-                return col;
+                return half4(col, 1);
             }
             ENDHLSL
         }

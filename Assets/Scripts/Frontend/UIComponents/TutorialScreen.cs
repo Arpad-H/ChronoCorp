@@ -133,7 +133,7 @@ public class TutorialScreen : MonoBehaviour
 
     private void EndTutorial()
     {
-        UnityEngine.SceneManagement.SceneManager.LoadScene("GameScene");
+       GameFrontendManager.Instance.EndTutorial();
         Destroy(this.gameObject);
     }
 }

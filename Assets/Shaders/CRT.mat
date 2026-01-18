@@ -29,8 +29,8 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Curvature: 23.58
-    - _VignetteWidth: 0.531
+    - _Curvature: 27.43
+    - _VignetteWidth: 0.451
     m_Colors: []
   m_BuildTextureStacks: []
   m_AllowLocking: 1
