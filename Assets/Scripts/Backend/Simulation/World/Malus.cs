@@ -60,12 +60,12 @@ namespace Backend.Simulation.World
         {
             int addedAmount = (int)(BalanceProvider.Balance.nodeDrainHealthEveryNTicks * DRAINRATE_INCREASE);
             change = addedAmount;
-            BalanceProvider.Balance.nodeDrainHealthEveryNTicks += addedAmount;
+            BalanceProvider.Balance.nodeDrainHealthEveryNTicks -= addedAmount;
         }
 
         public override void onDeactivation()
         {
-            BalanceProvider.Balance.nodeDrainHealthEveryNTicks -= change;
+            BalanceProvider.Balance.nodeDrainHealthEveryNTicks += change;
         }
     }
     
