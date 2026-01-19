@@ -10,8 +10,8 @@ namespace NodeBase
     {
         public List<Connection> Connections;
         private long lastDrain;
-        public long energyConsumed = 0;
-        private long energyToBeDestroyed = BalanceProvider.Balance.blackHoleEnergyPacketConsumeAmount;
+        public int energyConsumed = 0;
+        private int energyToBeDestroyed = BalanceProvider.Balance.blackHoleEnergyPacketConsumeAmount;
         public BlackHoleInstance(Vector2 pos) : base(pos, NodeType.BLACK_HOLE)
         {
             Connections = new List<Connection>();
@@ -23,6 +23,7 @@ namespace NodeBase
             {
                 return;
             }
+            energyToBeDestroyed = BalanceProvider.Balance.blackHoleEnergyPacketConsumeAmount;
 
             lastDrain = tickCount;
             storage.StabilityBar.decreaseStability(BalanceProvider.Balance.blackHoleStabilityDrainRate, storage);
@@ -31,6 +32,7 @@ namespace NodeBase
         public override void onReceiveEnergyPacket(long tickCount, EnergyPacket energyPacket, SimulationStorage storage)
         {
             energyConsumed += energyToBeDestroyed;
+            storage.Frontend.onNodeHealthChange(guid, 0, energyToBeDestroyed, energyConsumed);
             if (energyConsumed >= energyToBeDestroyed)
             {
                 storage.deleteNode(guid);
