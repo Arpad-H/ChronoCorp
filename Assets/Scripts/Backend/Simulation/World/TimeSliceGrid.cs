@@ -34,11 +34,6 @@ namespace Backend.Simulation.World
         
         #region Occupancy
 
-        public bool IsCellOccupied(Vector2 cell, out AbstractNodeInstance node, out List<Connection> connection)
-        {
-            return IsCellOccupied(WorldToCell(cell), out node, out connection);
-        }
-
         public bool IsCellOccupied(Vector2Int cell, out AbstractNodeInstance node, out List<Connection> connection)
         {
             node = null;
@@ -80,23 +75,12 @@ namespace Backend.Simulation.World
         {
             return IsInside(cell.x, cell.y);
         }
-        
-        private bool IsInside(Vector2 cell)
-        {
-            return IsInside(WorldToCell(cell));
-        }
 
         private Vector2Int WorldToCell(Vector2 worldPos)
         {
             var cx = Mathf.FloorToInt(worldPos.x / cellSize);
             var cy = Mathf.FloorToInt(worldPos.y / cellSize);
             return new Vector2Int(cx, cy);
-        }
-
-        // Optional helper, falls du mal die Zellmitte brauchst
-        private Vector2 CellToWorldCenter(Vector2Int cell)
-        {
-            return new Vector2((cell.x + 0.5f) * cellSize, (cell.y + 0.5f) * cellSize);
         }
 
         #region Nodes

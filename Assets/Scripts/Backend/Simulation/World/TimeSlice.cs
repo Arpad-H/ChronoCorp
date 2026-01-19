@@ -361,7 +361,7 @@ namespace Backend.Simulation.World
         public Guid? spawnBlackHole(Vector2 pos, out BlackHoleInstance blackHoleInstance)
         {
             blackHoleInstance = null;
-            if (TimeSliceGrid.IsCellOccupied(pos, out var node, out var connection))
+            if (TimeSliceGrid.IsCellOccupied(new Vector2Int((int)pos.x, (int)pos.y), out var node, out var connection))
             {
                 if (node != null)
                 {
@@ -450,7 +450,7 @@ namespace Backend.Simulation.World
         public Guid? spawnRipple(Vector2 pos, EnergyType energyType, out TimeRippleInstance timeRippleInstance)
         {
             timeRippleInstance = null;
-            if(TimeSliceGrid.IsCellOccupied(pos, out var node, out var connection)) return null;
+            if(TimeSliceGrid.IsCellOccupied(new Vector2Int((int)pos.x, (int)pos.y), out var node, out var connection)) return null;
             var newNode = new TimeRippleInstance(pos, energyType);
             newNode.currentTimeSlice = this;
             TimeSliceGrid.Add(newNode);
