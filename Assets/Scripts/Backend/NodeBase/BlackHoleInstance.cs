@@ -23,6 +23,8 @@ namespace NodeBase
             {
                 return;
             }
+
+            lastDrain = tickCount;
             storage.StabilityBar.decreaseStability(BalanceProvider.Balance.blackHoleStabilityDrainRate, storage);
         }
 
