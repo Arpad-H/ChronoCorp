@@ -255,6 +255,11 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
         }
         else //different time slices
         {
+            foreach (var bridge in bridges)
+            {
+                Destroy(bridge);
+            }
+
             sameLayerConnection = false;
             path.Clear();
             spline.Clear();
