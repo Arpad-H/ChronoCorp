@@ -1,10 +1,12 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Bridge : MonoBehaviour
 {
     public Material validBridgeMaterial;
     public Material invalidBridgeMaterial;
     public MeshRenderer bridgeMeshRenderer;
+   
     
     public void SetValidMaterial(bool isValid)
     {
@@ -17,4 +19,5 @@ public class Bridge : MonoBehaviour
             bridgeMeshRenderer.material = invalidBridgeMaterial;
         }
     }
+    
 }

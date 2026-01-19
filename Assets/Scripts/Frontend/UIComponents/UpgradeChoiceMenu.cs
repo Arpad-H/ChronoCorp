@@ -5,9 +5,11 @@ public class UpgradeChoiceMenu : MonoBehaviour
 {
     public UpgradeCard cardPrefab;
     public Transform cardParent;
+    public AudioSource selectedAudioSource;
 
     public void ShowChoices(List<UpgradeCardData> availableUpgrades)
     {
+        GameFrontendManager.Instance.SetGameState(GameFrontendManager.GameState.PAUSED);
         Clear();
 
         for (int i = 0; i < 3; i++)
@@ -26,7 +28,8 @@ public class UpgradeChoiceMenu : MonoBehaviour
         
         GameFrontendManager.Instance.UpgradeCardSelected(upgradeCard);
         gameObject.SetActive(false);
-      
+        selectedAudioSource.Play();
+      GameFrontendManager.Instance.SetGameState(GameFrontendManager.GameState.PLAYING);
     }
 
     void Clear()

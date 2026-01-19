@@ -12,6 +12,13 @@ using Util;
 
 public class GameFrontendManager : MonoBehaviour, IFrontend
 {
+    [Serializable]
+    public enum GameState
+    {
+        PLAYING,
+        PAUSED,
+        GAMEOVER
+    }
     public event Action GeneratorDeleted;
     public event Action InventoryChanged;
     public event Action<GUID> BackendDeletesConnection;
@@ -32,8 +39,7 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
     private long fixedTickCount;
 
     public StabilityBar stabilityBar;
-    private bool gameOver = false;
-    public bool gameRunning = false;
+    [SerializeField] private GameState gameState = GameState.PAUSED;
     
 
     private void Awake()
@@ -54,13 +60,10 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
         if (cameraController == null) cameraController = FindObjectOfType<CameraController>();
     }
 
-    private void Update()
-    {
-    }
-
     private void FixedUpdate()
     {
-        if (gameOver || !gameRunning) return;
+    
+        if (gameState == GameState.PAUSED || gameState == GameState.GAMEOVER) return;
         backend.tick(fixedTickCount, this);
         fixedTickCount++;
     }
@@ -68,7 +71,7 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
 
     public void GameOver(string reason)
     {
-        gameOver = true;
+       gameState = GameState.GAMEOVER;
         
         AudioManager.Instance.StopBackgroundMusic();
         AudioManager.Instance.PlayLossAudio();
@@ -110,7 +113,11 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
         CoordinatePlane layer = temporalLayerStack.GetLayerByNum(nodeVisuals[nodeID].layerNum);
         layer.RemoveNodeVisual(nodeVisuals[nodeID]);
         bool result = backend.DeleteNode(nodeID);
-        if (result) GeneratorDeleted?.Invoke();
+        if (result)
+        {
+            AudioManager.Instance.PlayPlayerActionSuccessSound();
+            GeneratorDeleted?.Invoke();
+        }
         nodeVisuals.Remove(nodeID);
         return result;
     }
@@ -149,7 +156,7 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
         CoordinatePlane newLayer = temporalLayerStack.AddNewFrame(sliceNum);
         if (newLayer && sliceNum != 0)
         {
-            UIManager.Instance.ShowUpgradeChoiceMenu(BalanceProvider.Balance.upgradeCards);
+            UIManager.Instance.ShowUpgradeChoiceMenu();
             BalanceProvider.Balance.nodeSpawnIntervalPerSecond += BalanceProvider.Balance.layerModifierToNodeSpawnInterval;
             return true;
         }
@@ -163,6 +170,14 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
         {
             ((TimeRipple)nodeVisual).UpdateHealthBar((float)(currentValue - minValue) / (maxValue - minValue));
         }
+        if (nodeVisual.GetType() == typeof(BlackHole))
+        {
+            ((BlackHole)nodeVisual).UpdateHealthBar((float)(currentValue - minValue) / (maxValue - minValue));
+        }
+        if (nodeVisual.GetType() == typeof(Blockade))
+        {
+            ((Blockade)nodeVisual).UpdateHealthBar((float)(currentValue - minValue) / (maxValue - minValue));
+        }
     }
 
     //Spawn Nodes from inventory or other manual placement
@@ -170,6 +185,7 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
     {
         RaycastHit rh;
         cameraController.RaycastForFirst(out rh); 
+       if (rh.collider == null) return false; // Not hovering over anything
         var frame = rh.transform.GetComponentInParent<CoordinatePlane>();
         if (frame == null) return false; // Not hovering over a frame
 
@@ -194,7 +210,12 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
     public GUID? IsValidConduit(NodeVisual a, NodeVisual b, Vector2Int[] cellsOfConnection,int bridgesBuilt)
     {
         if (!a || !b || a == b) return null;
-        return backend.LinkNodes(a.backendID, b.backendID, cellsOfConnection, bridgesBuilt);
+        GUID? pathValid = backend.LinkNodes(a.backendID, b.backendID, cellsOfConnection, bridgesBuilt);
+        if (!pathValid.HasValue)
+        {
+           AudioManager.Instance.PlayInvalidActionSound();
+        }else AudioManager.Instance.PlayPlayerActionSuccessSound();
+        return pathValid;
     }
 
     public bool IsConnectionPathValid(int layerNum,  Vector2Int[] cellsOfConnection)
@@ -209,13 +230,24 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
 
     public bool TryDrop(InventoryItem item)
     {
+        bool success = false;
         switch (item)
         {
-            case InventoryItem.GENERATOR :
-                return SpawnOnHoveredFrame(NodeDTO.GENERATOR, EnergyType.WHITE);
-            case InventoryItem.UPGRADE_CARD : return UpgradeHoveredNode(); return false;
+            case InventoryItem.GENERATOR:
+            {
+                 success = SpawnOnHoveredFrame(NodeDTO.GENERATOR, EnergyType.WHITE);
+                 break;
+            }
+
+            case InventoryItem.UPGRADE_CARD:
+            {
+                success = UpgradeHoveredNode();
+                break;
+            }
         }
-        return false;
+        if (success) AudioManager.Instance.PlayPlayerActionSuccessSound();
+        else AudioManager.Instance.PlayInvalidActionSound();
+        return success;
     }
 
     public void ConsumeInventoryItem(InventoryItem item, int amount = 1)
@@ -230,9 +262,20 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
         cameraController.RaycastForFirst(out rh); 
         var nodeVisual = rh.collider.GetComponent<Generator>(); //TODO Currently only generators can be upgraded
         if (nodeVisual == null) return false; // Not hovering over a node
-        backend.upgradeGenerator(nodeVisual.backendID);
-        nodeVisual.UpgradeNode();
-        return true;
+        if (backend.upgradeGenerator(nodeVisual.backendID))
+        {
+            nodeVisual.UpgradeNode();
+            AudioManager.Instance.PlayPlayerActionSuccessSound();
+            AddToInventory(InventoryItem.UPGRADE_CARD,-1);
+            return true;
+        }
+        else
+        {
+            AudioManager.Instance.PlayInvalidActionSound();
+            return false;
+        }
+       
+       
     }
 
     public bool UnlinkConduit(GUID backendID)
@@ -272,6 +315,11 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
 
     public void EndTutorial()
     {
-        gameRunning = true;
+       gameState = GameState.PLAYING;
     }
+    public void SetGameState(GameState state)
+    {
+        gameState = state;
+    }
+  
 }

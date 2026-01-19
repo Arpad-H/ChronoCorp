@@ -33,7 +33,7 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
     public ConduitVisualizer conduitVisualizer;
     private Spline spline;
     public GUID backendID;
-
+    public float  glowIntensity = 1f;
     private float conduitLength;
     public int bridgesBuilt = 0;
     public Renderer renderer;
@@ -100,15 +100,47 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
             planeA.AddCellsOccupiedByConduits(trimmedCells);
             GameFrontendManager.Instance.ConsumeInventoryItem(InventoryItem.BRIDGE, bridgesBuilt);
         }
-
         //path.Clear();
         return true;
+    }
+
+    public void InitializeNewConduit(GUID backendIdA, GUID backendIdB, GUID connectionId,
+        Vector2Int[] cellsOfConnection)
+    {
+        backendID = connectionId;
+        sourceNodeVisual = GameFrontendManager.Instance.GetNodeVisual(backendIdA);
+        targetNodeVisual = GameFrontendManager.Instance.GetNodeVisual(backendIdB);
+        SetConduitEnergyType();
+        planeA = GameFrontendManager.Instance.temporalLayerStack.GetLayerByNum(sourceNodeVisual.layerNum);
+        planeB = GameFrontendManager.Instance.temporalLayerStack.GetLayerByNum(targetNodeVisual.layerNum);
+        sameLayerConnection = planeA.layerNum == planeB.layerNum;
+        path = CellsToWorldPositions(cellsOfConnection);
+        Direction dir = CalculateAttachDircection();
+        SetPreviewPosition(targetNodeVisual.GetAttachPosition(dir),
+            GameFrontendManager.Instance.temporalLayerStack.GetLayerByNum(targetNodeVisual.layerNum));
+        sourceNodeVisual.AddConnectedConduit(this, dir);
+        targetNodeVisual.AddConnectedConduit(this, dir);
+        if (sameLayerConnection)
+        {
+            Vector2Int[] cells = GetCellsOfConnection();
+            int newLength = cells.Length - 2;
+            Vector2Int[] trimmedCells = new Vector2Int[newLength];
+            Array.Copy(cells, 1, trimmedCells, 0, newLength);
+            planeA.AddCellsOccupiedByConduits(trimmedCells);
+           // GameFrontendManager.Instance.ConsumeInventoryItem(InventoryItem.BRIDGE, bridgesBuilt);
+        }
+        conduitLength = spline.GetLength();
     }
 
     private Direction CalculateAttachDircection()
     {
         Vector3 lastSegment;
         Vector3 secondLastSegment;
+        if (path.Count < 2)
+        {
+            Debug.LogError("Path has less than 2 points, cannot calculate attach direction. Using default");
+            return Direction.Down; // Default fallback
+        }
         if (sourceNodeVisual is Generator)
         {
             lastSegment = path[0];
@@ -147,7 +179,7 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
             energyType = rippleB.energyType;
 
         Color color2 = energyType.ToColor();
-        float factor = Mathf.Pow(2, 3);
+        float factor = Mathf.Pow(2, glowIntensity);
         Color color1 = new Color(color2.r * factor, color2.g * factor, color2.b * factor, 1f);
         pipeMaterial.SetColor("_Color", color1);
         pipeMaterial.SetColor("_Color2", color2);
@@ -442,6 +474,8 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
     {
         if (eventData.button != PointerEventData.InputButton.Left)
             return;
+        if (sourceNodeVisual == null || targetNodeVisual == null)
+            return; // Only allow deletion of finalized conduits
         Vector3 clickPosWorld = eventData.pointerCurrentRaycast.worldPosition;
         SpawnDeleteButton(clickPosWorld);
     }
@@ -465,25 +499,6 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
     // {
     //     bulgePos = pos;
     // }
-
-    public void InitializeNewConduit(GUID backendIdA, GUID backendIdB, GUID connectionId,
-        Vector2Int[] cellsOfConnection)
-    {
-        backendID = connectionId;
-        sourceNodeVisual = GameFrontendManager.Instance.GetNodeVisual(backendIdA);
-        targetNodeVisual = GameFrontendManager.Instance.GetNodeVisual(backendIdB);
-        Direction dir = CalculateAttachDircection();
-        SetPreviewPosition(targetNodeVisual.GetAttachPosition(dir),
-            GameFrontendManager.Instance.temporalLayerStack.GetLayerByNum(targetNodeVisual.layerNum));
-        SetConduitEnergyType();
-        planeA = GameFrontendManager.Instance.temporalLayerStack.GetLayerByNum(sourceNodeVisual.layerNum);
-        planeB = GameFrontendManager.Instance.temporalLayerStack.GetLayerByNum(targetNodeVisual.layerNum);
-        sameLayerConnection = planeA.layerNum == planeB.layerNum;
-        path = CellsToWorldPositions(cellsOfConnection);
-        sourceNodeVisual.AddConnectedConduit(this, dir);
-        targetNodeVisual.AddConnectedConduit(this, dir);
-        conduitLength = spline.GetLength();
-    }
 
     private List<Vector3> CellsToWorldPositions(Vector2Int[] cellsOfConnection)
     {

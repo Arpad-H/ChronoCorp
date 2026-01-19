@@ -1,53 +1,51 @@
 using UnityEngine;
-using UnityEngine.UI;
 
+[RequireComponent(typeof(CanvasGroup))]
 public class UISlide : MonoBehaviour
 {
-    public RectTransform panel;
-    public float showHeight = 200f;
-    public float hiddenHeight = -140f;
-    public float buttonHhiddenHeight = -140f;
-    public float buttonShowHeight = -470f;
-    // public Sprite showIcon;
-    // public Sprite hideIcon;
-    // public Image buttonIcon;
-    public RectTransform buttonPosition;
-   // public DragableInventoyItem dragableInventoyItem; 
-    public float speed = 8f;
+    public RectTransform windowTransform;
+    public float speed = 12f; // Faster speed feels more "snappy"/retro
+    
+    [Header("Animation Settings")]
+    public Vector3 hiddenScale = new Vector3(0.1f, 0.01f, 1f); // Start thin and small
+    public Vector3 shownScale = Vector3.one;
 
-    bool shown = false;
-    Vector2 target;
-    Vector2 buttonTarget;
+    private bool isShown = false;
+    private Vector3 targetScale;
+    private CanvasGroup canvasGroup;
 
-    void Start()
+    void Awake()
     {
-        target = panel.anchoredPosition;
-        buttonTarget = buttonPosition.anchoredPosition;
+        canvasGroup = GetComponent<CanvasGroup>();
+        
+        // Initialize state
+        windowTransform.localScale = hiddenScale;
+        targetScale = hiddenScale;
+        canvasGroup.alpha = 0;
+        canvasGroup.blocksRaycasts = false;
     }
 
     void Update()
     {
-        panel.anchoredPosition = Vector2.Lerp(
-            panel.anchoredPosition,
-            target,
+        // Smoothly lerp the scale
+        windowTransform.localScale = Vector3.Lerp(
+            windowTransform.localScale, 
+            targetScale, 
             Time.deltaTime * speed
         );
-        buttonPosition.anchoredPosition = Vector2.Lerp(
-            buttonPosition.anchoredPosition,
-            buttonTarget,
-            Time.deltaTime * speed
-        );
+
+        // Fade alpha based on scale progress
+        canvasGroup.alpha = Mathf.Lerp(canvasGroup.alpha, isShown ? 1 : 0, Time.deltaTime * speed);
     }
 
     public void Toggle()
     {
-        shown = !shown;
-        target = shown
-            ? new Vector2(panel.anchoredPosition.x,showHeight)
-            : new Vector2(panel.anchoredPosition.x,hiddenHeight);
-        buttonTarget = shown
-            ? new Vector2(buttonPosition.anchoredPosition.x,buttonShowHeight)
-            : new Vector2(buttonPosition.anchoredPosition.x,buttonHhiddenHeight);
-        // buttonIcon.sprite = shown ? hideIcon : showIcon;
+        isShown = !isShown;
+        
+        targetScale = isShown ? shownScale : hiddenScale;
+        
+        // Prevent clicking items when the window is hidden
+        canvasGroup.blocksRaycasts = isShown;
+        canvasGroup.interactable = isShown;
     }
 }

@@ -52,13 +52,13 @@ Material:
     m_Ints: []
     m_Floats:
     - _EdgeSoftness: 0.01
-    - _HP: 0.15
+    - _HP: 0.9
     - _QueueControl: 0
     - _QueueOffset: 0
     - _StartOffset: 0
     m_Colors:
     - _Color: {r: 0.52963686, g: 0.013440864, b: 0.008318888, a: 1}
-    - _EmptyColor: {r: 0.12452829, g: 0.12452829, b: 0.12452829, a: 1}
+    - _EmptyColor: {r: 0.17735851, g: 0, b: 0, a: 1}
     - _FillColor: {r: 0.5773585, g: 0.010044135, b: 0, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

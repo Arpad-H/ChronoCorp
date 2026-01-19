@@ -240,12 +240,7 @@ public class CoordinatePlane : MonoBehaviour
 
         return null;
     }
-
-    // public Vector3 LocalToWorldPosition(Vector3 localPos)
-    // {
-    //     Vector3 snappedPos = SnapToGrid(localPos);
-    //     return snappedPos;
-    // }
+    
     public Vector3 WorldToLocal(Vector3 worldPos)
     {
         Vector3 local = nodeContainer.InverseTransformPoint(worldPos);

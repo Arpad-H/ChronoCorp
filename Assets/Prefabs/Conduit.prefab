@@ -58,6 +58,7 @@ MonoBehaviour:
   verticalOffset: 0
   splineContainer: {fileID: 0}
   conduitVisualizer: {fileID: 0}
+  glowIntensity: 1.3
   bridgesBuilt: 0
   renderer: {fileID: 4147508576704826286}
   positions: []

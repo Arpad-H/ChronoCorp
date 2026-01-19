@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f153cb32e9694d9c8e166139a398a9ca, type: 3}
   m_Name: Card1
   m_EditorClassIdentifier: 
-  upgradeName: Acceleration
+  upgradeName: placeholder
   description: get 1 gen
   icon: {fileID: 21300000, guid: f54aabf125452324995867c8f9ed5071, type: 3}
   effects:
