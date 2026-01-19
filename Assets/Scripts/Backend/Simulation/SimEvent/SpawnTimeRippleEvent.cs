@@ -10,10 +10,10 @@ namespace Backend.Simulation.SimEvent
     {
         public string Name => "SpawnTimeRipple";
 
-        private readonly Vector2 _pos;
+        private readonly Vector2Int _pos;
         private readonly EnergyType _energyType;
 
-        public SpawnTimeRippleEvent(Vector2 pos, EnergyType energyType)
+        public SpawnTimeRippleEvent(Vector2Int pos, EnergyType energyType)
         {
             _pos = pos;
             _energyType = energyType;
