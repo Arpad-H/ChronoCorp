@@ -32,7 +32,7 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
     private MeshCollider meshCollider;
     public ConduitVisualizer conduitVisualizer;
     private Spline spline;
-    public GUID backendID;
+    public Guid backendID;
     public float  glowIntensity = 1f;
     private float conduitLength;
     public int bridgesBuilt = 0;
@@ -79,7 +79,7 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
         }
     }
 
-    public bool FinalizeConduit(NodeVisual nodeVisual, GUID newBackendID)
+    public bool FinalizeConduit(NodeVisual nodeVisual, Guid newBackendID)
     {
         Direction dir = CalculateAttachDircection();
         SetPreviewPosition(nodeVisual.GetAttachPosition(dir),
@@ -104,7 +104,7 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
         return true;
     }
 
-    public void InitializeNewConduit(GUID backendIdA, GUID backendIdB, GUID connectionId,
+    public void InitializeNewConduit(Guid backendIdA, Guid backendIdB, Guid connectionId,
         Vector2Int[] cellsOfConnection)
     {
         backendID = connectionId;

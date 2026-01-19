@@ -7,7 +7,6 @@ using Backend.Simulation.SimEvent;
 using Interfaces;
 using JetBrains.Annotations;
 using NodeBase;
-using UnityEditor;
 using UnityEngine;
 using Util;
 
@@ -16,15 +15,15 @@ namespace Backend.Simulation.World
     public class SimulationStorage
     {
         public const int TICKS_PER_SECOND = 50;
-        private readonly List<GUID> _removeBuffer = new(128); //buffer to avoid modifying collection during iteration
+        private readonly List<Guid> _removeBuffer = new(128); //buffer to avoid modifying collection during iteration
         public readonly IFrontend Frontend;
 
         public readonly uint simulationSeed = 2930473240;
         public readonly StabilityBar StabilityBar = new(BalanceProvider.Balance.stabilityMaxValue, BalanceProvider.Balance.stabilityMinValue, BalanceProvider.Balance.stabilityMaxValue);
         public readonly List<TimeSlice> timeSlices = new();
-        public Dictionary<GUID, EnergyPacket> energyPackets = new();
-        public Dictionary<GUID, Connection> guidToConnections = new();
-        public Dictionary<GUID, AbstractNodeInstance> guidToNodesMapping = new();
+        public Dictionary<Guid, EnergyPacket> energyPackets = new();
+        public Dictionary<Guid, Connection> guidToConnections = new();
+        public Dictionary<Guid, AbstractNodeInstance> guidToNodesMapping = new();
         public Inventory inventory = new();
         public Dictionary<NodeType, List<AbstractNodeInstance>> nodeTypeToNodesMapping = new();
         private int timeSliceNumCounter = 0;
@@ -58,7 +57,7 @@ namespace Backend.Simulation.World
             return (uint)(simulationSeed % tickCount + tickCount);
         }
 
-        public bool deleteNode(GUID nodeBackendId)
+        public bool deleteNode(Guid nodeBackendId)
         {
             var timeSlice = getTimeSliceOfNodeByGuid(nodeBackendId);
             if (timeSlice == null)
@@ -97,7 +96,7 @@ namespace Backend.Simulation.World
             }
         }
         
-        public bool UnlinkNodes(GUID connectionId, bool recalculatePaths)
+        public bool UnlinkNodes(Guid connectionId, bool recalculatePaths)
         {
             foreach (var slice in timeSlices)
             {
@@ -127,9 +126,9 @@ namespace Backend.Simulation.World
             return getAmountOutputsPlaced() + inventory.inventoryItemsAvailable[InventoryItem.GENERATOR];
         }
 
-        public event Action<GUID> onPacketDeleted;
+        public event Action<Guid> onPacketDeleted;
 
-        public bool isNodeKnown(GUID guid)
+        public bool isNodeKnown(Guid guid)
         {
             return guidToNodesMapping.ContainsKey(guid);
         }
@@ -182,7 +181,7 @@ namespace Backend.Simulation.World
             }
         }
 
-        public GUID? link(GUID idNode1, GUID idNode2, Vector2Int[] cellsOfConnection)
+        public Guid? link(Guid idNode1, Guid idNode2, Vector2Int[] cellsOfConnection)
         {
             var canPlace = inventory.canPlaceNormalConnection();
             if (!canPlace)
@@ -225,7 +224,7 @@ namespace Backend.Simulation.World
             if (node2 is GeneratorInstance gen2 && node1 is NodeWithConnections anyNode1)
                 return linkGeneratorAndNonGenerator(gen2, anyNode1);
 
-            GUID? linkGeneratorAndNonGenerator(GeneratorInstance generator, NodeWithConnections anyNode)
+            Guid? linkGeneratorAndNonGenerator(GeneratorInstance generator, NodeWithConnections anyNode)
             {
                 if (generator.alreadyConnectedTo(anyNode as AbstractNodeInstance))
                 {
@@ -254,7 +253,7 @@ namespace Backend.Simulation.World
             return null;
         }
 
-        public bool unlink(GUID connectionId)
+        public bool unlink(Guid connectionId)
         {
             var foundConnection = guidToConnections[connectionId];
             if (foundConnection == null) return false;
@@ -281,7 +280,7 @@ namespace Backend.Simulation.World
         }
         
         [CanBeNull]
-        public TimeSlice getTimeSliceOfNodeByGuid(GUID guid)
+        public TimeSlice getTimeSliceOfNodeByGuid(Guid guid)
         {
             guidToNodesMapping.TryGetValue(guid, out var node);
             if (node != null)
@@ -343,7 +342,7 @@ namespace Backend.Simulation.World
             return energyTypesAvailableInSimulation.Keys.ToHashSet();
         }
 
-        public GUID? spawnGenerator(Vector2 pos, int amountInitialOutputs)
+        public Guid? spawnGenerator(Vector2 pos, int amountInitialOutputs)
         {
             var canPlace = _simulationStorage.inventory.canPlaceGenerator();
 
@@ -359,7 +358,7 @@ namespace Backend.Simulation.World
             return newNode.guid;
         }
 
-        public GUID? spawnBlackHole(Vector2 pos, out BlackHoleInstance blackHoleInstance)
+        public Guid? spawnBlackHole(Vector2 pos, out BlackHoleInstance blackHoleInstance)
         {
             blackHoleInstance = null;
             if (TimeSliceGrid.IsCellOccupied(pos, out var node, out var connection))
@@ -388,7 +387,7 @@ namespace Backend.Simulation.World
             return blackHoleInstance.guid;
         }
         
-        public GUID? spawnBlockadeInConnection(Connection connection, Vector2 cellPos, out BlockadeNodeInstance blockadeNodeInstance )
+        public Guid? spawnBlockadeInConnection(Connection connection, Vector2 cellPos, out BlockadeNodeInstance blockadeNodeInstance )
         {
             blockadeNodeInstance = null;
 
@@ -441,14 +440,14 @@ namespace Backend.Simulation.World
             }
 
             _simulationStorage.Frontend.PlaceNodeVisual(newNode.guid, newNode.NodeType.NodeDTO, this.SliceNumber, new Vector2(newNode.Pos.x, newNode.Pos.y), EnergyType.WHITE);
-            _simulationStorage.Frontend.CreateConnection(nodeStart.guid, newNode.guid, (GUID)startConID, newConnectionStartToBlockade.ToArray());
-            _simulationStorage.Frontend.CreateConnection(newNode.guid, nodeFinish.guid, (GUID)endConID, newConnectionBlockadeToFinish.ToArray());
+            _simulationStorage.Frontend.CreateConnection(nodeStart.guid, newNode.guid, (Guid)startConID, newConnectionStartToBlockade.ToArray());
+            _simulationStorage.Frontend.CreateConnection(newNode.guid, nodeFinish.guid, (Guid)endConID, newConnectionBlockadeToFinish.ToArray());
             
             blockadeNodeInstance = newNode;
             return blockadeNodeInstance.guid;
         }
 
-        public GUID? spawnRipple(Vector2 pos, EnergyType energyType, out TimeRippleInstance timeRippleInstance)
+        public Guid? spawnRipple(Vector2 pos, EnergyType energyType, out TimeRippleInstance timeRippleInstance)
         {
             timeRippleInstance = null;
             if(TimeSliceGrid.IsCellOccupied(pos, out var node, out var connection)) return null;
@@ -467,7 +466,7 @@ namespace Backend.Simulation.World
             return newNode.guid;
         }
 
-        public bool removeNode(GUID guid)
+        public bool removeNode(Guid guid)
         {
             Debug.Log("Removing " + guid);
             if (_simulationStorage.guidToNodesMapping.TryGetValue(guid, out var nodeInstance))
@@ -493,7 +492,7 @@ namespace Backend.Simulation.World
             return false;
         }
 
-        public bool isNodeKnown(GUID guid)
+        public bool isNodeKnown(Guid guid)
         {
             return _simulationStorage.guidToNodesMapping.TryGetValue(guid, out var nodeInstance) && nodeInstance.currentTimeSlice.SliceNumber == SliceNumber;
         }

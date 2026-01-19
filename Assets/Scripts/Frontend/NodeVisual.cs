@@ -52,7 +52,7 @@ public class NodeVisual : MonoBehaviour, IPointerClickHandler, IPointerEnterHand
     IEndDragHandler,
     IInitializePotentialDragHandler
 {
-    [Header("Node Properties")] public GUID backendID;
+    [Header("Node Properties")] public Guid backendID;
     public int layerNum;
     public float nodeScale = 0.75f; // Scale of the node (not overfill the grid)
 

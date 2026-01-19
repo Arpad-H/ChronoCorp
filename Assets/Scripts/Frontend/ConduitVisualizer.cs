@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using NodeBase;
 using UnityEditor;
 using UnityEngine;
@@ -11,7 +12,7 @@ public class ConduitVisualizer : MonoBehaviour
     public GameObject prefab;
     private ObjectPool<ConduitVisual> pool;
 
-    private Dictionary<GUID, ConduitVisual> conduitVisuals = new();
+    private Dictionary<Guid, ConduitVisual> conduitVisuals = new();
 
     //private LinkedList<ConduitVisual> conduitVisuals = new();
     ConduitVisual previewConduitVisual;
@@ -38,7 +39,7 @@ public class ConduitVisualizer : MonoBehaviour
         GameFrontendManager.Instance.BackendCreatesConnection += OnBackendCreatesConnection;
     }
 
-    private void OnBackendCreatesConnection(GUID backendIdA, GUID backendIdB, GUID connectionId,
+    private void OnBackendCreatesConnection(Guid backendIdA, Guid backendIdB, Guid connectionId,
         Vector2Int[] cellsOfConnection)
     {
         ConduitVisual conduitVisual = pool.Get();
@@ -78,7 +79,7 @@ public class ConduitVisualizer : MonoBehaviour
         pool.Release(conduitVisual);
     }
 
-    public void OnDeleteConduit(GUID guid)
+    public void OnDeleteConduit(Guid guid)
     {
         if (!conduitVisuals.ContainsKey(guid)) return;
         ConduitVisual conduitVisual = conduitVisuals[guid];
@@ -118,7 +119,7 @@ public class ConduitVisualizer : MonoBehaviour
     {
         previewConduitVisual.planeB =
             GameFrontendManager.Instance.temporalLayerStack.GetLayerByNum(endNodeVisual.layerNum);
-        GUID? conduitBackendID =
+        Guid? conduitBackendID =
             GameFrontendManager.Instance.IsValidConduit(previewConduitVisual.sourceNodeVisual, endNodeVisual,
                 previewConduitVisual.GetCellsOfConnection(),previewConduitVisual.bridgesBuilt);
         if (conduitBackendID != null)
@@ -153,7 +154,7 @@ public class ConduitVisualizer : MonoBehaviour
         }
     }
 
-    public ConduitVisual GetConduitVisual(GUID guid)
+    public ConduitVisual GetConduitVisual(Guid guid)
     {
         if (conduitVisuals.ContainsKey(guid))
         {

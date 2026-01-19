@@ -1,7 +1,7 @@
+using System;
 using System.Collections.Generic;
 using Backend.Simulation.Energy;
 using Interfaces;
-using UnityEditor;
 using UnityEngine;
 
 namespace NodeBase
@@ -65,13 +65,13 @@ namespace NodeBase
     {
         public Connection(AbstractNodeInstance node1, AbstractNodeInstance node2, Vector2Int[] cellsOfConnection)
         {
-            guid = GUID.Generate();
+            guid = Guid.NewGuid();
             this.node1 = node1;
             this.node2 = node2;
             length = cellsOfConnection.Length;
         }
 
-        public GUID guid { get; }
+        public Guid guid { get; }
 
         public AbstractNodeInstance node1 { get; }
         public AbstractNodeInstance node2 { get; }

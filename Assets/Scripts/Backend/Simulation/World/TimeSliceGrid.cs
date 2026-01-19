@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using NodeBase;
-using UnityEditor;
 using UnityEngine;
 using Random = Unity.Mathematics.Random;
 
@@ -12,7 +11,7 @@ namespace Backend.Simulation.World
         private readonly AbstractNodeInstance[,] _nodes;
         private readonly List<Connection>[,] _connections;
         
-        private readonly Dictionary<GUID, List<Vector2Int>> _connectionCellsById = new();
+        private readonly Dictionary<Guid, List<Vector2Int>> _connectionCellsById = new();
         private readonly int width;
         private readonly int height;
         private readonly float cellSize;
@@ -72,7 +71,7 @@ namespace Backend.Simulation.World
             return x >= 0 && x < width && y >= 0 && y < height;
         }
 
-        public List<Vector2Int> getCellsOfConnection(GUID connectionId)
+        public List<Vector2Int> getCellsOfConnection(Guid connectionId)
         {
             return _connectionCellsById.TryGetValue(connectionId, out var cells) ? cells : new List<Vector2Int>();
         }
@@ -181,7 +180,7 @@ namespace Backend.Simulation.World
             return true;
         }
 
-        public void RemoveConnectionCells(GUID connectionId)
+        public void RemoveConnectionCells(Guid connectionId)
         {
             if (!_connectionCellsById.TryGetValue(connectionId, out var cells))
                 return;

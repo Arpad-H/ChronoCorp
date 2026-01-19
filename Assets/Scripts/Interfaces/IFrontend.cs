@@ -1,6 +1,6 @@
-﻿using Backend.Simulation.World;
+﻿using System;
+using Backend.Simulation.World;
 using NodeBase;
-using UnityEditor;
 using UnityEngine;
 
 namespace Interfaces
@@ -13,28 +13,28 @@ namespace Interfaces
         /**
          * Tells the frontend about a node that was spawned by the backend at backend cellPos.
          */
-        bool PlaceNodeVisual(GUID id,NodeDTO nodeDto, int layerNum, Vector2 cellPos, EnergyType energyType);
+        bool PlaceNodeVisual(Guid id,NodeDTO nodeDto, int layerNum, Vector2 cellPos, EnergyType energyType);
 
         /**
          * Tells the frontend to delete a connection
          */
-        void DeleteConnection(GUID connectionId);
+        void DeleteConnection(Guid connectionId);
         
         /**
          * Tells the frontend to delete a node
          */
-        void DeleteNode(GUID nodeId);
+        void DeleteNode(Guid nodeId);
         
         /**
          * Tells the frontend to connect two nodes
          */
-        void CreateConnection(GUID backendIdA, GUID backendIdB, GUID connectionId, Vector2Int[] cellsOfConnection); 
+        void CreateConnection(Guid backendIdA, Guid backendIdB, Guid connectionId, Vector2Int[] cellsOfConnection); 
         
         /**
          * Tells the frontend to spawn an energy packet visualizer for the packet with the given GUID and energy type.
          */
-        void SpawnEnergyPacket(GUID guid, EnergyType energyType);
-        void DeleteEnergyPacket(GUID guid);
+        void SpawnEnergyPacket(Guid guid, EnergyType energyType);
+        void DeleteEnergyPacket(Guid guid);
 
         /**
          * Called by the backend whenever the value of the stability bar changes. Can be used to change UI accordingly
@@ -53,7 +53,7 @@ namespace Interfaces
 
         bool AddTimeSlice(int sliceNum);
 
-        void onNodeHealthChange(GUID id, int minValue, int maxValue, int currentValue);
+        void onNodeHealthChange(Guid id, int minValue, int maxValue, int currentValue);
         //ui healthbar etc later
     }
 }
