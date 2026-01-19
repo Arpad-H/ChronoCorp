@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using NodeBase;
-using UnityEditor;
 using UnityEngine;
 using Random = Unity.Mathematics.Random;
 
@@ -12,7 +11,7 @@ namespace Backend.Simulation.World
         private readonly AbstractNodeInstance[,] _nodes;
         private readonly List<Connection>[,] _connections;
         
-        private readonly Dictionary<GUID, List<Vector2Int>> _connectionCellsById = new();
+        private readonly Dictionary<Guid, List<Vector2Int>> _connectionCellsById = new();
         private readonly int width;
         private readonly int height;
         private readonly float cellSize;
@@ -34,11 +33,6 @@ namespace Backend.Simulation.World
         }
         
         #region Occupancy
-
-        public bool IsCellOccupied(Vector2 cell, out AbstractNodeInstance node, out List<Connection> connection)
-        {
-            return IsCellOccupied(WorldToCell(cell), out node, out connection);
-        }
 
         public bool IsCellOccupied(Vector2Int cell, out AbstractNodeInstance node, out List<Connection> connection)
         {
@@ -72,7 +66,7 @@ namespace Backend.Simulation.World
             return x >= 0 && x < width && y >= 0 && y < height;
         }
 
-        public List<Vector2Int> getCellsOfConnection(GUID connectionId)
+        public List<Vector2Int> getCellsOfConnection(Guid connectionId)
         {
             return _connectionCellsById.TryGetValue(connectionId, out var cells) ? cells : new List<Vector2Int>();
         }
@@ -81,23 +75,12 @@ namespace Backend.Simulation.World
         {
             return IsInside(cell.x, cell.y);
         }
-        
-        private bool IsInside(Vector2 cell)
-        {
-            return IsInside(WorldToCell(cell));
-        }
 
         private Vector2Int WorldToCell(Vector2 worldPos)
         {
             var cx = Mathf.FloorToInt(worldPos.x / cellSize);
             var cy = Mathf.FloorToInt(worldPos.y / cellSize);
             return new Vector2Int(cx, cy);
-        }
-
-        // Optional helper, falls du mal die Zellmitte brauchst
-        private Vector2 CellToWorldCenter(Vector2Int cell)
-        {
-            return new Vector2((cell.x + 0.5f) * cellSize, (cell.y + 0.5f) * cellSize);
         }
 
         #region Nodes
@@ -181,7 +164,7 @@ namespace Backend.Simulation.World
             return true;
         }
 
-        public void RemoveConnectionCells(GUID connectionId)
+        public void RemoveConnectionCells(Guid connectionId)
         {
             if (!_connectionCellsById.TryGetValue(connectionId, out var cells))
                 return;

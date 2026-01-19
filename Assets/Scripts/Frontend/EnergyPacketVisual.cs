@@ -10,7 +10,7 @@ public class EnergyPacketVisual : MonoBehaviour
 {
     public ConduitVisual conduit;
 
-    public GUID guid;
+    public Guid guid;
     private EnergyType energyType;
     public String debugInfo;
     public String debugconduitID;
@@ -27,9 +27,9 @@ public class EnergyPacketVisual : MonoBehaviour
     {
         debugInfo = guid.ToString();
       
-        GUID? sourceNode;
-        GUID? targetNode;
-        GUID? conduitID;
+        Guid? sourceNode;
+        Guid? targetNode;
+        Guid? conduitID;
         float progress = GameFrontendManager.Instance.GetEnergyPacketProgress(guid, out sourceNode, out targetNode, out conduitID);
 
         if (conduitID.HasValue)

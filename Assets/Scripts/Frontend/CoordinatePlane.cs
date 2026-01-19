@@ -124,7 +124,7 @@ public class CoordinatePlane : MonoBehaviour
     // /// <summary>
     // /// Instantiates a node inside the nodeContainer at plane coordinates.
     // /// </summary>
-    public NodeVisual PlaceNode(NodeDTO nodeDTO, Vector3 planePos,GUID guid, EnergyType energyType)
+    public NodeVisual PlaceNode(NodeDTO nodeDTO, Vector3 planePos,Guid guid, EnergyType energyType)
     {
         NodeVisual nv = null;
         switch (nodeDTO)

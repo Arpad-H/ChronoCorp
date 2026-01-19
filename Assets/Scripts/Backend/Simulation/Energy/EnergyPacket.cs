@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Backend.Simulation.World;
 using NodeBase;
-using UnityEditor;
 using Util;
 
 namespace Backend.Simulation.Energy
@@ -21,7 +21,7 @@ namespace Backend.Simulation.Energy
             AbstractNodeInstance destination,
             List<EnergyStep> steps)
         {
-            Guid = GUID.Generate();
+            Guid = Guid.NewGuid();
             EnergyType = energyType;
             Source = source;
             Destination = destination;
@@ -29,7 +29,7 @@ namespace Backend.Simulation.Energy
             PacketTravelSpeedPerTick = BalanceProvider.Balance.energyPacketSpeed;
         }
 
-        public GUID Guid { get; }
+        public Guid Guid { get; }
 
         // Units traveled along the edge
         public float progressOnEdge { get; set; }

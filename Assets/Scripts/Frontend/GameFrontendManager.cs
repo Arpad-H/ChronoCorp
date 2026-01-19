@@ -21,8 +21,8 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
     }
     public event Action GeneratorDeleted;
     public event Action InventoryChanged;
-    public event Action<GUID> BackendDeletesConnection;
-    public event Action<GUID,GUID,GUID,Vector2Int[]> BackendCreatesConnection;
+    public event Action<Guid> BackendDeletesConnection;
+    public event Action<Guid,Guid,Guid,Vector2Int[]> BackendCreatesConnection;
     
     public static GameFrontendManager Instance;
     public CameraController cameraController;
@@ -31,7 +31,7 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
     [Header("Layer Management")] public TemporalLayerStack temporalLayerStack;
     public float layerDuplicationTime = 60f;
   
-    private Dictionary<GUID, NodeVisual> nodeVisuals = new();
+    private Dictionary<Guid, NodeVisual> nodeVisuals = new();
 
     private IBackend backend; // Link to backend
     private EnergyPacketVisualizer energyPacketVisualizer;
@@ -79,7 +79,7 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
     }
 
     //Spawn Nodes from backend
-    public bool PlaceNodeVisual(GUID id, NodeDTO nodeDto, int layerNum, Vector2 cellPos, EnergyType energyType)
+    public bool PlaceNodeVisual(Guid id, NodeDTO nodeDto, int layerNum, Vector2 cellPos, EnergyType energyType)
     {
         var frame = GetCoordinatePlane(layerNum);
         NodeVisual nv = frame.PlaceNodeFromBackend(nodeDto, cellPos, energyType);
@@ -94,12 +94,12 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
         return false;
     }
 
-    public void DeleteConnection(GUID connectionId)
+    public void DeleteConnection(Guid connectionId)
     {
         BackendDeletesConnection?.Invoke(connectionId);
     }
     // Called by the backend to delete a node visual
-    public void DeleteNode(GUID nodeId)
+    public void DeleteNode(Guid nodeId)
     {
         CoordinatePlane layer = temporalLayerStack.GetLayerByNum(nodeVisuals[nodeId].layerNum);
         layer.RemoveNodeVisual(nodeVisuals[nodeId]);
@@ -108,7 +108,7 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
     }
 
     // Called when player deletes a node
-    public bool DestroyNode(GUID nodeID)
+    public bool DestroyNode(Guid nodeID)
     {
         CoordinatePlane layer = temporalLayerStack.GetLayerByNum(nodeVisuals[nodeID].layerNum);
         layer.RemoveNodeVisual(nodeVisuals[nodeID]);
@@ -122,17 +122,17 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
         return result;
     }
 
-    public void CreateConnection(GUID backendIdA, GUID backendIdB, GUID connectionId, Vector2Int[] cellsOfConnection)
+    public void CreateConnection(Guid backendIdA, Guid backendIdB, Guid connectionId, Vector2Int[] cellsOfConnection)
     {
         BackendCreatesConnection?.Invoke(backendIdA, backendIdB, connectionId, cellsOfConnection);
     }
 
-    public void SpawnEnergyPacket(GUID guid, EnergyType energyType)
+    public void SpawnEnergyPacket(Guid guid, EnergyType energyType)
     {
         energyPacketVisualizer.SpawnEnergyPacket(guid, energyType);
     }
 
-    public void DeleteEnergyPacket(GUID guid)
+    public void DeleteEnergyPacket(Guid guid)
     {
         energyPacketVisualizer.DeleteEnergyPacket(guid);
     }
@@ -163,7 +163,7 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
         return false;
     }
 
-    public void onNodeHealthChange(GUID id, int minValue, int maxValue, int currentValue)
+    public void onNodeHealthChange(Guid id, int minValue, int maxValue, int currentValue)
     {
         NodeVisual nodeVisual = nodeVisuals[id];
         if (nodeVisual.GetType() == typeof(TimeRipple))
@@ -192,8 +192,8 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
         var hitPoint = rh.point;
 
         var spawnPos = frame.WorldToLocal(hitPoint);
-        GUID? nodeBackendID = backend.PlaceNode(nodeDto, frame.layerNum, spawnPos, energyType);
-        GUID id;
+        Guid? nodeBackendID = backend.PlaceNode(nodeDto, frame.layerNum, spawnPos, energyType);
+        Guid id;
         if (nodeBackendID.HasValue) id = nodeBackendID.Value;
         else return false;
         NodeVisual node = frame.PlaceNode(nodeDto, spawnPos, id, energyType);
@@ -207,10 +207,10 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
         return false;
     }
 
-    public GUID? IsValidConduit(NodeVisual a, NodeVisual b, Vector2Int[] cellsOfConnection,int bridgesBuilt)
+    public Guid? IsValidConduit(NodeVisual a, NodeVisual b, Vector2Int[] cellsOfConnection,int bridgesBuilt)
     {
         if (!a || !b || a == b) return null;
-        GUID? pathValid = backend.LinkNodes(a.backendID, b.backendID, cellsOfConnection, bridgesBuilt);
+        Guid? pathValid = backend.LinkNodes(a.backendID, b.backendID, cellsOfConnection, bridgesBuilt);
         if (!pathValid.HasValue)
         {
            AudioManager.Instance.PlayInvalidActionSound();
@@ -278,7 +278,7 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
        
     }
 
-    public bool UnlinkConduit(GUID backendID)
+    public bool UnlinkConduit(Guid backendID)
     {
         return backend.UnlinkNodes(backendID);
     }
@@ -298,11 +298,11 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
         CardEffectEvaluator.ApplyEffect(upgradeCard);
     }
 
-    public float GetEnergyPacketProgress(GUID guid, out GUID? sourceNode, out GUID? targetNode, out GUID? conduitID)
+    public float GetEnergyPacketProgress(Guid guid, out Guid? sourceNode, out Guid? targetNode, out Guid? conduitID)
     {
         return backend.GetEnergyPacketProgress(guid, out sourceNode, out targetNode, out conduitID);
     }
-    public NodeVisual GetNodeVisual(GUID nodeID) 
+    public NodeVisual GetNodeVisual(Guid nodeID) 
     {
         return nodeVisuals[nodeID];
     }

@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using System.Linq;
 using Interfaces;
 using JetBrains.Annotations;
 using NodeBase;
-using UnityEditor;
 using UnityEngine;
 
 namespace Backend.Simulation.World
@@ -20,11 +19,11 @@ namespace Backend.Simulation.World
             _storage.onPacketDeleted += guid => FrontendCallback.DeleteEnergyPacket(guid);
         }
 
-        public GUID? PlaceNode(NodeDTO nodeType, int LayerNum, Vector2 planePos, EnergyType? et)
+        public Guid? PlaceNode(NodeDTO nodeType, int LayerNum, Vector2 planePos, EnergyType? et)
         {
             var timeSlice = byLayerNum(LayerNum);
 
-            GUID? guid = null;
+            Guid? guid = null;
             var energyType = et ?? EnergyType.WHITE;
 
             if (nodeType.Equals(NodeDTO.GENERATOR)) guid = timeSlice.spawnGenerator(planePos, 1);
@@ -37,14 +36,14 @@ namespace Backend.Simulation.World
             return guid;
         }
 
-        public bool DeleteNode(GUID nodeBackendId)
+        public bool DeleteNode(Guid nodeBackendId)
         {
             return _storage.deleteNode(nodeBackendId);
         }
         
-        public GUID? LinkNodes(
-            GUID a,
-            GUID b,
+        public Guid? LinkNodes(
+            Guid a,
+            Guid b,
             Vector2Int[] cellsOfConnection,
             int bridgesBuilt)
         {
@@ -86,7 +85,7 @@ namespace Backend.Simulation.World
             }
             Debug.Log("Linked nodes -> cells: "+string.Join(",", cellsOfConnection.Select(x => x.ToString()).ToArray()));
 
-            var connectionObj = _storage.guidToConnections[(GUID)connectionId];
+            var connectionObj = _storage.guidToConnections[(Guid)connectionId];
 
             bool reserved = grid.TryAddConnectionCells(
                 connectionObj,
@@ -98,14 +97,14 @@ namespace Backend.Simulation.World
 
             if (!reserved)
             {
-                _storage.unlink((GUID)connectionId);
+                _storage.unlink((Guid)connectionId);
                 return null;
             }
             _storage.recalculatePaths();
             return connectionObj.guid;
         }
 
-        public bool upgradeGenerator(GUID generatorGUID)
+        public bool upgradeGenerator(Guid generatorGUID)
         {
             _storage.guidToNodesMapping.TryGetValue(generatorGUID, out var foundNode);
             if (foundNode != null && foundNode is GeneratorInstance generatorInstance && generatorInstance.totalOutputs.Count < 4)
@@ -116,18 +115,18 @@ namespace Backend.Simulation.World
             return false;
         }
 
-        public bool UnlinkNodes(GUID connectionId)
+        public bool UnlinkNodes(Guid connectionId)
         {
             return UnlinkNodes(connectionId, true);
         }
 
-        public bool UnlinkNodes(GUID connectionId, bool recalculatePaths)
+        public bool UnlinkNodes(Guid connectionId, bool recalculatePaths)
         {
             return _storage.UnlinkNodes(connectionId, recalculatePaths);
         }
 
-        public float GetEnergyPacketProgress(GUID packet, out GUID? sourcePos, out GUID? targetPos,
-            out GUID? connectionID)
+        public float GetEnergyPacketProgress(Guid packet, out Guid? sourcePos, out Guid? targetPos,
+            out Guid? connectionID)
         {
             if (!_storage.energyPackets.ContainsKey(packet))
             {
@@ -220,7 +219,7 @@ namespace Backend.Simulation.World
         }
 
         [CanBeNull]
-        private TimeSlice getTimeSliceOfNodeByGuid(GUID guid)
+        private TimeSlice getTimeSliceOfNodeByGuid(Guid guid)
         {
             return _storage.getTimeSliceOfNodeByGuid(guid);
         }

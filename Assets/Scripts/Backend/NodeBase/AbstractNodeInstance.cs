@@ -1,6 +1,6 @@
-﻿using Backend.Simulation.Energy;
+﻿using System;
+using Backend.Simulation.Energy;
 using Backend.Simulation.World;
-using UnityEditor;
 using UnityEngine;
 
 namespace NodeBase
@@ -12,12 +12,12 @@ namespace NodeBase
     {
         protected AbstractNodeInstance(Vector2 pos, NodeType nodeType)
         {
-            guid = GUID.Generate();
+            guid = Guid.NewGuid();
             NodeType = nodeType;
             Pos = pos;
         }
 
-        public GUID guid { get; }
+        public Guid guid { get; }
         public Vector2 Pos { get; set; }
         public NodeType NodeType { get; }
         public TimeSlice currentTimeSlice { get; set; }

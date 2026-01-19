@@ -37,7 +37,7 @@ namespace Backend.Simulation.World
                 lastSpawnTick = tickCount;
                 Debug.Log("Auto generated new time ripple with "+energyTypeOfNewNode+" energy at "+cell);
                 storage.Frontend.PlaceNodeVisual(newTimeRipple.guid,newTimeRipple.NodeType.NodeDTO, _timeSlice.SliceNumber, cell, (EnergyType)energyTypeOfNewNode);
-                storage.log.Track(tickCount, new SpawnTimeRippleEvent(new Vector2(cell.x, cell.y), (EnergyType) energyTypeOfNewNode), SubTickTime.Zero);
+                storage.log.Track(tickCount, new SpawnTimeRippleEvent(cell, (EnergyType) energyTypeOfNewNode), SubTickTime.Zero);
             }
             
         }

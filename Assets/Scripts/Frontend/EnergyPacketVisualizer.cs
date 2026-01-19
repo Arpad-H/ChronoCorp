@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Interfaces;
 using NodeBase;
 using UnityEditor;
@@ -12,7 +13,7 @@ public class EnergyPacketVisualizer : MonoBehaviour
     public GameObject prefab;
     private ObjectPool<EnergyPacketVisual> pool;
  
-    private Dictionary<GUID,EnergyPacketVisual> ePVisuals = new();
+    private Dictionary<Guid,EnergyPacketVisual> ePVisuals = new();
 
     private void Awake()
     {
@@ -29,7 +30,7 @@ public class EnergyPacketVisualizer : MonoBehaviour
     }
 
    
-    public void SpawnEnergyPacket(GUID guid,EnergyType energyType) //TODO giga dirty. fix backend reference later
+    public void SpawnEnergyPacket(Guid guid,EnergyType energyType) //TODO giga dirty. fix backend reference later
     {
         EnergyPacketVisual ePVisual = pool.Get();
         ePVisual.guid = guid;
@@ -65,7 +66,7 @@ public class EnergyPacketVisualizer : MonoBehaviour
         pool.Release(ePVisual);
     }
 
-    public void DeleteEnergyPacket(GUID guid)
+    public void DeleteEnergyPacket(Guid guid)
     {
         if (!ePVisuals.ContainsKey(guid)) return;
         EnergyPacketVisual ePVisual = ePVisuals[guid];

@@ -1,6 +1,6 @@
-﻿using Backend.Simulation.World;
+﻿using System;
+using Backend.Simulation.World;
 using NodeBase;
-using UnityEditor;
 using UnityEngine;
 
 namespace Interfaces
@@ -19,32 +19,32 @@ namespace Interfaces
          * 
          * The returned GUID is a reference to the backend node object. Can be used to interact with the object (delete, link).
          */
-        GUID? PlaceNode(NodeDTO nodeType, int LayerNum, Vector2 planePos, EnergyType? energyType);
+        Guid? PlaceNode(NodeDTO nodeType, int LayerNum, Vector2 planePos, EnergyType? energyType);
 
         /**
          * Takes a node backend id to delete a node.
          * Returns true if it could be deleted. Else false
          */
-        bool DeleteNode(GUID nodeBackendId);
+        bool DeleteNode(Guid nodeBackendId);
 
         /**
          * Takes two node uids to the backend.
          * Returns true and a connection uid if the nodes could be connected.
          * Otherwise, returns false and null.
          */
-        GUID? LinkNodes(GUID backendIdA, GUID backendIdB, Vector2Int[] cellsOfConnection, int bridgesBuilt);
+        Guid? LinkNodes(Guid backendIdA, Guid backendIdB, Vector2Int[] cellsOfConnection, int bridgesBuilt);
 
         /**
          * Upgrades a generator by adding an output. Maximum is 4. If 4 is already reached or the provided guid does not belong to a generator the method returns false.
          * Else returns true.
          */
-        bool upgradeGenerator(GUID generatorGUID);
+        bool upgradeGenerator(Guid generatorGUID);
 
         /**
          * Takes a connection id (NOT A NODE ID) to remove the connection and unlink the nodes that are connected.
          * Returns true if a connection with this id could be unlinked.
          */
-        bool UnlinkNodes(GUID connectionId);
+        bool UnlinkNodes(Guid connectionId);
 
         /**
          * Returns the progress between 0-1 on the current edge and the current edge of the packet defined by starting and end pos.
@@ -53,7 +53,7 @@ namespace Interfaces
          * 
          * This function is called per FixedUpdate on a Frontend Energy Packet Game Object. Between frames interpolation might be needed
          */
-        float GetEnergyPacketProgress(GUID packetID, out GUID? sourcePos, out GUID? targetPos, out GUID? conduitID);
+        float GetEnergyPacketProgress(Guid packetID, out Guid? sourcePos, out Guid? targetPos, out Guid? conduitID);
 
         /**
          * Asks the backend for the activation threshold value of a malus type.
