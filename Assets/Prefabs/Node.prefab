@@ -70,6 +70,7 @@ MonoBehaviour:
   yellowGlowInactiveEffect: {fileID: 2100000, guid: a9b996ab353cd084d84ff3095a6c5db3, type: 2}
   ScreenEdgeIconPrefab: {fileID: 1225898907467027101, guid: c12da8f82d18fdf4896364294e880c33, type: 3}
   _renderer: {fileID: 3664991402655252295}
+  currentHp: 1
 --- !u!65 &8393058502439382757
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -89,8 +90,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 0.16823533}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 1, y: 1, z: 0.28138375}
+  m_Center: {x: 0, y: 0, z: -0.056574225}
 --- !u!1001 &1462811604011351619
 PrefabInstance:
   m_ObjectHideFlags: 0
