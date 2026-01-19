@@ -131,7 +131,11 @@ namespace Util
 
         [Header("Upgrade Cards Settings")]
         public int cardsShownPerUpgradeChoice;
-
+        
+        [Header("Scoring Settings")]
+        public int scorePerSurvivedTick;
+        public int startTargetScore;
+        public float targetScoreMultiplierAfterCashIn;
 
         public void Add(StatType type, float amount)
         {

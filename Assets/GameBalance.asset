@@ -47,3 +47,6 @@ MonoBehaviour:
   cameraPanSpeed: 0.03
   spiralGridminMaxCameraY: {x: 2, y: 15}
   cardsShownPerUpgradeChoice: 3
+  scorePerSurvivedTick: 0
+  startTargetScore: 50
+  targetScoreMultiplierAfterCashIn: 1.1
