@@ -4,12 +4,15 @@ using NaughtyAttributes;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Rendering.Universal;
 
 public class Generator : NodeVisual
 {
     private int generatorTier = 1;
     private int maxTier = 4;
-    public GameObject[] generatorTiers;
+    public Material[] generatorTiers;
+    public GameObject[] generatorTiersObject;
+    public DecalProjector decalProjector;
     [Label("Up Direction")] public GameObject upConnector;
     [Label("Down Direction")] public GameObject downConnector;
     [Label("Left Direction")] public GameObject leftConnector;
@@ -71,9 +74,12 @@ public class Generator : NodeVisual
     }
     private void SetGeneratorTier(int tier)
     {
-        generatorTiers[generatorTier-1].SetActive(false);
-        generatorTier = tier;
-        generatorTiers[tier-1].SetActive(true);
+        Material newMat = generatorTiers[tier - 1];
+       decalProjector.material = newMat;
+       generatorTiersObject[generatorTier-1].SetActive(false);
+       generatorTier = tier;
+       generatorTiersObject[tier-1].SetActive(true);
+    
     }
 
     public void UpgradeNode()

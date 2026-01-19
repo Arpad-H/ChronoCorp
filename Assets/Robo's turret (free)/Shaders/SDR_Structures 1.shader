@@ -6,7 +6,7 @@ Shader "Robo shaders/Structures_URP"
         _BaseMap("Albedo", 2D) = "white" {}
         _BaseColor("Base Color Tint", Color) = (1,1,1,1)
         _Brightness("Brightness", Range(0, 2)) = 1
-        
+
         [Header(Painted Logic)]
         _PaintedMask("Painted Mask (R)", 2D) = "black" {}
         _PaintedColor("Painted Color", Color) = (1,1,1,1)
@@ -15,7 +15,7 @@ Shader "Robo shaders/Structures_URP"
         [Normal] _NormalMap("Normal", 2D) = "bump" {}
         _MaskMap("Metallic(R) Smoothness(A)", 2D) = "white" {}
         _Smoothness("Smoothness Scale", Range(0, 1)) = 1
-        
+
         [Header(Emission and Flicker)]
         [HDR] _EmissionColor("Emission Color", Color) = (0,0,0,0)
         _EmissionMap("Emission", 2D) = "black" {}
@@ -25,12 +25,20 @@ Shader "Robo shaders/Structures_URP"
 
     SubShader
     {
-        Tags { "RenderType"="Opaque" "RenderPipeline" = "UniversalPipeline" "Queue"="Geometry" }
-
+        Tags
+        {
+            "RenderType"="Opaque"
+            "RenderPipeline" = "UniversalPipeline"
+            "UniversalMaterialType" = "Lit" // This tells URP to treat this as a Lit material
+            "Queue"="Geometry"
+        }
         Pass
         {
             Name "ForwardLit"
-            Tags { "LightMode" = "UniversalForward" }
+            Tags
+            {
+                "LightMode" = "UniversalForward"
+            }
 
             HLSLPROGRAM
             #pragma vertex vert
@@ -62,11 +70,16 @@ Shader "Robo shaders/Structures_URP"
                 float _FlickerSpeed;
             CBUFFER_END
 
-            TEXTURE2D(_BaseMap); SAMPLER(sampler_BaseMap);
-            TEXTURE2D(_NormalMap); SAMPLER(sampler_NormalMap);
-            TEXTURE2D(_MaskMap); SAMPLER(sampler_MaskMap);
-            TEXTURE2D(_EmissionMap); SAMPLER(sampler_EmissionMap);
-            TEXTURE2D(_PaintedMask); SAMPLER(sampler_PaintedMask);
+            TEXTURE2D(_BaseMap);
+            SAMPLER(sampler_BaseMap);
+            TEXTURE2D(_NormalMap);
+            SAMPLER(sampler_NormalMap);
+            TEXTURE2D(_MaskMap);
+            SAMPLER(sampler_MaskMap);
+            TEXTURE2D(_EmissionMap);
+            SAMPLER(sampler_EmissionMap);
+            TEXTURE2D(_PaintedMask);
+            SAMPLER(sampler_PaintedMask);
 
             Varyings vert(Attributes input)
             {
@@ -101,7 +114,7 @@ Shader "Robo shaders/Structures_URP"
                 InputData inputData = (InputData)0;
                 inputData.normalWS = normalize(input.normalWS);
                 inputData.viewDirectionWS = SafeNormalize(GetCameraPositionWS() - inputData.normalWS); // Basic view dir
-                
+
                 SurfaceData surfaceData = (SurfaceData)0;
                 surfaceData.albedo = albedo.rgb;
                 surfaceData.metallic = metallic;
@@ -113,6 +126,48 @@ Shader "Robo shaders/Structures_URP"
             }
             ENDHLSL
         }
+        Pass
+        {
+            Name "DepthNormals"
+            Tags
+            {
+                "LightMode" = "DepthNormals"
+            }
+
+            ZWrite On
+
+            HLSLPROGRAM
+            #pragma vertex vert
+            #pragma fragment frag
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+
+            struct Attributes
+            {
+                float4 positionOS : POSITION;
+                float3 normalOS : NORMAL;
+            };
+
+            struct Varyings
+            {
+                float4 positionCS : SV_POSITION;
+                float3 normalWS : TEXCOORD0;
+            };
+
+            Varyings vert(Attributes input)
+            {
+                Varyings output;
+                output.positionCS = TransformObjectToHClip(input.positionOS.xyz);
+                output.normalWS = TransformObjectToWorldNormal(input.normalOS);
+                return output;
+            }
+
+            float4 frag(Varyings input) : SV_Target
+            {
+                // This encodes the normal into the format URP decals expect
+                return float4(PackNormalOctRectEncode(normalize(input.normalWS)), 0, 0);
+            }
+            ENDHLSL
+        }
     }
-  //  Fallback "Universal Render Pipeline/Lit"
+    //  Fallback "Universal Render Pipeline/Lit"
 }
