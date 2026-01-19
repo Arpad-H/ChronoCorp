@@ -3412,7 +3412,7 @@ MonoBehaviour:
   gameOverScreen: {fileID: 1717523660}
   conduitVisualizer: {fileID: 1020198329}
   cardChoiceMenu: {fileID: 1560653167}
-  scoreDisplay: {fileID: 0}
+  scoreDisplay: {fileID: 1160098670}
 --- !u!224 &1866031583 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 7496924441829916050, guid: 13810ce881c4f1e44a91eb9763b1ac6f, type: 3}

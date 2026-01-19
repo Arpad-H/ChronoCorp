@@ -321,5 +321,9 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
     {
         gameState = state;
     }
-  
+
+    public void AddScore(int scorePerInterval)
+    {
+        UIManager.Instance.AddScore(scorePerInterval);
+    }
 }

@@ -26,6 +26,7 @@ MonoBehaviour:
   blackHoleStabilityDrainRate: 1
   blackHoleDrainEveryNTicks: 200
   blackHoleEnergyPacketConsumeAmount: 100
+  blockadeEnergyPacketConsumeAmount: 0
   baseStabilityDecreasePerNode: 1
   nodeStableThresholdPercentage: 0.5
   layerDuplicationTime: 1000
@@ -47,6 +48,8 @@ MonoBehaviour:
   cameraPanSpeed: 0.03
   spiralGridminMaxCameraY: {x: 2, y: 15}
   cardsShownPerUpgradeChoice: 3
-  scorePerSurvivedTick: 0
+  scorePerInterval: 5
+  scoreInterval: 5
   startTargetScore: 50
-  targetScoreMultiplierAfterCashIn: 1.1
+  hpThresholdForScoreBonus: 0.8
+  targetScoreMultiplierAfterCashIn: 0.5

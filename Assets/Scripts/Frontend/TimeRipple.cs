@@ -1,3 +1,4 @@
+using System.Collections;
 using NodeBase;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -24,6 +25,11 @@ public class TimeRipple : NodeVisual
 
     [Header("Other")] public Renderer _renderer;
 
+    [Header("Scoring")]
+    private Coroutine scoreRoutine;
+    private float timeSinceLastValidHpThreshold = 0;
+   public float currentHp = 1f;
+    
     // public Image hpBar;
     private bool isEnergySupplied = true;
 
@@ -37,6 +43,7 @@ public class TimeRipple : NodeVisual
 
     void Start()
     {
+        
         ChangeEnergySupplyState(false);
     }
 
@@ -115,23 +122,44 @@ public class TimeRipple : NodeVisual
 
     public void UpdateHealthBar(float currentValue)
     {
+        currentHp = currentValue;
+        EvaluateScore(currentValue);
         currentGlowEffect.SetFloat("_HP", currentValue);
         lastGlowEffect.SetFloat("_HP", currentValue);
         //   hpBar.fillAmount = currentValue;
-        if (currentValue <= BalanceProvider.Balance.nodeBlinkThreshhold && !isEnergySupplied)
-        {
-            if (!screenEdgeIcon)
-            {
-                screenEdgeIcon = Instantiate(ScreenEdgeIconPrefab).GetComponentInChildren<ScreenEdgeIcon>();
-                screenEdgeIcon.target = this.transform;
-            }
+        // if (currentValue <= BalanceProvider.Balance.nodeBlinkThreshhold && !isEnergySupplied)
+        // {
+        //     if (!screenEdgeIcon)
+        //     {
+        //         screenEdgeIcon = Instantiate(ScreenEdgeIconPrefab).GetComponentInChildren<ScreenEdgeIcon>();
+        //         screenEdgeIcon.target = this.transform;
+        //     }
+        //
+        //     ToggleBlinking(true);
+        // }
+        // else
+        // {
+        //     if (screenEdgeIcon) Destroy(screenEdgeIcon);
+        //     ToggleBlinking(false);
+        // }
+    }
 
-            ToggleBlinking(true);
+    private void EvaluateScore(float currentValue) 
+    {
+        bool isAboveThreshold = currentValue > BalanceProvider.Balance.hpThresholdForScoreBonus;
+        if (isAboveThreshold && scoreRoutine == null) {
+            scoreRoutine = StartCoroutine(ScoreBonusRoutine());
+        } 
+        else if (!isAboveThreshold && scoreRoutine != null) {
+            StopCoroutine(scoreRoutine);
+            scoreRoutine = null;
         }
-        else
-        {
-            if (screenEdgeIcon) Destroy(screenEdgeIcon);
-            ToggleBlinking(false);
+    }
+    private IEnumerator ScoreBonusRoutine() 
+    {
+        while (true) {
+            yield return new WaitForSeconds(BalanceProvider.Balance.scoreInterval);
+            GameFrontendManager.Instance.AddScore(BalanceProvider.Balance.scorePerInterval);
         }
     }
 

@@ -113,5 +113,9 @@ public class UIManager : MonoBehaviour
     {
         scoreDisplay.SetTargetScore(score);
     }
+    public void AddScore(int score)
+    {
+       scoreDisplay.AddScore(score);
+    }
     
 }

@@ -10,7 +10,7 @@ public class ScoreDisplay : MonoBehaviour
     public TextMeshProUGUI targetText;
     int currentTarget = 0;
     const int DIGITS = 5;
-
+    int currentScore = 0;
     private void Start()
     {
         SetCurrentScore(0);
@@ -24,7 +24,20 @@ public class ScoreDisplay : MonoBehaviour
 
     public void SetCurrentScore(int score)
     {
-        scoreText.text = score.ToString($"D{DIGITS}");
+        currentScore = score;
+        scoreText.text = currentScore.ToString($"D{DIGITS}");
+        if (currentScore >= currentTarget)
+        { 
+            int newTarget = (int)Math.Round((currentTarget + currentTarget * BalanceProvider.Balance.targetScoreMultiplierAfterCashIn) / 10.0) * 10;;
+            SetTargetScore(newTarget);  
+            UIManager.Instance.ShowUpgradeChoiceMenu();
+        }
+    }
+
+    public void AddScore(int scorePerInterval)
+    {
+        currentScore += scorePerInterval;
+        SetCurrentScore(currentScore);
     }
     public void AnimateTarget(int newTarget)
     {

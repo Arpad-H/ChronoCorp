@@ -29,7 +29,7 @@ public class UpgradeChoiceMenu : MonoBehaviour
         GameFrontendManager.Instance.UpgradeCardSelected(upgradeCard);
         gameObject.SetActive(false);
         selectedAudioSource.Play();
-      GameFrontendManager.Instance.SetGameState(GameFrontendManager.GameState.PLAYING);
+        GameFrontendManager.Instance.SetGameState(GameFrontendManager.GameState.PLAYING);
     }
 
     void Clear()

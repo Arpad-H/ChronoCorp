@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,7 +12,7 @@ public class UpgradeCard : MonoBehaviour
     public Button button;
     
     UpgradeCardData _cardData;
-    System.Action<UpgradeCardData> onSelected;
+   Action<UpgradeCardData> onSelected;
 
     public void Init(UpgradeCardData upgradeCard, System.Action<UpgradeCardData> onSelectedCallback)
     {
