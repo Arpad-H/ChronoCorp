@@ -149,7 +149,7 @@ namespace Backend.Simulation.World
 
         public void tick(long tickCount, IFrontend frontend)
         {
-            BalanceAutoTuner.Tick(tickCount, this);
+            //BalanceAutoTuner.Tick(tickCount, this);
             foreach (var timeSlice in timeSlices) timeSlice.Tick(tickCount, this);
 
             _removeBuffer.Clear();
