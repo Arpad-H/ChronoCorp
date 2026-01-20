@@ -28,7 +28,11 @@ Material:
     - _BulgeRadius: 0.5
     - _BulgeStrength: 0.2
     - _DebugHardcoded: 0
+    - _FresnelPower: 1.59
+    - _Opacity: 0.5
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 1, g: 0.39999998, b: 0.6, a: 1}
+    - _Color2: {r: 0, g: 0.8, b: 1, a: 0.047058824}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

@@ -66,6 +66,7 @@ MonoBehaviour:
   invalidColor: {r: 0.83396226, g: 0.073955104, b: 0.073955104, a: 0.7176471}
   previewColor: {r: 0.6377357, g: 0.60043424, b: 0.60043424, a: 1}
   validColor: {r: 0.016838714, g: 0.8113208, b: 0.6127003, a: 1}
+  differentLayerAlpha: 0.12
   audioSource: {fileID: 7208633087258384961}
 --- !u!114 &2781901633303892491
 MonoBehaviour:

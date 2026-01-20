@@ -44,7 +44,7 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
     public Color invalidColor;
     public Color previewColor;
     public Color validColor;
-    
+    public float differentLayerAlpha;
     public AudioSource audioSource;
 
     void Awake()
@@ -180,7 +180,9 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
 
         Color color2 = energyType.ToColor();
         float factor = Mathf.Pow(2, glowIntensity);
+        float alpha = sameLayerConnection ? 1f : differentLayerAlpha;
         Color color1 = new Color(color2.r * factor, color2.g * factor, color2.b * factor, 1f);
+        color2.a = alpha;
         pipeMaterial.SetColor("_Color", color1);
         pipeMaterial.SetColor("_Color2", color2);
     }

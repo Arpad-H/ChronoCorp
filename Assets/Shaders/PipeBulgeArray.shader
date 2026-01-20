@@ -1,12 +1,15 @@
-Shader "Custom/MultiBulgePipe"
+Shader "Custom/MultiBulgePipeTransparent"
 {
     Properties
     {
         [Header(Appearance)]
-        _Color("Rim Color", Color) = (1, 0.4, 0.6, 1)    // Based on graph top color
-        _Color2("Center Color", Color) = (0, 0.8, 1, 1)  // Based on graph bottom color
-        _FresnelPower("Fresnel Power", Float) = 1.59     // From your Float node
+        _Color("Rim Color", Color) = (1, 0.4, 0.6, 1)    
+        _Color2("Center Color", Color) = (0, 0.8, 1, 1)  
+        _FresnelPower("Fresnel Power", Float) = 1.59     
         
+        // Add an Opacity slider
+        _Opacity("Master Opacity", Range(0, 1)) = 0.5
+
         [Header(Deformation)]
         _BulgeRadius("Bulge Radius", Float) = 0.1
         _BulgeStrength("Bulge Strength", Float) = 0.2
@@ -14,10 +17,20 @@ Shader "Custom/MultiBulgePipe"
 
     SubShader
     {
-        Tags { "RenderType"="Opaque" "RenderPipeline"="UniversalPipeline" }
+        // 1. Change RenderType and Queue to Transparent
+        Tags { 
+            "RenderType"="Transparent" 
+            "Queue"="Transparent"
+            "RenderPipeline"="UniversalPipeline" 
+        }
 
         Pass
         {
+            // 2. Set the Blend Mode (SrcAlpha OneMinusSrcAlpha is standard transparency)
+            // ZWrite Off is typical for transparent objects to avoid clipping issues
+            Blend SrcAlpha OneMinusSrcAlpha
+            ZWrite Off
+
             HLSLPROGRAM
             #pragma vertex vert
             #pragma fragment frag
@@ -33,8 +46,8 @@ Shader "Custom/MultiBulgePipe"
             struct Varyings
             {
                 float4 positionCS : SV_POSITION;
-                float3 normalWS   : TEXCOORD0; // Needed for Fresnel
-                float3 viewDirWS  : TEXCOORD1; // Needed for Fresnel
+                float3 normalWS   : TEXCOORD0;
+                float3 viewDirWS  : TEXCOORD1;
             };
 
             float _BulgePositions[20]; 
@@ -45,12 +58,12 @@ Shader "Custom/MultiBulgePipe"
             float4 _Color;
             float4 _Color2;
             float _FresnelPower;
+            float _Opacity; // Defined from Properties
 
             Varyings vert(Attributes input)
             {
                 Varyings output;
                 
-                // --- Vertex Displacement Logic ---
                 float mask = 0;
                 for (int i = 0; i < _BulgeCount; i++)
                 {
@@ -61,7 +74,6 @@ Shader "Custom/MultiBulgePipe"
 
                 float3 posWS = TransformObjectToWorld(input.positionOS.xyz + (input.normalOS * mask * _BulgeStrength));
                 
-                // --- Pass Data to Fragment ---
                 output.positionCS = TransformWorldToHClip(posWS);
                 output.normalWS = TransformObjectToWorldNormal(input.normalOS);
                 output.viewDirWS = GetWorldSpaceViewDir(posWS);
@@ -71,21 +83,19 @@ Shader "Custom/MultiBulgePipe"
 
             half4 frag(Varyings input) : SV_Target
             {
-                // Re-normalize vectors
                 float3 normal = normalize(input.normalWS);
                 float3 viewDir = normalize(input.viewDirWS);
 
-                // --- Fresnel Logic (Matching Shader Graph) ---
-                // Fresnel = pow(1.0 - saturate(dot(Normal, ViewDir)), Power)
                 float fresnel = pow(1.0 - saturate(dot(normal, viewDir)), _FresnelPower);
-                
-                // One Minus Fresnel for the center color
                 float inverseFresnel = 1.0 - fresnel;
 
-                // Combine colors: (Color * Fresnel) + (Color2 * (1 - Fresnel))
+                // 3. Calculate final color and apply alpha
                 float4 finalColor = (_Color * fresnel) + (_Color2 * inverseFresnel);
+                
+                // Use the alpha from your colors multiplied by the Master Opacity
+                float alpha = finalColor.a * _Opacity;
 
-                return finalColor;
+                return half4(finalColor.rgb, alpha);
             }
             ENDHLSL
         }
