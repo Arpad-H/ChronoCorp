@@ -29,7 +29,7 @@ Material:
     - _BulgeStrength: 0.2
     - _DebugHardcoded: 0
     - _FresnelPower: 1.59
-    - _Opacity: 0.5
+    - _Opacity: 1
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 0.39999998, b: 0.6, a: 1}

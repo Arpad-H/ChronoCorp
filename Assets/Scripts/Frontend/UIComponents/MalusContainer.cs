@@ -64,6 +64,7 @@ public class MalusContainer : MonoBehaviour
     {
         EvaluateIcons(stability);
         EvaluateSound(stability);
+        EvaluateScoreMultiplier(stability);
         float[] t = malusConfig;
 
         for (int i = 0; i < t.Length; i++)
@@ -83,5 +84,18 @@ public class MalusContainer : MonoBehaviour
         // Below lowest malus
         buildupBar.fillAmount = 0f;
         lastStability = stability;
+    }
+
+    private void EvaluateScoreMultiplier(float stability)
+    {
+        float multiplier = 1f;
+        if (stability < malusConfig[2])
+            multiplier = BalanceProvider.Balance.scoreBonusMultipliersPerHpThreshold[2];
+        else if (stability < malusConfig[1])
+            multiplier = BalanceProvider.Balance.scoreBonusMultipliersPerHpThreshold[1];
+        else if (stability < malusConfig[0])
+            multiplier = BalanceProvider.Balance.scoreBonusMultipliersPerHpThreshold[0];
+
+         BalanceProvider.Balance.scoreInterval = (int)(BalanceProvider.Balance.baseScorePerInterval*multiplier);
     }
 }

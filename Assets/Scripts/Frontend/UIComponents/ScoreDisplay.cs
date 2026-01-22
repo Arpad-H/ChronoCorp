@@ -10,12 +10,14 @@ public class ScoreDisplay : MonoBehaviour
     public TextMeshProUGUI targetText;
     int currentTarget = 0;
     const int DIGITS = 5;
-    int currentScore = 0;
+
     private void Start()
     {
-        SetCurrentScore(0);
         SetTargetScore(BalanceProvider.Balance.startTargetScore);
+        SetCurrentScore(0);
     }
+
+    int currentScore = 0;
 
     public void SetTargetScore(int target)
     {

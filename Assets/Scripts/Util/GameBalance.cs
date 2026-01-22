@@ -136,11 +136,13 @@ namespace Util
         public int cardsShownPerUpgradeChoice;
         
         [Header("Scoring Settings")]
+        public  int baseScorePerInterval;
         public int scorePerInterval;
         public int scoreInterval;
         public int startTargetScore;
         public float hpThresholdForScoreBonus;
         public float targetScoreMultiplierAfterCashIn;
+        public float[] scoreBonusMultipliersPerHpThreshold;
 
         public void Add(StatType type, float amount)
         {

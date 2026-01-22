@@ -48,8 +48,13 @@ MonoBehaviour:
   cameraPanSpeed: 0.03
   spiralGridminMaxCameraY: {x: 2, y: 15}
   cardsShownPerUpgradeChoice: 3
+  baseScorePerInterval: 5
   scorePerInterval: 5
   scoreInterval: 5
   startTargetScore: 50
   hpThresholdForScoreBonus: 0.8
   targetScoreMultiplierAfterCashIn: 0.5
+  scoreBonusMultipliersPerHpThreshold:
+  - 0.75
+  - 0.5
+  - 0.25
