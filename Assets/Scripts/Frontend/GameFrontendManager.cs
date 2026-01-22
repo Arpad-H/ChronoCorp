@@ -321,6 +321,18 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
     public void SetGameState(GameState state)
     {
         gameState = state;
+        switch (state)
+        {
+            case GameState.PLAYING:
+                Time.timeScale = 1f;
+                break;
+            case GameState.PAUSED:
+                Time.timeScale = 0f;
+                break;
+            case GameState.GAMEOVER:
+                Time.timeScale = 0f;
+                break;
+        }
     }
 
     public void AddScore(int scorePerInterval)

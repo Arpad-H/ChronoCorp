@@ -48,7 +48,7 @@ public class DragableInventoyItem : MonoBehaviour, IBeginDragHandler, IDragHandl
     public void OnBeginDrag(PointerEventData eventData)
     {
         if (!isDraggable || count <= 0) return;
-        if (uiSlide) uiSlide.Toggle();
+        //if (uiSlide) uiSlide.Toggle();
         dragIcon = new GameObject("DragIcon").AddComponent<Image>();
         dragIcon.sprite = iconImage;
         dragIcon.raycastTarget = false;

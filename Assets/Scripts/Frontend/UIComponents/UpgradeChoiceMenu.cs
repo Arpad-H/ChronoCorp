@@ -9,6 +9,8 @@ public class UpgradeChoiceMenu : MonoBehaviour
 
     public void ShowChoices(List<UpgradeCardData> availableUpgrades)
     {
+       
+       
         GameFrontendManager.Instance.SetGameState(GameFrontendManager.GameState.PAUSED);
         Clear();
 
@@ -30,6 +32,7 @@ public class UpgradeChoiceMenu : MonoBehaviour
         gameObject.SetActive(false);
         selectedAudioSource.Play();
         GameFrontendManager.Instance.SetGameState(GameFrontendManager.GameState.PLAYING);
+        
     }
 
     void Clear()
