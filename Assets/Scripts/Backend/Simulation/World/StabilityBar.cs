@@ -71,10 +71,10 @@ namespace Backend.Simulation.World
             setStability(newStabilityValue);
             var newValue = currentValue;
 
-            // if (oldValue - newValue <= float.Epsilon)
-            // {
-            //     return;
-            // }
+            if (oldValue - newValue <= float.Epsilon)
+            {
+                return;
+            }
 
             storage.Frontend.OnStabilityBarUpdate(minValue, maxValue, (int)currentValue);
         }

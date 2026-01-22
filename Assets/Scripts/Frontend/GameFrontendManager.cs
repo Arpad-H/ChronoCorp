@@ -44,20 +44,21 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
 
     private void Awake()
     {
-        if (Instance == null)
-        {
+        if (Instance != null && Instance != this) {
+            Destroy(gameObject);
+        }
+        else {
             Instance = this;
         }
-        else Destroy(gameObject);
+        if (energyPacketVisualizer == null) energyPacketVisualizer = FindObjectOfType<EnergyPacketVisualizer>();
+        if (cameraController == null) cameraController = FindObjectOfType<CameraController>();
         if (!temporalLayerStack) temporalLayerStack = FindObjectOfType<TemporalLayerStack>();
-       
+        backend = new BackendImpl(this);
     }
 
     private void Start()
     {
-        backend = new BackendImpl(this);
-        if (energyPacketVisualizer == null) energyPacketVisualizer = FindObjectOfType<EnergyPacketVisualizer>();
-        if (cameraController == null) cameraController = FindObjectOfType<CameraController>();
+       
     }
 
     private void FixedUpdate()
