@@ -16,7 +16,7 @@ public class NodeInfoWindow : MonoBehaviour
     public float blinkInterval = 0.5f;
     private float blinkTimer = 0f;
     private bool isCursorVisible = true;
-    public GameObject cursorUnderscoreObject;   
+    public TextMeshProUGUI cursorUnderscoreObject;   
     
     [Header("Settings")]
     public Vector3 offset = new Vector3(0, 2f, 0);
@@ -32,8 +32,6 @@ public class NodeInfoWindow : MonoBehaviour
     
     void Awake()
     {
-        cursorUnderscoreObject.SetActive(true);
-        
         if (Instance != null && Instance != this) 
         { 
             Destroy(this.gameObject); 
@@ -64,9 +62,19 @@ public class NodeInfoWindow : MonoBehaviour
     private void SetTexts(Guid id, float hp, float energyDrain, float energyReceived)
     {
         nodeNameText.text = ">SYSTEM_SCAN " + id.ToString("N")[..5];
-        nodeHPtext.text =  hp.ToString(CultureInfo.CurrentCulture);
+        SetHP(hp);
         nodeEnergyDrainText.text =   energyDrain.ToString("F2");
         nodeEnergyRecievedText.text =energyReceived.ToString("F2");
+    }
+
+    private void SetHP(float hp)
+    {
+        char hpChar = '■';
+        char emptyHpChar = '□';
+        int totalChars = 10;
+        int filledChars = Mathf.Clamp(Mathf.RoundToInt((hp / 100f) * totalChars), 0, totalChars);
+        string hpBar = new string(hpChar, filledChars) + new string(emptyHpChar, totalChars - filledChars);
+        nodeHPtext.text = hpBar;
     }
 
     public void Hide()
@@ -111,13 +119,21 @@ public class NodeInfoWindow : MonoBehaviour
         
         SetTexts(targetNodeVisual.backendID, 
             Mathf.RoundToInt(targetNodeVisual.currentHp * 100), 
-            targetNodeVisual.energyConsumptionPerSecond, 
-            targetNodeVisual.energyReceivedPerSecond);
+            targetNodeVisual.getEnergyConsumptionPerSecond(), 
+            targetNodeVisual.getEnergyReceivedPerSecond());
         
         blinkTimer += Time.deltaTime;
         if (blinkTimer >= blinkInterval)
         {
-            cursorUnderscoreObject.SetActive(!cursorUnderscoreObject.activeSelf);
+            isCursorVisible = !isCursorVisible;
+            if (isCursorVisible)
+            {
+                cursorUnderscoreObject.text = ">_";
+            }
+            else
+            {
+                cursorUnderscoreObject.text = "> ";
+            }
             blinkTimer = 0f;
         }
     }

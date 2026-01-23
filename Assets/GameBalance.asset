@@ -20,7 +20,7 @@ MonoBehaviour:
   nodeMinHp: 0
   nodeHealthDrain: 5
   nodeDrainHealthEveryNTicks: 60
-  nodeSpawnIntervalPerSecond: 10
+  nodeSpawnIntervalPerSecond: 25
   layerModifierToNodeSpawnInterval: 2
   nodeBlinkThreshhold: 0.25
   blackHoleStabilityDrainRate: 1
@@ -29,7 +29,7 @@ MonoBehaviour:
   blockadeEnergyPacketConsumeAmount: 0
   baseStabilityDecreasePerNode: 1
   nodeStableThresholdPercentage: 0.5
-  layerDuplicationTime: 500
+  layerDuplicationTime: 999999
   maxLayerCount: 99
   layerGridCellCount: {x: 16, y: 9}
   cellSize: 1

@@ -60,6 +60,8 @@ MonoBehaviour:
   _renderer: {fileID: 3664991402655252295}
   currentHp: 1
   nodeInfoWindow: {fileID: 0}
+  nodeInfoWindowFollower: {fileID: 0}
+  rateWindow: 2
 --- !u!65 &8393058502439382757
 BoxCollider:
   m_ObjectHideFlags: 0

@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using NodeBase;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -44,11 +45,14 @@ public class TimeRipple : NodeVisual
     private float timeSinceLastValidHpThreshold = 0;
     
     [Header("Stat Panel")]
-    public float energyConsumptionPerSecond = 0f;
-    public float energyReceivedPerSecond = 0f;
+    private float energyConsumptionPerSecond = 0f;
+    private float energyReceivedPerSecond = 0f;
+    readonly Queue<(float time, float amount)> samples = new();
+    public float EnergyPerSecond => energyReceivedPerSecond;
     float lastyEnergyPacket = -Mathf.Infinity;
-    
-
+    float windowStartTime;
+    float energyInWindow;
+    [SerializeField] float rateWindow = 2.0f;
 
 
     protected override void Awake()
@@ -123,14 +127,8 @@ public class TimeRipple : NodeVisual
 
     public void UpdateHealthBar(float currentValue)
     {
-        if (currentValue >= currentHp)
-        {
-            float timeSinceLastCall = Time.time - lastyEnergyPacket;
-            lastyEnergyPacket = Time.time;
-            energyReceivedPerSecond = BalanceProvider.Balance.energyPacketRechargeAmount / timeSinceLastCall;
-        }
       
-        
+        CalcEnergyMean(currentValue);
         currentHp = currentValue;
         EvaluateScore(currentValue);
         glow.SetHP(currentHp);
@@ -150,6 +148,29 @@ public class TimeRipple : NodeVisual
             if (screenEdgeIcon) Destroy(screenEdgeIcon);
             ToggleBlinking(false);
         }
+    }
+
+    private void CalcEnergyMean(float currentValue)
+    {
+        float delta = currentValue - currentHp;
+        currentHp = currentValue;
+
+        if (delta <= 0f) { RecalcEnergyMean(); return; }
+
+        float now = Time.time;
+        samples.Enqueue((now, BalanceProvider.Balance.energyPacketRechargeAmount));
+
+        // drop old samples
+        while (samples.Count > 0 && now - samples.Peek().time > rateWindow)
+            samples.Dequeue();
+
+        RecalcEnergyMean();
+    }
+    void RecalcEnergyMean()
+    {
+        float sum = 0f;
+        foreach (var s in samples) sum += s.amount;
+        energyReceivedPerSecond = sum / rateWindow;
     }
 
     private void EvaluateScore(float currentValue) 
@@ -221,5 +242,14 @@ public class TimeRipple : NodeVisual
         isDirectionOccupied[dir] = conduitVisual;
         connectedConduits.Add(conduitVisual);
         ChangeEnergySupplyState(true);
+    }
+    public float getEnergyReceivedPerSecond()
+    {
+        return energyReceivedPerSecond;
+    }
+    public float getEnergyConsumptionPerSecond()
+    {
+        energyConsumptionPerSecond = BalanceProvider.Balance.nodeHealthDrain/(BalanceProvider.Balance.nodeDrainHealthEveryNTicks/60f);
+        return energyConsumptionPerSecond;
     }
 }
