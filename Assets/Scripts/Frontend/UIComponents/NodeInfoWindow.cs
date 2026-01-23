@@ -3,6 +3,8 @@ using System.Globalization;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
+using UnityEngine.Video;
 
 public class NodeInfoWindow : MonoBehaviour
 {
@@ -12,19 +14,28 @@ public class NodeInfoWindow : MonoBehaviour
     public TextMeshProUGUI nodeHPtext;
     public TextMeshProUGUI nodeEnergyDrainText;
     public TextMeshProUGUI nodeEnergyRecievedText;
-   
+    public TextMeshProUGUI cursorUnderscoreObject;
+    public Canvas parentCanvas;
+    public Camera mainCamera;
+    public RawImage terminalImage;
+    public RenderTexture rickRollRenderTexture;
+    public Texture defaultTerminalTexture;
+    public VideoPlayer videoPlayer; 
+    [SerializeField] Color lowColor = Color.red;
+    [SerializeField] Color goodColor = Color.green;
+    [SerializeField] Color terminalColor = Color.black;
     public float blinkInterval = 0.5f;
     private float blinkTimer = 0f;
     private bool isCursorVisible = true;
-    public TextMeshProUGUI cursorUnderscoreObject;   
-    
+
+
     [Header("Settings")]
     public Vector3 offset = new Vector3(0, 2f, 0);
-    public Canvas parentCanvas;
-    public Camera mainCamera;
+
     private RectTransform myRectTransform;
     private TimeRipple targetNodeVisual;
-    
+    private bool isTyping = false;
+    public FakeTerminalAutoTyper fakeTerminalAutoTyper;
     // private float nodeHp;
     // float nodeEnergyDrain;
     // float nodeEnergyReceived;
@@ -64,7 +75,10 @@ public class NodeInfoWindow : MonoBehaviour
         nodeNameText.text = ">SYSTEM_SCAN " + id.ToString("N")[..5];
         SetHP(hp);
         nodeEnergyDrainText.text =   energyDrain.ToString("F2");
-        nodeEnergyRecievedText.text =energyReceived.ToString("F2");
+        nodeEnergyRecievedText.text = energyReceived.ToString("F2");
+
+        nodeEnergyRecievedText.color =
+            energyReceived < energyDrain ? lowColor : goodColor;
     }
 
     private void SetHP(float hp)
@@ -79,6 +93,12 @@ public class NodeInfoWindow : MonoBehaviour
 
     public void Hide()
     {
+        terminalImage.color = terminalColor;
+            terminalImage.texture = defaultTerminalTexture;
+            videoPlayer.Stop();
+        cursorUnderscoreObject.text = "> ";
+            isTyping = false;
+            fakeTerminalAutoTyper.ResetTyping();
         targetNodeVisual = null;
         gameObject.SetActive(false);
     }
@@ -114,6 +134,22 @@ public class NodeInfoWindow : MonoBehaviour
 
         myRectTransform.anchoredPosition = localPoint;
     }
+
+    private void Update()
+    {
+        if (Input.anyKeyDown)
+        {
+            isTyping = true;
+            fakeTerminalAutoTyper.AdvanceTyping();
+            if (fakeTerminalAutoTyper.IsFinished)
+            {
+                PlayRickroll();
+                isTyping = false;
+            }
+            
+        }
+    }
+
     void LateUpdate()
     {
         
@@ -121,7 +157,11 @@ public class NodeInfoWindow : MonoBehaviour
             Mathf.RoundToInt(targetNodeVisual.currentHp * 100), 
             targetNodeVisual.getEnergyConsumptionPerSecond(), 
             targetNodeVisual.getEnergyReceivedPerSecond());
-        
+
+        if (isTyping)
+        {
+            return;
+        }
         blinkTimer += Time.deltaTime;
         if (blinkTimer >= blinkInterval)
         {
@@ -136,6 +176,12 @@ public class NodeInfoWindow : MonoBehaviour
             }
             blinkTimer = 0f;
         }
+    }
+    public void PlayRickroll()
+    {
+        terminalImage.texture = rickRollRenderTexture;
+        terminalImage.color = Color.white;
+        videoPlayer.Play();
     }
     
 }
