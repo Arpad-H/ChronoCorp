@@ -38,7 +38,8 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
     public int bridgesBuilt = 0;
     public Renderer renderer;
     private Material pipeMaterial;
-    public float[] positions = { };
+    const int maxBulges = 20;
+    public float[] positions ;
     public List<GameObject> bridges;
 
     public Color invalidColor;
@@ -46,9 +47,10 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
     public Color validColor;
     public float differentLayerAlpha;
     public AudioSource audioSource;
-
+    int bulgeCount = 0;
     void Awake()
     {
+        positions = new float[maxBulges];
         pipeMaterial = renderer.material;
         splineContainer = GetComponent<SplineContainer>();
         splineExtrude = GetComponent<SplineExtrude>();
@@ -407,13 +409,14 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
 
     private void LateUpdate()
     {
-        if (positions.Length == 0) AddBulge(-1); // Dummy value to avoid shader errors
+   //     if (positions.Length == 0) AddBulge(-1); // Dummy value to avoid shader errors
         // Pass the array to the shader
 //        Debug.Log("Passing bulge positions to shader: " + string.Join(", ", positions));
-        pipeMaterial.SetFloatArray("_BulgePositions", positions);
-        // Tell the shader how many elements in the array to actually loop through
-        pipeMaterial.SetInt("_BulgeCount", positions.Length);
-        positions = new float[] { };
+pipeMaterial.SetInt("_BulgeCount", positions.Length);
+pipeMaterial.SetFloatArray("_BulgePositions", positions);
+// Tell the shader how many elements in the array to actually loop through
+        positions = new float[maxBulges];
+        bulgeCount = 0;
     }
 
     public void Reset()
@@ -538,13 +541,15 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
 
     public void AddBulge(float position)
     {
-//        Debug.Log("Adding bulge at position: " + position);
-        Array.Resize(ref positions, positions.Length + 1);
-        positions[positions.Length - 1] = position * conduitLength;
+
+       // Array.Resize(ref positions, positions.Length + 1);
+        positions[bulgeCount] = position * conduitLength;
+        bulgeCount = Mathf.Min(bulgeCount+1,maxBulges-1);
     }
 
     public void RemoveBulge()
     {
+        bulgeCount = Mathf.Max(bulgeCount-1,0);
         // Currently does nothing; bulges are removed automatically each frame
     }
 }

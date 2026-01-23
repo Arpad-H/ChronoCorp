@@ -32,15 +32,24 @@ public class TimeRipple : NodeVisual
     public GameObject ScreenEdgeIconPrefab;
     private ScreenEdgeIcon screenEdgeIcon;
 
-    [Header("Other")] public Renderer _renderer;
-
+    [Header("Other")] 
+    public Renderer _renderer;
+    public float currentHp = 1f;
+    public NodeInfoWindow nodeInfoWindow;
+    public UI_FollowObjecte nodeInfoWindowFollower;
+        private bool isEnergySupplied = true;
+        
     [Header("Scoring")]
     private Coroutine scoreRoutine;
     private float timeSinceLastValidHpThreshold = 0;
-    public float currentHp = 1f;
     
-    // public Image hpBar;
-    private bool isEnergySupplied = true;
+    [Header("Stat Panel")]
+    public float energyConsumptionPerSecond = 0f;
+    public float energyReceivedPerSecond = 0f;
+    float lastyEnergyPacket = -Mathf.Infinity;
+    
+
+
 
     protected override void Awake()
     {
@@ -49,8 +58,28 @@ public class TimeRipple : NodeVisual
 
     void Start()
     {
+        energyConsumptionPerSecond = BalanceProvider.Balance.nodeHealthDrain/(BalanceProvider.Balance.nodeDrainHealthEveryNTicks/60f);
         ChangeEnergySupplyState(false);
         UpdateHealthBar(1f);
+    }
+    protected override void ShowInfoWindow(bool show)
+    {
+        if (NodeInfoWindow.Instance == null) return;
+
+        if (show)
+        {
+            NodeInfoWindow.Instance.Show(
+                this, 
+                backendID, 
+                Mathf.RoundToInt(currentHp * 100), 
+                energyConsumptionPerSecond, 
+                energyReceivedPerSecond
+            );
+        }
+        else
+        {
+            NodeInfoWindow.Instance.Hide();
+        }
     }
 
     public new void OnPointerEnter(PointerEventData eventData)
@@ -94,6 +123,14 @@ public class TimeRipple : NodeVisual
 
     public void UpdateHealthBar(float currentValue)
     {
+        if (currentValue >= currentHp)
+        {
+            float timeSinceLastCall = Time.time - lastyEnergyPacket;
+            lastyEnergyPacket = Time.time;
+            energyReceivedPerSecond = BalanceProvider.Balance.energyPacketRechargeAmount / timeSinceLastCall;
+        }
+      
+        
         currentHp = currentValue;
         EvaluateScore(currentValue);
         glow.SetHP(currentHp);

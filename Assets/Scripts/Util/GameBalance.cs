@@ -57,8 +57,8 @@ namespace Util
 
         public int nodeMinHp;
 
-        [Tooltip("How much health this node drains per tick")]
-        public int nodeHealthDrainRate;
+        [Tooltip("How much health this node drains per interval")]
+        public int nodeHealthDrain;
 
         [Tooltip("every n ticks, node drains health")]
         public int nodeDrainHealthEveryNTicks;

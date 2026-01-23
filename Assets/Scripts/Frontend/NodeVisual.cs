@@ -117,11 +117,18 @@ public class NodeVisual : MonoBehaviour, IPointerClickHandler, IPointerEnterHand
     public void OnPointerEnter(PointerEventData eventData)
     {
         transform.localScale = Vector3.one * nodeScale * 1.2f;
+        ShowInfoWindow(true);
+    }
+
+    protected virtual void ShowInfoWindow(bool b)
+    {
+        
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
         transform.localScale = Vector3.one * nodeScale;
+        ShowInfoWindow(false);
     }
 
     public Vector3 GetAttachPosition(Direction direction)

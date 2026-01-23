@@ -95,7 +95,7 @@ namespace Util
             // ----------------------------
             // Drain pro Sekunde:
             // drainPerSecond = nodeHealthDrainRate * (tps / nodeDrainHealthEveryNTicks)
-            var drainPerSecond = b.nodeHealthDrainRate * (tps / Mathf.Max(1f, b.nodeDrainHealthEveryNTicks));
+            var drainPerSecond = b.nodeHealthDrain * (tps / Mathf.Max(1f, b.nodeDrainHealthEveryNTicks));
 
             // Ein Output spawnt packets: packetsPerSecond = 1 / energyPacketSpawnIntervalPerSecond
             // Ein Packet heilt: energyPacketRechargeAmount
@@ -234,9 +234,9 @@ namespace Util
 
                 // --- NODE HEALTH / DRAIN ---
                 "[NODE HEALTH & DRAIN]\n" +
-                $"- Node Health Drain Rate: {b.nodeHealthDrainRate}\n" +
+                $"- Node Health Drain Rate: {b.nodeHealthDrain}\n" +
                 $"- Node Drain Every N Ticks: {b.nodeDrainHealthEveryNTicks}\n" +
-                $"- Drain Per Second (approx): {b.nodeHealthDrainRate * (SimulationStorage.TICKS_PER_SECOND / (float)b.nodeDrainHealthEveryNTicks):F3}\n\n" +
+                $"- Drain Per Second (approx): {b.nodeHealthDrain * (SimulationStorage.TICKS_PER_SECOND / (float)b.nodeDrainHealthEveryNTicks):F3}\n\n" +
 
                 // --- ENERGY ECONOMY ---
                 "[ENERGY ECONOMY]\n" +

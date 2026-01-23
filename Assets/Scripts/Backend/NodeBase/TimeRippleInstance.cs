@@ -43,7 +43,7 @@ namespace NodeBase
         {
             if (tickCount - lastEnergyDrainTick >= BalanceProvider.Balance.nodeDrainHealthEveryNTicks)
             {
-                currentStability -= BalanceProvider.Balance.nodeHealthDrainRate;
+                currentStability -= BalanceProvider.Balance.nodeHealthDrain;
                 if (currentStability < minStability)
                 {
                     currentStability = minStability;
