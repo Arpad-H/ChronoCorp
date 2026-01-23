@@ -431,7 +431,10 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
         {
             Destroy(bridge);
         }
-        GameFrontendManager.Instance.AddToInventory(InventoryItem.BRIDGE, bridgesBuilt);
+        if (targetNodeVisual)
+        {
+            GameFrontendManager.Instance.AddToInventory(InventoryItem.BRIDGE, bridgesBuilt);
+        }
         bridges.Clear();
         if (!targetNodeVisual) return;
         Vector2Int[] cells = GetCellsOfConnection();
