@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c2cdb254c7864dcfba5d46c782c46a57, type: 3}
-  m_Name: GameBalance
+  m_Name: GB_EndlessMode
   m_EditorClassIdentifier: 
   useAutoBalance: 0
   energyPacketSpeed: 0.1
@@ -29,7 +29,7 @@ MonoBehaviour:
   blockadeEnergyPacketConsumeAmount: 0
   baseStabilityDecreasePerNode: 1
   nodeStableThresholdPercentage: 0.5
-  layerDuplicationTime: 999999
+  layerDuplicationTime: 3000
   maxLayerCount: 99
   layerGridCellCount: {x: 16, y: 9}
   cellSize: 1

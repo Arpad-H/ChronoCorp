@@ -244,6 +244,11 @@ public class TemporalLayerStack : MonoBehaviour
             frame.layerNum = sliceNum;
             layerToCoordinatePlane.Add(sliceNum, frame); 
             numberOfFrames += 1;
+            int gridSize = Mathf.CeilToInt(Mathf.Sqrt(numberOfFrames)); // 
+            float targetWidth = (gridSize * 17f) + 2;              // how many units of board width you want visible
+            float aspect = (float)Screen.width / Screen.height;
+            BalanceProvider.Balance.spiralGridminMaxCameraY.y = targetWidth / (2f * aspect);
+           
         }
         return frame;
     }

@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c2cdb254c7864dcfba5d46c782c46a57, type: 3}
+  m_Name: GB_testing
+  m_EditorClassIdentifier: 
+  useAutoBalance: 0
+  energyPacketSpeed: 0.1
+  energyPacketSpawnIntervalPerSecond: 2
+  energyPacketRechargeAmount: 25
+  nodeMaxHp: 100
+  nodeMinHp: 0
+  nodeHealthDrain: 5
+  nodeDrainHealthEveryNTicks: 60
+  nodeSpawnIntervalPerSecond: 25
+  layerModifierToNodeSpawnInterval: 2
+  nodeBlinkThreshhold: 0.25
+  blackHoleStabilityDrainRate: 1
+  blackHoleDrainEveryNTicks: 200
+  blackHoleEnergyPacketConsumeAmount: 100
+  blockadeEnergyPacketConsumeAmount: 0
+  baseStabilityDecreasePerNode: 1
+  nodeStableThresholdPercentage: 0.5
+  layerDuplicationTime: 500
+  maxLayerCount: 99
+  layerGridCellCount: {x: 16, y: 9}
+  cellSize: 1
+  initialGeneratorCount: 10
+  initialUpgradeCardCount: 10
+  initialBridgeCount: 2
+  stabilityMaxValue: 1000
+  stabilityMinValue: 0
+  stabilityDecreaseValue: 0
+  stabilityDecreaseTicks: 50
+  malusThresholds:
+  - 0.75
+  - 0.5
+  - 0.25
+  cameraZoomSpeed: 3
+  cameraPanSpeed: 0.03
+  spiralGridminMaxCameraY: {x: 2, y: 15}
+  cardsShownPerUpgradeChoice: 3
+  baseScorePerInterval: 5
+  scorePerInterval: 5
+  scoreInterval: 5
+  startTargetScore: 50
+  hpThresholdForScoreBonus: 0.8
+  targetScoreMultiplierAfterCashIn: 0.5
+  scoreBonusMultipliersPerHpThreshold:
+  - 0.75
+  - 0.5
+  - 0.25
