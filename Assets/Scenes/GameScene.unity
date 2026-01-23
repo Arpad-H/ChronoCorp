@@ -989,7 +989,7 @@ AudioSource:
   m_GameObject: {fileID: 336719840}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 24300002, guid: 73b24252559505146b49ad3812b0f55f, type: 2}
+  OutputAudioMixerGroup: {fileID: 4041317890944604943, guid: 73b24252559505146b49ad3812b0f55f, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 846f2a2664703174a9183bce71e32501, type: 3}
   m_PlayOnAwake: 0
@@ -1630,7 +1630,7 @@ AudioSource:
   m_GameObject: {fileID: 467188931}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 24300002, guid: 73b24252559505146b49ad3812b0f55f, type: 2}
+  OutputAudioMixerGroup: {fileID: 4041317890944604943, guid: 73b24252559505146b49ad3812b0f55f, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 35500576abc424d42864e661a6995013, type: 3}
   m_PlayOnAwake: 1
@@ -1727,7 +1727,7 @@ AudioSource:
   m_GameObject: {fileID: 467188931}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 24300002, guid: 73b24252559505146b49ad3812b0f55f, type: 2}
+  OutputAudioMixerGroup: {fileID: 4041317890944604943, guid: 73b24252559505146b49ad3812b0f55f, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 9529ce9b5bdac4b4192a38f3503cdecf, type: 3}
   m_PlayOnAwake: 1
@@ -1824,7 +1824,7 @@ AudioSource:
   m_GameObject: {fileID: 467188931}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 24300002, guid: 73b24252559505146b49ad3812b0f55f, type: 2}
+  OutputAudioMixerGroup: {fileID: 4041317890944604943, guid: 73b24252559505146b49ad3812b0f55f, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 5d17ed05c4367f64cbd8472e346aa47c, type: 3}
   m_PlayOnAwake: 1
@@ -5466,6 +5466,21 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 862114569408308618, guid: 7663133e0fab64d4481246ee8d5da3bb, type: 3}
       propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 886494866317091227, guid: 7663133e0fab64d4481246ee8d5da3bb, type: 3}
+      propertyPath: fullScript
+      value: "> lua_interpreter.attach()\r\n> injecting user script...\r\n> \r\n\r\nfunction
+        distribute(n)\r\n    if n % 2 == 0 then\r\n        forward(n)\r\n    end\r\nend\r\n\r\n>
+        EXECUTE"
+      objectReference: {fileID: 0}
+    - target: {fileID: 886494866317091227, guid: 7663133e0fab64d4481246ee8d5da3bb, type: 3}
+      propertyPath: luaFunction
+      value: "function distribute(n)\r\n    if n % 2 == 0 then\r\n        forward(n)\r\n   
+        end\r\nend"
+      objectReference: {fileID: 0}
+    - target: {fileID: 886494866317091227, guid: 7663133e0fab64d4481246ee8d5da3bb, type: 3}
+      propertyPath: functionLinePerPress
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1192657145803021508, guid: 7663133e0fab64d4481246ee8d5da3bb, type: 3}

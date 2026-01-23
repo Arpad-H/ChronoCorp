@@ -55,6 +55,10 @@ public class NodeInfoWindow : MonoBehaviour
         myRectTransform = GetComponent<RectTransform>();
         // Start hidden
         gameObject.SetActive(false); 
+        fakeTerminalAutoTyper.OnExecuteConfirmed += () =>
+        {
+            PlayRickroll(); 
+        };
     }
     public void Show(TimeRipple nodeVisual, Guid id, float hp, float energyDrain, float energyReceived)
     {
