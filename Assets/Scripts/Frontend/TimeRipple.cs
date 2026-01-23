@@ -8,16 +8,25 @@ using Util;
 public class TimeRipple : NodeVisual
 {
     public EnergyType energyType;
-    [Header("Effects")] public Material greenGlowEffect;
-    public Material blueGlowEffect;
-    public Material redGlowEffect;
-    public Material yellowGlowEffect;
-    public Material greenGlowInactiveEffect;
-    public Material blueGlowInactiveEffect;
-    public Material redGlowInactiveEffect;
-    public Material yellowGlowInactiveEffect;
-    private Material currentGlowEffect;
-    private Material lastGlowEffect;
+
+    [Header("Effects")]
+    //  public Material greenGlowEffect;
+    //  public Material blueGlowEffect;
+    //  public Material redGlowEffect;
+    //  public Material yellowGlowEffect;
+    //  public Material greenGlowInactiveEffect;
+    //  public Material blueGlowInactiveEffect;
+    //  public Material redGlowInactiveEffect;
+    //  public Material yellowGlowInactiveEffect;
+    // private Material currentGlowEffect;
+    // private Material lastGlowEffect;
+    private Color colorNonGlow;
+    private Color colorBlink;
+    private Color colorBG;
+    private Color colorGlow;
+    public float glowIntensity = 2f;
+    public float darkenIntensity = 0.25f;
+    public GlowHP glow;
     private bool isBlinking = false;
     private bool blinkToggle;
     public GameObject ScreenEdgeIconPrefab;
@@ -28,7 +37,7 @@ public class TimeRipple : NodeVisual
     [Header("Scoring")]
     private Coroutine scoreRoutine;
     private float timeSinceLastValidHpThreshold = 0;
-   public float currentHp = 1f;
+    public float currentHp = 1f;
     
     // public Image hpBar;
     private bool isEnergySupplied = true;
@@ -36,15 +45,12 @@ public class TimeRipple : NodeVisual
     protected override void Awake()
     {
         base.Awake();
-        currentGlowEffect = greenGlowEffect;
-        lastGlowEffect = currentGlowEffect;
-        UpdateHealthBar(1f);
     }
 
     void Start()
     {
-        
         ChangeEnergySupplyState(false);
+        UpdateHealthBar(1f);
     }
 
     public new void OnPointerEnter(PointerEventData eventData)
@@ -60,29 +66,13 @@ public class TimeRipple : NodeVisual
             ChangeEnergySupplyState(false);
             return;
         }
-
-        lastGlowEffect = currentGlowEffect;
-        switch (newEnergyType)
-        {
-            case EnergyType.GREEN:
-                currentGlowEffect = greenGlowEffect;
-
-                break;
-            case EnergyType.BLUE:
-                currentGlowEffect = blueGlowEffect;
-
-                break;
-            case EnergyType.RED:
-                currentGlowEffect = redGlowEffect;
-
-                break;
-            case EnergyType.YELLOW:
-                currentGlowEffect = yellowGlowEffect;
-
-                break;
-        }
-
-        _renderer.material = currentGlowEffect;
+        colorNonGlow = energyType.ToColor();
+        float factor = Mathf.Pow(2, glowIntensity);
+        colorGlow = new Color(colorNonGlow.r * factor, colorNonGlow.g * factor, colorNonGlow.b * factor, 1f);
+        colorBlink = Color.Lerp(colorNonGlow, Color.white, 0.5f);
+        colorBG = colorNonGlow * darkenIntensity;
+        glow.SetVisuals(currentHp, colorGlow);
+        glow.SetBGColor(colorBG);
     }
 
     private void ChangeEnergySupplyState(bool isSupplied)
@@ -95,53 +85,34 @@ public class TimeRipple : NodeVisual
         }
         else
         {
-            lastGlowEffect = currentGlowEffect;
-            switch (energyType)
-            {
-                case EnergyType.GREEN:
-                    currentGlowEffect = greenGlowInactiveEffect;
-
-                    break;
-                case EnergyType.BLUE:
-
-                    currentGlowEffect = blueGlowInactiveEffect;
-                    break;
-                case EnergyType.RED:
-
-                    currentGlowEffect = redGlowInactiveEffect;
-                    break;
-                case EnergyType.YELLOW:
-
-                    currentGlowEffect = yellowGlowInactiveEffect;
-                    break;
-            }
+            colorNonGlow = energyType.ToColor();
+            float factor = Mathf.Pow(2, glowIntensity);
+            //colorGlow = new Color(colorNonGlow.r * factor, colorNonGlow.g * factor, colorNonGlow.b * factor, 1f);
+            glow.SetVisuals(currentHp, colorNonGlow);
         }
-
-        _renderer.material = currentGlowEffect;
     }
 
     public void UpdateHealthBar(float currentValue)
     {
         currentHp = currentValue;
         EvaluateScore(currentValue);
-        currentGlowEffect.SetFloat("_HP", currentValue);
-        lastGlowEffect.SetFloat("_HP", currentValue);
-        //   hpBar.fillAmount = currentValue;
-        // if (currentValue <= BalanceProvider.Balance.nodeBlinkThreshhold && !isEnergySupplied)
-        // {
-        //     if (!screenEdgeIcon)
-        //     {
-        //         screenEdgeIcon = Instantiate(ScreenEdgeIconPrefab).GetComponentInChildren<ScreenEdgeIcon>();
-        //         screenEdgeIcon.target = this.transform;
-        //     }
-        //
-        //     ToggleBlinking(true);
-        // }
-        // else
-        // {
-        //     if (screenEdgeIcon) Destroy(screenEdgeIcon);
-        //     ToggleBlinking(false);
-        // }
+        glow.SetHP(currentHp);
+        // hpBar.fillAmount = currentValue;
+        if (currentValue <= BalanceProvider.Balance.nodeBlinkThreshhold && !isEnergySupplied)
+        {
+            if (!screenEdgeIcon)
+            {
+                screenEdgeIcon = Instantiate(ScreenEdgeIconPrefab).GetComponentInChildren<ScreenEdgeIcon>();
+                screenEdgeIcon.target = this.transform;
+            }
+        
+            ToggleBlinking(true);
+        }
+        else
+        {
+            if (screenEdgeIcon) Destroy(screenEdgeIcon);
+            ToggleBlinking(false);
+        }
     }
 
     private void EvaluateScore(float currentValue) 
@@ -179,7 +150,6 @@ public class TimeRipple : NodeVisual
             {
                 isBlinking = false;
                 CancelInvoke(nameof(BlinkEffect));
-                _renderer.material = currentGlowEffect;
             }
         }
     }
@@ -187,21 +157,8 @@ public class TimeRipple : NodeVisual
     private void BlinkEffect()
     {
         blinkToggle = !blinkToggle;
-        switch (energyType)
-        {
-            case EnergyType.GREEN:
-                _renderer.material = blinkToggle ? greenGlowInactiveEffect : greenGlowEffect;
-                break;
-            case EnergyType.BLUE:
-                _renderer.material = blinkToggle ? blueGlowInactiveEffect : blueGlowEffect;
-                break;
-            case EnergyType.RED:
-                _renderer.material = blinkToggle ? redGlowInactiveEffect : redGlowEffect;
-                break;
-            case EnergyType.YELLOW:
-                _renderer.material = blinkToggle ? yellowGlowInactiveEffect : yellowGlowEffect;
-                break;
-        }
+        if (blinkToggle) glow.SetBGColor(colorNonGlow);
+        else glow.SetBGColor(colorBlink);
     }
 
     public override void RemoveConnectedConduit(ConduitVisual conduitVisual)
