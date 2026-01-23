@@ -49,7 +49,7 @@ namespace Backend.Simulation.World
         {
             var sliceA = getTimeSliceOfNodeByGuid(a);
             var sliceB = getTimeSliceOfNodeByGuid(b);
-
+            //TODO connecting generator and node in different slices only works node -> generator not generator -> node
             if (sliceA == null || sliceB == null)
                 return null;
 

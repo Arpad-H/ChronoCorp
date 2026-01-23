@@ -100,6 +100,7 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
             planeA.AddCellsOccupiedByConduits(trimmedCells);
             GameFrontendManager.Instance.ConsumeInventoryItem(InventoryItem.BRIDGE, bridgesBuilt);
         }
+        meshCollider.enabled = true;
         //path.Clear();
         return true;
     }
@@ -190,6 +191,7 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
     public void StartNewConduitAtNode(NodeVisual nodeVisual, CoordinatePlane plane)
     {
         if (sourceNodeVisual != null) return; // Don't start a new drag if one is active
+        meshCollider.enabled = false;
         sourceNodeVisual = nodeVisual;
         planeA = plane;
     }
@@ -308,16 +310,16 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
 
     private void SplineFromPath()
     {
-        if (path.Count >= 2)
-        {
-            splineExtrude.enabled = true;
-            meshCollider.enabled = true;
-        }
-        else
-        {
-            splineExtrude.enabled = false;
-            meshCollider.enabled = false;
-        }
+        // if (path.Count >= 2)
+        // {
+        //     splineExtrude.enabled = true;
+        //     meshCollider.enabled = true;
+        // }
+        // else
+        // {
+        //     splineExtrude.enabled = false;
+        //     meshCollider.enabled = false;
+        // }
 
         foreach (var bridge in bridges)
         {
