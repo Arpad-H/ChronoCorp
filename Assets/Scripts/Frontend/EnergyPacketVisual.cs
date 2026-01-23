@@ -45,6 +45,7 @@ public class EnergyPacketVisual : MonoBehaviour
            
         }
     }
+ 
 
     public void Reset()
     {

@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class BlackHole : NodeVisual
@@ -29,6 +31,29 @@ public class BlackHole : NodeVisual
     {
         
     }
+
+    void OnDestroy()
+    {
+        List<ConduitVisual> visuals = new List<ConduitVisual>(connectedConduits.Count);
+
+        foreach (var conduit in connectedConduits)
+            visuals.Add(conduit);
+
+        foreach (var id in visuals)
+        {
+            RemoveConnectedConduit(id);
+            GameFrontendManager.Instance.DeleteConnection(id.backendID);
+        }
+            
+        
+        connectedConduits.Clear();
+       
+    }
+    public override void AddConnectedConduit(ConduitVisual conduitVisual, Direction dir)
+    {
+        connectedConduits.Add(conduitVisual);
+    }
+ 
     public void UpdateHealthBar(float hp)
     {
         Color currentColor = Color.Lerp(colourLow, colorHigh, hp);

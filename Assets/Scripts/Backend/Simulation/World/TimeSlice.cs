@@ -84,7 +84,12 @@ namespace Backend.Simulation.World
                 }
                 case NodeWithConnections node:
                 {
+                    var connectionsToRemove = new List<Connection>(node.getConnections().Count);
                     foreach (var connection in node.getConnections())
+                    {
+                        connectionsToRemove.Add(connection);
+                    }
+                    foreach (var connection in connectionsToRemove)
                     {
                         UnlinkNodes(connection.guid, false);
                     }
