@@ -120,7 +120,7 @@ public class NodeVisual : MonoBehaviour, IPointerClickHandler, IPointerEnterHand
         ShowInfoWindow(true);
     }
 
-    protected virtual void ShowInfoWindow(bool b)
+    protected virtual void ShowInfoWindow(bool show)
     {
         
     }
@@ -153,5 +153,8 @@ public class NodeVisual : MonoBehaviour, IPointerClickHandler, IPointerEnterHand
     public virtual void AddConnectedConduit(ConduitVisual conduitVisual,Direction dir)
     {
         
+    }public int GetConnectedConduitCount()
+    {
+        return connectedConduits.Count;
     }
 }

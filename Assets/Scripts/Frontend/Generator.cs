@@ -5,6 +5,7 @@ using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Rendering.Universal;
+using Util;
 
 public class Generator : NodeVisual
 {
@@ -47,9 +48,31 @@ public class Generator : NodeVisual
             }
         });
     }
+    protected override void ShowInfoWindow(bool show)
+    {
+        if (GeneratorInfoWindow.Instance == null) return;
 
-    // Update is called once per frame
-  
+        if (show)
+        {
+            GeneratorInfoWindow.Instance.Show(
+                this, 
+                backendID, 
+                generatorTier, 
+                GetOutput(),
+                connectedConduits.Count
+            );
+        }
+        else
+        {
+            GeneratorInfoWindow.Instance.Hide();
+        }
+    }
+
+    public float GetOutput()
+    {
+        return BalanceProvider.Balance.energyPacketRechargeAmount / BalanceProvider.Balance.energyPacketSpawnIntervalPerSecond;
+    }
+
     public override void RemoveConnectedConduit(ConduitVisual conduitVisual)
     {
         
@@ -75,10 +98,10 @@ public class Generator : NodeVisual
     private void SetGeneratorTier(int tier)
     {
         Material newMat = generatorTiers[tier - 1];
-       decalProjector.material = newMat;
-       generatorTiersObject[generatorTier-1].SetActive(false);
-       generatorTier = tier;
-       generatorTiersObject[tier-1].SetActive(true);
+        decalProjector.material = newMat;
+        generatorTiersObject[generatorTier-1].SetActive(false);
+        generatorTier = tier;
+        generatorTiersObject[tier-1].SetActive(true);
     
     }
 
@@ -88,5 +111,9 @@ public class Generator : NodeVisual
         {
             SetGeneratorTier(generatorTier + 1);
         }
+    }
+    public int GetTier()
+    {
+        return generatorTier;
     }
 }
