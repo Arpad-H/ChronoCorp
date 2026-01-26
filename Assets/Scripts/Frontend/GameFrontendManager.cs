@@ -24,6 +24,10 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
     public event Action<Guid> BackendDeletesConnection;
     public event Action<Guid,Guid,Guid,Vector2Int[]> BackendCreatesConnection;
     
+    public event Action TimeRipplePlaced;
+    public event Action GeneratorPlaced;
+    public event Action ScoreUpdated;
+    
     public static GameFrontendManager Instance;
     public CameraController cameraController;
    
@@ -86,12 +90,15 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
         NodeVisual nv = frame.PlaceNodeFromBackend(nodeDto, cellPos, energyType);
         if (nv)
         {
+            if (nodeDto == NodeDTO.RIPPLE) TimeRipplePlaced?.Invoke();
+            if (nodeDto == NodeDTO.BLOCKADE) ;
+            if (nodeDto == NodeDTO.BLACK_HOLE) ; 
             nv.backendID = id;
             nv.layerNum = layerNum;
             nodeVisuals.Add(id, nv);
             return true;
         }
-
+        
         return false;
     }
 
@@ -246,13 +253,19 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
                 break;
             }
         }
-        if (success) AudioManager.Instance.PlayPlayerActionSuccessSound();
+
+        if (success)
+        {
+            AudioManager.Instance.PlayPlayerActionSuccessSound();
+            if (item == InventoryItem.GENERATOR) GeneratorPlaced?.Invoke();
+        }
         else AudioManager.Instance.PlayInvalidActionSound();
         return success;
     }
 
     public void ConsumeInventoryItem(InventoryItem item, int amount = 1)
     {
+       
         backend.AddItemToInventory(item, -amount);
         InventoryChanged?.Invoke();
     }

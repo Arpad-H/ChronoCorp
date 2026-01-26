@@ -138,6 +138,7 @@ namespace Util
         [Header("Scoring Settings")]
         public  int baseScorePerInterval;
         public int scorePerInterval;
+        [Tooltip("Interval in seconds for score calculation")]
         public int scoreInterval;
         public int startTargetScore;
         public float hpThresholdForScoreBonus;

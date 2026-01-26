@@ -29,7 +29,7 @@ MonoBehaviour:
   blockadeEnergyPacketConsumeAmount: 0
   baseStabilityDecreasePerNode: 1
   nodeStableThresholdPercentage: 0.5
-  layerDuplicationTime: 500
+  layerDuplicationTime: 999999
   maxLayerCount: 99
   layerGridCellCount: {x: 16, y: 9}
   cellSize: 1
@@ -48,8 +48,8 @@ MonoBehaviour:
   cameraPanSpeed: 0.03
   spiralGridminMaxCameraY: {x: 2, y: 15}
   cardsShownPerUpgradeChoice: 3
-  baseScorePerInterval: 5
-  scorePerInterval: 5
+  baseScorePerInterval: 0
+  scorePerInterval: 0
   scoreInterval: 5
   startTargetScore: 50
   hpThresholdForScoreBonus: 0.8

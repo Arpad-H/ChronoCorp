@@ -32,7 +32,10 @@ public class TutorialScreen : MonoBehaviour
     private Coroutine typingCoroutine;
     private Coroutine movementCoroutine;
 
-    void Start() { if (steps.Length > 0) StartStep(); }
+    void Start()
+    {
+        
+    }
 
     void Update()
     {
@@ -125,9 +128,10 @@ public class TutorialScreen : MonoBehaviour
         }
         else
         {
-            currentStepIndex++;
-            if (currentStepIndex < steps.Length) StartStep();
-            else EndTutorial();
+            this.gameObject.SetActive(false);
+            // currentStepIndex++;
+            // if (currentStepIndex < steps.Length) StartStep();
+            // else EndTutorial();
         }
     }
 
@@ -135,5 +139,12 @@ public class TutorialScreen : MonoBehaviour
     {
        GameFrontendManager.Instance.EndTutorial();
         Destroy(this.gameObject);
+    }
+
+    public void ShowStep(TutorialOrchestrator.TutorialStep step)
+    {
+        this.gameObject.SetActive(true);
+        currentStepIndex = (int)step;
+        StartStep();
     }
 }
