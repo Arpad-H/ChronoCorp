@@ -18,6 +18,7 @@ public class TutorialScreen : MonoBehaviour
 
     [Header("UI References")]
     public TextMeshProUGUI tutorialText;
+    public GameObject crtTextHolder;
     public RectTransform moverRoot;    // Pivot (0.5, 1)
     public RectTransform tapperRoot;   // Pivot (0.5, 0)
     public UITapEffect tapperScript;
@@ -129,6 +130,7 @@ public class TutorialScreen : MonoBehaviour
         else
         {
             this.gameObject.SetActive(false);
+            crtTextHolder.SetActive(false);
             // currentStepIndex++;
             // if (currentStepIndex < steps.Length) StartStep();
             // else EndTutorial();
@@ -139,11 +141,13 @@ public class TutorialScreen : MonoBehaviour
     {
        GameFrontendManager.Instance.EndTutorial();
         Destroy(this.gameObject);
+        Destroy(crtTextHolder);
     }
 
     public void ShowStep(TutorialOrchestrator.TutorialStep step)
     {
         this.gameObject.SetActive(true);
+        crtTextHolder.SetActive(true);
         currentStepIndex = (int)step;
         StartStep();
     }
