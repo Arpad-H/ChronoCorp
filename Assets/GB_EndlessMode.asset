@@ -34,6 +34,7 @@ MonoBehaviour:
   layerGridCellCount: {x: 16, y: 9}
   cellSize: 1
   initialGeneratorCount: 10
+  initialPausePowerupCount: 1
   initialUpgradeCardCount: 10
   initialBridgeCount: 2
   stabilityMaxValue: 1000

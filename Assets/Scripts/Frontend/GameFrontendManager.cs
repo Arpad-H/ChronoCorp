@@ -1,6 +1,7 @@
 // GameManager.cs
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Backend.Simulation.World;
 using Frontend;
@@ -45,7 +46,7 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
     public StabilityBar stabilityBar;
     [SerializeField] private GameState gameState = GameState.PAUSED;
     
-
+private Coroutine pauseGameCoroutine;
     private void Awake()
     {
         if (Instance != null && Instance != this) {
@@ -58,11 +59,14 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
         if (cameraController == null) cameraController = FindObjectOfType<CameraController>();
         if (!temporalLayerStack) temporalLayerStack = FindObjectOfType<TemporalLayerStack>();
         backend = new BackendImpl(this);
+        
     }
+
+   
 
     private void Start()
     {
-       
+        InputManager.Instance.OnSpacebarPress += UnPauseGame;
     }
 
     private void FixedUpdate()
@@ -251,6 +255,13 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
             {
                 success = UpgradeHoveredNode();
                 break;
+            }   
+            case InventoryItem.PAUSE_POWERUP:
+            {
+                AddToInventory(InventoryItem.PAUSE_POWERUP, -1);
+                pauseGameCoroutine =  StartCoroutine(PauseGameForSeconds(BalanceProvider.Balance.pauseDurationSeconds));
+                success = true;
+                break;
             }
         }
 
@@ -262,7 +273,20 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
         else AudioManager.Instance.PlayInvalidActionSound();
         return success;
     }
-
+    IEnumerator PauseGameForSeconds(float seconds)
+    {
+        SetGameState(GameState.PAUSED);
+        UIManager.Instance.GamePaused(true);
+        yield return new WaitForSecondsRealtime(seconds);
+        SetGameState(GameState.PLAYING);
+        UIManager.Instance.GamePaused(false);
+    }
+    private void UnPauseGame()
+    {
+        StopCoroutine(pauseGameCoroutine);
+        SetGameState(GameState.PLAYING);
+        UIManager.Instance.GamePaused(false);
+    }
     public void ConsumeInventoryItem(InventoryItem item, int amount = 1)
     {
        
@@ -288,8 +312,6 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
             AudioManager.Instance.PlayInvalidActionSound();
             return false;
         }
-       
-       
     }
 
     public bool UnlinkConduit(Guid backendID)
@@ -340,7 +362,7 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
                 Time.timeScale = 1f;
                 break;
             case GameState.PAUSED:
-                Time.timeScale = 0f;
+                Time.timeScale = 1f;
                 break;
             case GameState.GAMEOVER:
                 Time.timeScale = 0f;

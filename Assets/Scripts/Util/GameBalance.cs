@@ -107,7 +107,8 @@ namespace Util
 
         [Header("Inventory and Item Settings")]
         public int initialGeneratorCount;
-
+        public int initialPausePowerupCount;
+        public int pauseDurationSeconds;
         public int initialUpgradeCardCount;
         public int initialBridgeCount;
 
@@ -144,6 +145,7 @@ namespace Util
         public float hpThresholdForScoreBonus;
         public float targetScoreMultiplierAfterCashIn;
         public float[] scoreBonusMultipliersPerHpThreshold;
+      
 
         public void Add(StatType type, float amount)
         {

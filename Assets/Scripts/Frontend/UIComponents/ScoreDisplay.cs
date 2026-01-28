@@ -18,6 +18,10 @@ public class ScoreDisplay : MonoBehaviour
     }
 
     int currentScore = 0;
+    
+    public int GetCurrentScore() { 
+        return currentScore; 
+    }
 
     public void SetTargetScore(int target)
     {

@@ -14,7 +14,8 @@ namespace Backend.Inv
             [InventoryItem.NORMALCONNECTION] = STARTNUMBER_OF_CONNECTIONS,
             [InventoryItem.GENERATOR] = BalanceProvider.Balance.initialGeneratorCount,
             [InventoryItem.UPGRADE_CARD] = BalanceProvider.Balance.initialUpgradeCardCount,
-            [InventoryItem.BRIDGE] = BalanceProvider.Balance.initialBridgeCount
+            [InventoryItem.BRIDGE] = BalanceProvider.Balance.initialBridgeCount,
+            [InventoryItem.PAUSE_POWERUP] = BalanceProvider.Balance.initialPausePowerupCount
         };
     }
     public class Inventory

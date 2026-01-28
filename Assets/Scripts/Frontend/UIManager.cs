@@ -14,14 +14,17 @@ public class UIManager : MonoBehaviour
     public static UIManager Instance;
     public GameObject deleteButtonPrefab;
     private GameObject deleteNodeButton;
-    public GameObject gameOverScreen;
+    public GameOverScript gameOverScreen;
     public ConduitVisualizer conduitVisualizer;
-    
+    public GameObject pauseIcon;
+    public TextMeshProUGUI pauseTimer;
     private UpgradeChoiceMenu upgradeChoiceMenuComponent;
     public GameObject cardChoiceMenu;
     private UpgradeCardData[] allUpgrades;
     public ScoreDisplay scoreDisplay;
-
+private Coroutine blinkCoroutine;
+private Coroutine countdownCoroutine;
+float remainingTime;
     void Awake()
     {
         Instance = this;
@@ -44,7 +47,8 @@ public class UIManager : MonoBehaviour
 
     public void ShowGameOver(string reason)
     {
-        gameOverScreen.SetActive(true);
+        gameOverScreen.gameObject.SetActive(true);
+        gameOverScreen.SetScore(scoreDisplay.GetCurrentScore());
     }
 
     public DeleteButton SpawnDeleteButton(Vector3 position)
@@ -117,5 +121,64 @@ public class UIManager : MonoBehaviour
     {
        scoreDisplay.AddScore(score);
     }
-    
+    public void GamePaused(bool paused)
+    {
+        if (paused)
+        {
+            remainingTime = BalanceProvider.Balance.pauseDurationSeconds;
+
+
+            pauseTimer.gameObject.SetActive(true);
+            pauseIcon.SetActive(true);
+
+
+            blinkCoroutine = StartCoroutine(BlinkPauseIcon());
+            countdownCoroutine = StartCoroutine(PauseCountdown());
+        }
+        else
+        {
+            if (blinkCoroutine != null)
+                StopCoroutine(blinkCoroutine);
+
+
+            if (countdownCoroutine != null)
+                StopCoroutine(countdownCoroutine);
+
+
+            pauseIcon.SetActive(false);
+            pauseTimer.gameObject.SetActive(false);
+        }
+    }
+    IEnumerator PauseCountdown()
+    {
+        while (remainingTime > 0f)
+        {
+            remainingTime -= Time.unscaledDeltaTime;
+            remainingTime = Mathf.Max(remainingTime, 0f);
+
+
+            int minutes = Mathf.FloorToInt(remainingTime / 60f);
+            int seconds = Mathf.FloorToInt(remainingTime % 60f);
+
+
+            pauseTimer.text = $"{minutes:00}:{seconds:00}";
+
+
+            yield return null; // update every frame (smooth)
+        }
+
+
+// optional: auto-unpause or trigger event
+        pauseTimer.text = "00:00";
+    }
+
+    IEnumerator BlinkPauseIcon()
+    {
+        while (true)
+        {
+            pauseIcon.SetActive(!pauseIcon.activeSelf);
+            yield return new WaitForSecondsRealtime(0.5f);
+        }
+    }
+
 }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Interfaces;
 using UnityEngine;
 
 public class UpgradeChoiceMenu : MonoBehaviour
@@ -39,5 +40,13 @@ public class UpgradeChoiceMenu : MonoBehaviour
     {
         foreach (Transform child in cardParent)
             Destroy(child.gameObject);
+    }
+
+   public void PauseSelected()
+    {
+        GameFrontendManager.Instance.AddToInventory(InventoryItem.PAUSE_POWERUP,1);
+        gameObject.SetActive(false);
+        selectedAudioSource.Play();
+        GameFrontendManager.Instance.SetGameState(GameFrontendManager.GameState.PLAYING);
     }
 }

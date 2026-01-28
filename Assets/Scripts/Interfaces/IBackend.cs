@@ -94,6 +94,7 @@ namespace Interfaces
         GENERATOR,
         UPGRADE_CARD,
         NORMALCONNECTION,
-        BRIDGE
+        BRIDGE,
+        PAUSE_POWERUP
     }
 }

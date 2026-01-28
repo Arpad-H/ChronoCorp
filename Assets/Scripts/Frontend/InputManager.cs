@@ -9,6 +9,7 @@ public class InputManager : MonoBehaviour
     public static InputManager Instance;
     public event Action OnLeftClick;
     public event Action OnRightClick;
+    public event Action OnSpacebarPress;
     public event Action<Vector2> OnMouseRightDrag;
 
 
@@ -37,7 +38,8 @@ public class InputManager : MonoBehaviour
         if (Input.GetMouseButtonDown(0)) OnLeftClick?.Invoke();
         // --- On Right Click ---
         if (Input.GetMouseButtonDown(1)) OnRightClick?.Invoke();
-        
+        // spacebar
+        if (Input.GetKeyDown(KeyCode.Space)) OnSpacebarPress?.Invoke();
         if (Input.GetMouseButtonDown(1))
         {
             lastMousePosition = Input.mousePosition;
