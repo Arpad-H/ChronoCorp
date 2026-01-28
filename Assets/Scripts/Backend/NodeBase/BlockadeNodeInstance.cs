@@ -11,7 +11,7 @@ namespace NodeBase
         public List<Connection> Connections;
         private long lastDrain;
         public int energyConsumed = 0;
-        private int energyToBeDestroyed = BalanceProvider.Balance.blackHoleEnergyPacketConsumeAmount;
+        private int energyToBeDestroyed = BalanceProvider.Balance.blockadeEnergyPacketConsumeAmount;
         public BlockadeNodeInstance(Vector2 pos) : base(pos, NodeType.BLOCKADE)
         {
             Connections = new List<Connection>();
@@ -19,13 +19,14 @@ namespace NodeBase
 
         public override void Tick(long tickCount, SimulationStorage storage)
         {
-            
+            energyToBeDestroyed = BalanceProvider.Balance.blockadeEnergyPacketConsumeAmount;
         }
 
         public override void onReceiveEnergyPacket(long tickCount, EnergyPacket energyPacket, SimulationStorage storage)
         {
             energyConsumed += energyToBeDestroyed;
             storage.Frontend.onNodeHealthChange(guid, 0, energyToBeDestroyed, energyConsumed);
+            Debug.Log("Blockade received energy ");
             if (energyConsumed >= energyToBeDestroyed)
             {
                 storage.deleteNode(guid);
@@ -35,6 +36,7 @@ namespace NodeBase
 
         public override bool onRelayEnergyPacket(long tickCount, EnergyPacket energyPacket, SimulationStorage storage)
         {
+            Debug.Log("Blockade blocked an energy packet");
             return false;
         }
 
