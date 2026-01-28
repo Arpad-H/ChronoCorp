@@ -289,7 +289,6 @@ private Coroutine pauseGameCoroutine;
     }
     public void ConsumeInventoryItem(InventoryItem item, int amount = 1)
     {
-       
         backend.AddItemToInventory(item, -amount);
         InventoryChanged?.Invoke();
     }

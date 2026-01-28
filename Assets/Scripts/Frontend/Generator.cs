@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Frontend.UIComponents;
+using Interfaces;
 using NaughtyAttributes;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
@@ -42,7 +43,7 @@ public class Generator : NodeVisual
                 {
                     conduit.ConnectedNodeDestroyedConnection(this);
                 }
-
+                GameFrontendManager.Instance.AddToInventory(InventoryItem.UPGRADE_CARD, generatorTier -1);
                 Destroy(this.gameObject);
                 Destroy(deleteBtn.gameObject);
             }
