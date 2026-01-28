@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Interfaces;
 using NodeBase;
-using UnityEngine;
 using Util;
 
 namespace Backend.Simulation.World
@@ -71,12 +71,12 @@ namespace Backend.Simulation.World
             setStability(newStabilityValue);
             var newValue = currentValue;
 
-            if (oldValue - newValue <= float.Epsilon)
+            if (Math.Abs(oldValue - newValue) <= float.Epsilon)
             {
                 return;
             }
 
-            storage.Frontend.OnStabilityBarUpdate(minValue, maxValue, (int)currentValue);
+            storage.Frontend.OnStabilityBarUpdate(minValue, maxValue, (int) Math.Round(currentValue));
         }
 
         private void setStability(float value)
