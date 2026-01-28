@@ -9,6 +9,7 @@ using JetBrains.Annotations;
 using NodeBase;
 using UnityEngine;
 using Util;
+using Random = System.Random;
 
 namespace Backend.Simulation.World
 {
@@ -18,7 +19,7 @@ namespace Backend.Simulation.World
         private readonly List<Guid> _removeBuffer = new(128); //buffer to avoid modifying collection during iteration
         public readonly IFrontend Frontend;
 
-        public readonly uint simulationSeed = 2930473240;
+        public readonly uint simulationSeed = (uint)new Random().Next(0, int.MaxValue);
         public readonly StabilityBar StabilityBar = new(BalanceProvider.Balance.stabilityMaxValue, BalanceProvider.Balance.stabilityMinValue, BalanceProvider.Balance.stabilityMaxValue);
         public readonly List<TimeSlice> timeSlices = new();
         public Dictionary<Guid, EnergyPacket> energyPackets = new();
