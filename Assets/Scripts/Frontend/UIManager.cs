@@ -64,17 +64,16 @@ float remainingTime;
     {
         StartCoroutine(QueueUpgradeMenu());
     }
+    
     private IEnumerator QueueUpgradeMenu()
     {
-        // This loop stays active as long as it is NOT safe
         while (!SafeToShowUpgradeUI())
         {
-            yield return null; // Wait for the next frame and check again
+            yield return null; 
         }
-
-        // Once the loop breaks, it's safe!
         ExecuteShowMenu();
     }
+    
     private void ExecuteShowMenu()
     {
         List<UpgradeCardData> availableUpgrades = GetRandomUpgrades(BalanceProvider.Balance.cardsShownPerUpgradeChoice);

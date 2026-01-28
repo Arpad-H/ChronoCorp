@@ -113,10 +113,10 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
         backendID = connectionId;
         sourceNodeVisual = GameFrontendManager.Instance.GetNodeVisual(backendIdA);
         targetNodeVisual = GameFrontendManager.Instance.GetNodeVisual(backendIdB);
-        SetConduitEnergyType();
         planeA = GameFrontendManager.Instance.temporalLayerStack.GetLayerByNum(sourceNodeVisual.layerNum);
         planeB = GameFrontendManager.Instance.temporalLayerStack.GetLayerByNum(targetNodeVisual.layerNum);
         sameLayerConnection = planeA.layerNum == planeB.layerNum;
+        SetConduitEnergyType();
         path = CellsToWorldPositions(cellsOfConnection);
         Direction dir = CalculateAttachDircection();
         SetPreviewPosition(targetNodeVisual.GetAttachPosition(dir),
@@ -141,7 +141,7 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
         Vector3 secondLastSegment;
         if (path.Count < 2)
         {
-            Debug.LogError("Path has less than 2 points, cannot calculate attach direction. Using default");
+        //    Debug.LogError("Path has less than 2 points, cannot calculate attach direction. Using default");
             return Direction.Down; // Default fallback
         }
         if (sourceNodeVisual is Generator)
@@ -346,7 +346,7 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
             PlaceBridgesOnIntersections();
         }
 
-        ColorSplineIfValid();
+     
         conduitLength = spline.GetLength();
         PlayBuildSound();
     }
@@ -379,8 +379,9 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
         }
     }
 
-    private void ColorSplineIfValid()
+    public void ColorSplineIfValid()
     {
+    //    if (!targetNodeVisual) return;
         Vector2Int[] cells = GetCellsOfConnection();
         int newLength = cells.Length - 1;
         Vector2Int[] trimmedCells = new Vector2Int[newLength];

@@ -113,6 +113,7 @@ private Coroutine pauseGameCoroutine;
     // Called by the backend to delete a node visual
     public void DeleteNode(Guid nodeId)
     {
+        if (!nodeVisuals.ContainsKey(nodeId)) return;
         CoordinatePlane layer = temporalLayerStack.GetLayerByNum(nodeVisuals[nodeId].layerNum);
         layer.RemoveNodeVisual(nodeVisuals[nodeId]);
         nodeVisuals.Remove(nodeId);
@@ -177,6 +178,7 @@ private Coroutine pauseGameCoroutine;
 
     public void onNodeHealthChange(Guid id, int minValue, int maxValue, int currentValue)
     {
+        if (!nodeVisuals.ContainsKey(id)) return;
         NodeVisual nodeVisual = nodeVisuals[id];
         if (nodeVisual.GetType() == typeof(TimeRipple))
         {
