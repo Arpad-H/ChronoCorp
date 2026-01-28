@@ -167,7 +167,10 @@ namespace Backend.Simulation.World
         public void RemoveConnectionCells(Guid connectionId)
         {
             if (!_connectionCellsById.TryGetValue(connectionId, out var cells))
+            {
+                Debug.Log("Tried to remove connection but was not found in this grid with id: "+connectionId);
                 return;
+            }
 
             foreach (var cell in cells)
             {
