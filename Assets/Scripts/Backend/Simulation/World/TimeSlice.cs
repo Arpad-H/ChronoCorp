@@ -360,51 +360,6 @@ namespace Backend.Simulation.World
             return energyTypesAvailableInSimulation.Keys.ToHashSet();
         }
 
-        public Guid? spawnGenerator(Vector2 pos, int amountInitialOutputs)
-        {
-            var canPlace = _simulationStorage.inventory.canPlaceGenerator();
-
-            
-            if (TimeSliceGrid.IsCellOccupied(new Vector2Int((int)pos.x, (int)pos.y)) || !canPlace) return null;
-
-            _simulationStorage.inventory.placeGenerator();
-            var newNode = new GeneratorInstance(pos, amountInitialOutputs);
-            newNode.currentTimeSlice = this;
-            TimeSliceGrid.Add(newNode);
-
-            addNodeToMapping(newNode);
-            return newNode.guid;
-        }
-
-        public Guid? spawnBlackHole(Vector2 pos, out BlackHoleInstance blackHoleInstance)
-        {
-            blackHoleInstance = null;
-            if (TimeSliceGrid.IsCellOccupied(new Vector2Int((int)pos.x, (int)pos.y), out var node, out var connection))
-            {
-                if (node != null)
-                {
-                    if (_simulationStorage.deleteNode(node.guid))
-                    {
-                        _simulationStorage.Frontend.DeleteNode(node.guid);
-                    }
-                    else
-                    {
-                        Debug.Log("Backend could not delete node to replace it with a black hole!");
-                        return null;
-                    }
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            blackHoleInstance = new BlackHoleInstance(pos);
-            blackHoleInstance.currentTimeSlice = this;
-            TimeSliceGrid.Add(blackHoleInstance);
-            addNodeToMapping(blackHoleInstance);
-            return blackHoleInstance.guid;
-        }
-        
         public Guid? spawnBlockadeInConnection(Connection connection, Vector2Int cellPos, out BlockadeNodeInstance blockadeNodeInstance )
         {
             blockadeNodeInstance = null;
@@ -462,13 +417,59 @@ namespace Backend.Simulation.World
             {
                 throw new Exception("Could n't link node to start or end node!");
             }
-
-            _simulationStorage.Frontend.PlaceNodeVisual(newNode.guid, newNode.NodeType.NodeDTO, this.SliceNumber, new Vector2(newNode.Pos.x, newNode.Pos.y), EnergyType.WHITE);
-            _simulationStorage.Frontend.CreateConnection(nodeStart.guid, newNode.guid, (Guid)startConID, newConnectionStartToBlockade.ToArray());
-            _simulationStorage.Frontend.CreateConnection(newNode.guid, nodeFinish.guid, (Guid)endConID, newConnectionBlockadeToFinish.ToArray());
             
+            _simulationStorage.Frontend.PlaceNodeVisual(newNode.guid, newNode.NodeType.NodeDTO, this.SliceNumber, new Vector2(newNode.Pos.x, newNode.Pos.y), EnergyType.WHITE);
+            _simulationStorage.Frontend.CreateConnection(nodeStart.guid, newNode.guid, (Guid)startConID,newConnectionStartToBlockade.ToArray()[..^1]);
+          //  _simulationStorage.Frontend.CreateConnection(nodeStart.guid, newNode.guid, (Guid)startConID,newConnectionStartToBlockade.ToArray());
+            _simulationStorage.Frontend.CreateConnection(newNode.guid, nodeFinish.guid, (Guid)endConID, newConnectionBlockadeToFinish.ToArray());
+           
             blockadeNodeInstance = newNode;
             return blockadeNodeInstance.guid;
+        }
+
+        public Guid? spawnGenerator(Vector2 pos, int amountInitialOutputs)
+        {
+            var canPlace = _simulationStorage.inventory.canPlaceGenerator();
+
+            
+            if (TimeSliceGrid.IsCellOccupied(new Vector2Int((int)pos.x, (int)pos.y)) || !canPlace) return null;
+
+            _simulationStorage.inventory.placeGenerator();
+            var newNode = new GeneratorInstance(pos, amountInitialOutputs);
+            newNode.currentTimeSlice = this;
+            TimeSliceGrid.Add(newNode);
+
+            addNodeToMapping(newNode);
+            return newNode.guid;
+        }
+
+        public Guid? spawnBlackHole(Vector2 pos, out BlackHoleInstance blackHoleInstance)
+        {
+            blackHoleInstance = null;
+            if (TimeSliceGrid.IsCellOccupied(new Vector2Int((int)pos.x, (int)pos.y), out var node, out var connection))
+            {
+                if (node != null)
+                {
+                    if (_simulationStorage.deleteNode(node.guid))
+                    {
+                        _simulationStorage.Frontend.DeleteNode(node.guid);
+                    }
+                    else
+                    {
+                        Debug.Log("Backend could not delete node to replace it with a black hole!");
+                        return null;
+                    }
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            blackHoleInstance = new BlackHoleInstance(pos);
+            blackHoleInstance.currentTimeSlice = this;
+            TimeSliceGrid.Add(blackHoleInstance);
+            addNodeToMapping(blackHoleInstance);
+            return blackHoleInstance.guid;
         }
 
         public Guid? spawnRipple(Vector2 pos, EnergyType energyType, out TimeRippleInstance timeRippleInstance)

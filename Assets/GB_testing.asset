@@ -26,7 +26,7 @@ MonoBehaviour:
   blackHoleStabilityDrainRate: 1
   blackHoleDrainEveryNTicks: 200
   blackHoleEnergyPacketConsumeAmount: 100
-  blockadeEnergyPacketConsumeAmount: 0
+  blockadeEnergyPacketConsumeAmount: 10
   baseStabilityDecreasePerNode: 1
   nodeStableThresholdPercentage: 0.5
   layerDuplicationTime: 1000

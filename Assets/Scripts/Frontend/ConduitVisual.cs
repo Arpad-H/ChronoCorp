@@ -125,11 +125,15 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
         targetNodeVisual.AddConnectedConduit(this, dir);
         if (sameLayerConnection)
         {
-            Vector2Int[] cells = GetCellsOfConnection();
-            int newLength = cells.Length - 2;
-            Vector2Int[] trimmedCells = new Vector2Int[newLength];
-            Array.Copy(cells, 1, trimmedCells, 0, newLength);
-            planeA.AddCellsOccupiedByConduits(trimmedCells);
+            if (!(cellsOfConnection.Length <= 2))
+            {
+                Vector2Int[] cells = GetCellsOfConnection();
+                int newLength = cells.Length - 2;
+                Vector2Int[] trimmedCells = new Vector2Int[newLength];
+                Array.Copy(cells, 1, trimmedCells, 0, newLength);
+                planeA.AddCellsOccupiedByConduits(trimmedCells);
+            }
+           
            // GameFrontendManager.Instance.ConsumeInventoryItem(InventoryItem.BRIDGE, bridgesBuilt);
         }
         conduitLength = spline.GetLength();
@@ -503,12 +507,17 @@ pipeMaterial.SetFloatArray("_BulgePositions", positions);
         {
             if (GameFrontendManager.Instance.UnlinkConduit(backendID))
             {
-                sourceNodeVisual.RemoveConnectedConduit(this);
-                targetNodeVisual.RemoveConnectedConduit(this);
-                conduitVisualizer.ReleaseItem(this);
+                DeleteConduit();
                 Destroy(deleteBtn.gameObject);
             }
         });
+    }
+
+    public void DeleteConduit()
+    {
+        sourceNodeVisual.RemoveConnectedConduit(this);
+        targetNodeVisual.RemoveConnectedConduit(this);
+        conduitVisualizer.ReleaseItem(this);
     }
 
     // public void setBulgePos(float pos)

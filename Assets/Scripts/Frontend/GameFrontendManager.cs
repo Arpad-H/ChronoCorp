@@ -299,6 +299,7 @@ private Coroutine pauseGameCoroutine;
     {
         RaycastHit rh;
         cameraController.RaycastForFirst(out rh); 
+        if (rh.collider == null) return false; // Not hovering over anything
         var nodeVisual = rh.collider.GetComponent<Generator>(); //TODO Currently only generators can be upgraded
         if (nodeVisual == null) return false; // Not hovering over a node
         if (backend.upgradeGenerator(nodeVisual.backendID))

@@ -24,7 +24,7 @@ namespace NodeBase
 
         public override void onReceiveEnergyPacket(long tickCount, EnergyPacket energyPacket, SimulationStorage storage)
         {
-            energyConsumed += energyToBeDestroyed;
+            energyConsumed += 1;
             storage.Frontend.onNodeHealthChange(guid, 0, energyToBeDestroyed, energyConsumed);
             Debug.Log("Blockade received energy ");
             if (energyConsumed >= energyToBeDestroyed)
