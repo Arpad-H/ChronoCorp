@@ -60,18 +60,18 @@ namespace Backend.Simulation.World
         {
             int addedAmount = (int)(BalanceProvider.Balance.nodeDrainHealthEveryNTicks * DRAINRATE_INCREASE);
             change = addedAmount;
-            BalanceProvider.Balance.nodeDrainHealthEveryNTicks -= addedAmount;
+            BalanceProvider.Balance.nodeDrainHealthEveryNTicks += addedAmount;
         }
 
         public override void onDeactivation()
         {
-            BalanceProvider.Balance.nodeDrainHealthEveryNTicks += change;
+            BalanceProvider.Balance.nodeDrainHealthEveryNTicks -= change;
         }
     }
     
     public class NodeSpawnMalus : StabilityMalus
     {
-        private const double SPAWNRATE_INCREASE = 0.25;
+        private const double SPAWNRATE_INCREASE = 0.50;
 
         private int change;
         public NodeSpawnMalus() : base(StabilityMalusType.NODE_SPAWNRATE_INCREASE, "NodeSpawn")
@@ -86,18 +86,18 @@ namespace Backend.Simulation.World
         {
             int addedAmount = (int)(BalanceProvider.Balance.nodeSpawnIntervalPerSecond * SPAWNRATE_INCREASE);
             change = addedAmount;
-            BalanceProvider.Balance.nodeSpawnIntervalPerSecond -= addedAmount;
+            BalanceProvider.Balance.nodeSpawnIntervalPerSecond += addedAmount;
         }
 
         public override void onDeactivation()
         {
-            BalanceProvider.Balance.nodeSpawnIntervalPerSecond += change;
+            BalanceProvider.Balance.nodeSpawnIntervalPerSecond -= change;
         }
     }
     
     public class StabilityDecrease : StabilityMalus
     {
-        private const float NEW_DECREASE = 1;
+        private const float NEW_DECREASE = -1;
         private float oldDecrease;
         private readonly StabilityBar stabilityBar;
 
@@ -113,7 +113,7 @@ namespace Backend.Simulation.World
         public override void onActivation()
         {
             oldDecrease = BalanceProvider.Balance.stabilityDecreaseValue;
-            stabilityBar.valueDecreasePerTick =  NEW_DECREASE;
+            stabilityBar.valueDecreasePerTick = NEW_DECREASE;
         }
 
         public override void onDeactivation()
