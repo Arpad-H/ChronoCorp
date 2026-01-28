@@ -204,16 +204,28 @@ namespace Backend.Simulation.World
             var node1 = guidToNodesMapping[idNode1];
             var node2 = guidToNodesMapping[idNode2];
 
-            if (node1 is GeneratorInstance generator1 && node2 is GeneratorInstance generator2) return null;
+            if (node1 is GeneratorInstance generator1 && node2 is GeneratorInstance generator2)
+            {
+                Debug.Log("Cannot link two generators");
+                return null;
+            }
             if (node1 is NodeWithConnections ripple1 && node2 is NodeWithConnections ripple2)
             {
                 var eType1 = ripple1.getAcceptedEnergyType();
                 var eType2 = ripple2.getAcceptedEnergyType();
 
-                if (!eType1.Equals(EnergyType.WHITE) && !eType2.Equals(EnergyType.WHITE) &&
-                    !eType1.Equals(eType2)) return null;
+                // energy types dont match
+                if (!eType1.Equals(EnergyType.WHITE) && !eType2.Equals(EnergyType.WHITE) && !eType1.Equals(eType2))
+                {
+                    Debug.Log("Could not create connection due to energy type mismatch");
+                    return null;
+                }
 
-                if (ripple1.HasDirectConnectionTo(ripple2 as AbstractNodeInstance)) return null;
+                if (ripple1.HasDirectConnectionTo(ripple2 as AbstractNodeInstance))
+                {
+                    Debug.Log("Could not create connection because the nodes are already linked");
+                    return null;
+                }
 
                 inventory.placeNormalConnection();
                 var rippleConnection = new Connection(ripple1 as AbstractNodeInstance, ripple2 as AbstractNodeInstance, cellsOfConnection);
@@ -234,8 +246,7 @@ namespace Backend.Simulation.World
             {
                 if (generator.alreadyConnectedTo(anyNode as AbstractNodeInstance))
                 {
-                    Debug.Log("Generator " + generator.guid + " already connected to node " +
-                              (anyNode as AbstractNodeInstance).guid);
+                    Debug.Log("Generator " + generator.guid + " already connected to node " + (anyNode as AbstractNodeInstance).guid);
                     return null;
                 }
 
@@ -256,6 +267,7 @@ namespace Backend.Simulation.World
                 return rippleConnection.guid;
             }
 
+            Debug.Log("Could not create connection. This state should never be reached");
             return null;
         }
 
@@ -393,7 +405,7 @@ namespace Backend.Simulation.World
             return blackHoleInstance.guid;
         }
         
-        public Guid? spawnBlockadeInConnection(Connection connection, Vector2 cellPos, out BlockadeNodeInstance blockadeNodeInstance )
+        public Guid? spawnBlockadeInConnection(Connection connection, Vector2Int cellPos, out BlockadeNodeInstance blockadeNodeInstance )
         {
             blockadeNodeInstance = null;
 
@@ -407,9 +419,11 @@ namespace Backend.Simulation.World
             var foundMiddlePiece = false;
             foreach (var cell in cellsOfConnection)
             {
-                if (cell.Equals(new Vector2Int((int)cellPos.x, (int)cellPos.y)))
+                if (cell.Equals(cellPos))
                 {
                     foundMiddlePiece = true;
+                    newConnectionStartToBlockade.Add(cell);
+                    newConnectionBlockadeToFinish.Add(cell);
                     continue;
                 }
                 
@@ -424,16 +438,20 @@ namespace Backend.Simulation.World
             }
             if (newConnectionBlockadeToFinish.Count == 0 || newConnectionStartToBlockade.Count == 0)
             {
+                Debug.Log("Could not create blockade connections because no cells found for either first or second connection.");
                 return null;
             }
-
-            if (!_simulationStorage.unlink(connection.guid))
+            
+            
+            
+            if (!_simulationStorage.UnlinkNodes(connection.guid, true))
             {
+                Debug.Log("Could not unlink connection with guid: "+connection.guid);
                 return null;
             }
             _simulationStorage.Frontend.DeleteConnection(connection.guid);
 
-            BlockadeNodeInstance newNode = new BlockadeNodeInstance(cellPos);
+            BlockadeNodeInstance newNode = new(cellPos);
             newNode.currentTimeSlice = this;
             TimeSliceGrid.Add(newNode);
             addNodeToMapping(newNode);
