@@ -49,8 +49,8 @@ namespace Backend.Simulation.Energy
 
             progressOnEdge = 0;
             _travelledOnEdge = 0;
-            _currentEdgeIndex++;
-            if (_currentEdgeIndex >= Steps.Count)
+
+            if (_currentEdgeIndex+1 >= Steps.Count)
             {
                 Delivered = true;
                 Destination.onReceiveEnergyPacket(tick, this, storage);
@@ -62,6 +62,8 @@ namespace Backend.Simulation.Energy
                     Delivered = true;
                 }
             }
+            
+            _currentEdgeIndex++;
         }
 
         public EnergyStep currentStep()
