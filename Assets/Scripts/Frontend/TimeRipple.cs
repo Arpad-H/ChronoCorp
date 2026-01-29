@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Backend.Simulation.World;
 using NodeBase;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -249,7 +250,7 @@ public class TimeRipple : NodeVisual
     }
     public float getEnergyConsumptionPerSecond()
     {
-        energyConsumptionPerSecond = BalanceProvider.Balance.nodeHealthDrain/(BalanceProvider.Balance.nodeDrainHealthEveryNTicks/60f);
+        energyConsumptionPerSecond = BalanceProvider.Balance.nodeHealthDrain/(BalanceProvider.Balance.nodeDrainHealthEveryNTicks * 1f/SimulationStorage.TICKS_PER_SECOND);
         return energyConsumptionPerSecond;
     }
 }
