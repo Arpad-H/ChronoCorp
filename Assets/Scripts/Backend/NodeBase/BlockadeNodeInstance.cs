@@ -26,7 +26,7 @@ namespace NodeBase
         {
             energyConsumed += 1;
             storage.Frontend.onNodeHealthChange(guid, 0, energyToBeDestroyed, energyConsumed);
-            Debug.Log("Blockade received energy ");
+            Debug.Log("Blockade received energy");
             if (energyConsumed >= energyToBeDestroyed)
             {
                 storage.deleteNode(guid);
@@ -37,6 +37,7 @@ namespace NodeBase
         public override bool onRelayEnergyPacket(long tickCount, EnergyPacket energyPacket, SimulationStorage storage)
         {
             Debug.Log("Blockade blocked an energy packet");
+            onReceiveEnergyPacket(tickCount, energyPacket, storage);
             return false;
         }
 
