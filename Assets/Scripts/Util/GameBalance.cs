@@ -119,6 +119,7 @@ namespace Util
         public int stabilityMinValue;
         public float stabilityDecreaseValue;
         public int stabilityDecreaseTicks;
+        public int stabilityDecreaseMaxPerTick;
 
         [Tooltip("Index matches StabilityMalusType enum order. Index 0 -> MALUS1, index 1 -> MALUS2, etc.")]
         [Range(0f, 1f)]

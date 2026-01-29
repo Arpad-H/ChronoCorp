@@ -57,11 +57,19 @@ namespace Backend.Simulation.World
 
         public void decreaseStability(float value, SimulationStorage storage)
         {
+            if (value > BalanceProvider.Balance.stabilityDecreaseMaxPerTick)
+            {
+                value = BalanceProvider.Balance.stabilityDecreaseMaxPerTick;
+            }
             updateStability(currentValue - value, storage);
         }
 
         public void increaseStability(float value, SimulationStorage storage)
         {
+            if (value > BalanceProvider.Balance.stabilityDecreaseMaxPerTick)
+            {
+                value = BalanceProvider.Balance.stabilityDecreaseMaxPerTick;
+            }
             updateStability(currentValue + value, storage);
         }
 

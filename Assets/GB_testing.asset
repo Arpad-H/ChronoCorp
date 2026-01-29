@@ -42,6 +42,7 @@ MonoBehaviour:
   stabilityMinValue: 0
   stabilityDecreaseValue: 1
   stabilityDecreaseTicks: 50
+  stabilityDecreaseMaxPerTick: 10
   malusThresholds:
   - 0.75
   - 0.5
