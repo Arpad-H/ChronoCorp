@@ -57,9 +57,8 @@ namespace Backend.Simulation.Energy
             }
             else
             {
-                if (!currentStep().getEnd().onRelayEnergyPacket(tick, this, storage))
+                if (!currentStep().getStart().onRelayEnergyPacket(tick, this, storage) || !currentStep().getEnd().onRelayEnergyPacket(tick, this, storage))
                 {
-                    this._currentEdgeIndex = Steps.Count;
                     Delivered = true;
                 }
             }
