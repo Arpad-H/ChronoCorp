@@ -50,7 +50,7 @@ namespace Backend.Simulation.Energy
             progressOnEdge = 0;
             _travelledOnEdge = 0;
             _currentEdgeIndex++;
-            if (_currentEdgeIndex >= Steps.Count || currentStep().getEnd() is BlockadeNodeInstance blockadeNodeInstance)
+            if (_currentEdgeIndex >= Steps.Count)
             {
                 Delivered = true;
                 Destination.onReceiveEnergyPacket(tick, this, storage);
