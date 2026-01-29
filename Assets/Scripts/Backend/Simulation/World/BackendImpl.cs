@@ -45,80 +45,10 @@ namespace Backend.Simulation.World
             Guid a,
             Guid b,
             Vector2Int[] cellsOfConnection,
-            int bridgesBuilt)
+            int bridgesBuilt
+            )
         {
-            var sliceA = getTimeSliceOfNodeByGuid(a);
-            var sliceB = getTimeSliceOfNodeByGuid(b);
-            //TODO connecting generator and node in different slices only works node -> generator not generator -> node
-            if (sliceA == null)
-            {
-                Debug.Log("Error while linking nodes -> Slice A could not be found");
-                return null;
-            }
-            if (sliceB == null)
-            {
-                Debug.Log("Error while linking nodes -> Slice B could not be found");
-                return null;
-            }
-
-            // Only check for occupied cells if we stay in one slice. Otherwise, this should not be used.
-            if (sliceA.Equals(sliceB))
-            {
-                var grid = sliceA.TimeSliceGrid;
-                int numOfConnectionsCrossed = 0;
-                foreach (var cell in cellsOfConnection)
-                {
-                    if (grid.IsCellOccupied(cell, out var node, out var connection))
-                    {
-                        if (node != null && (!node.guid.Equals(a) && !node.guid.Equals(b)))
-                        {
-                            Debug.Log("Cannot link because there is a node in its path in slices: "+sliceA.SliceNumber+"-"+sliceB.SliceNumber);
-                            return null;
-                        }
-
-                        if (connection != null)
-                        {
-                            numOfConnectionsCrossed++;
-                            if (numOfConnectionsCrossed > bridgesBuilt)
-                            {
-                                Debug.Log("Cannot link because there are not enough bridges built to cross connections in slices: "+sliceA.SliceNumber+"-"+sliceB.SliceNumber);
-                                return null;
-                            }
-                        }
-                    }
-                }
-            }
-            
-            var connectionId = _storage.link(a, b, cellsOfConnection);
-            if (connectionId == null)
-            {
-                Debug.Log("Connection could not be created!");
-                return null;
-            }
-            Debug.Log("Linked nodes -> cells: "+string.Join(",", cellsOfConnection.Select(x => x.ToString()).ToArray()));
-
-            var connectionObj = _storage.guidToConnections[(Guid)connectionId];
-
-            if (sliceA.Equals(sliceB))
-            {
-                var grid = sliceA.TimeSliceGrid;
-                bool reserved = grid.TryAddConnectionCells(
-                    connectionObj,
-                    cellsOfConnection,
-                    _storage.guidToNodesMapping[a],
-                    _storage.guidToNodesMapping[b],
-                    bridgesBuilt
-                );
-
-                if (!reserved)
-                {
-                    _storage.unlink((Guid)connectionId);
-                    return null;
-                }
-            }
-            
-            _storage.recalculatePaths();
-            return connectionObj.guid;
+            return _storage.LinkNodes(a, b, cellsOfConnection, bridgesBuilt);
         }
 
         public bool upgradeGenerator(Guid generatorGUID)

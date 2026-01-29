@@ -43,6 +43,86 @@ namespace Backend.Simulation.World
             maxSpawnIntervalSeconds = 15.0f
         };
 
+       public Guid? LinkNodes(
+            Guid a,
+            Guid b,
+            Vector2Int[] cellsOfConnection,
+            int bridgesBuilt
+            )
+        {
+            var sliceA = getTimeSliceOfNodeByGuid(a);
+            var sliceB = getTimeSliceOfNodeByGuid(b);
+            if (sliceA == null)
+            {
+                Debug.Log("Error while linking nodes -> Slice A could not be found");
+                return null;
+            }
+            if (sliceB == null)
+            {
+                Debug.Log("Error while linking nodes -> Slice B could not be found");
+                return null;
+            }
+
+            // Only check for occupied cells if we stay in one slice. Otherwise, this should not be used.
+            if (sliceA.Equals(sliceB))
+            {
+                var grid = sliceA.TimeSliceGrid;
+                int numOfConnectionsCrossed = 0;
+                foreach (var cell in cellsOfConnection)
+                {
+                    if (grid.IsCellOccupied(cell, out var node, out var connection))
+                    {
+                        if (node != null && (!node.guid.Equals(a) && !node.guid.Equals(b)))
+                        {
+                            Debug.Log("Cannot link because there is a node in its path in slices: "+sliceA.SliceNumber+"-"+sliceB.SliceNumber);
+                            return null;
+                        }
+
+                        if (connection != null)
+                        {
+                            numOfConnectionsCrossed++;
+                            if (numOfConnectionsCrossed > bridgesBuilt)
+                            {
+                                Debug.Log("Cannot link because there are not enough bridges built to cross connections in slices: "+sliceA.SliceNumber+"-"+sliceB.SliceNumber);
+                                return null;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            var connectionId = linkInternally(a, b, cellsOfConnection);
+            if (connectionId == null)
+            {
+                Debug.Log("Connection could not be created!");
+                return null;
+            }
+            Debug.Log("Linked nodes -> cells: "+string.Join(",", cellsOfConnection.Select(x => x.ToString()).ToArray()));
+
+            var connectionObj = guidToConnections[(Guid)connectionId];
+
+            if (sliceA.Equals(sliceB))
+            {
+                var grid = sliceA.TimeSliceGrid;
+                bool reserved = grid.TryAddConnectionCells(
+                    connectionObj,
+                    cellsOfConnection,
+                    guidToNodesMapping[a],
+                    guidToNodesMapping[b],
+                    bridgesBuilt
+                );
+
+                if (!reserved)
+                {
+                    unlinkInternally((Guid)connectionId);
+                    return null;
+                }
+            }
+            
+            recalculatePaths();
+            return connectionObj.guid;
+        }
+
         public SimulationStorage(IFrontend frontend)
         {
             Frontend = frontend;
@@ -109,7 +189,7 @@ namespace Backend.Simulation.World
                 slice.TimeSliceGrid.RemoveConnectionCells(connectionId);
             }
 
-            if (unlink(connectionId))
+            if (unlinkInternally(connectionId))
             {
                 if(recalculatePaths) this.recalculatePaths();
                 return true;
@@ -187,7 +267,7 @@ namespace Backend.Simulation.World
             }
         }
 
-        public Guid? link(Guid idNode1, Guid idNode2, Vector2Int[] cellsOfConnection)
+        private Guid? linkInternally(Guid idNode1, Guid idNode2, Vector2Int[] cellsOfConnection)
         {
             var canPlace = inventory.canPlaceNormalConnection();
             if (!canPlace)
@@ -271,7 +351,7 @@ namespace Backend.Simulation.World
             return null;
         }
 
-        public bool unlink(Guid connectionId)
+        private bool unlinkInternally(Guid connectionId)
         {
             var foundConnection = guidToConnections[connectionId];
             if (foundConnection == null) return false;
@@ -410,8 +490,8 @@ namespace Backend.Simulation.World
             newNode.currentTimeSlice = this;
             TimeSliceGrid.Add(newNode);
             addNodeToMapping(newNode);
-            var startConID = _simulationStorage.link(nodeStart.guid, newNode.guid, newConnectionStartToBlockade.ToArray());
-            var endConID = _simulationStorage.link(newNode.guid, nodeFinish.guid, newConnectionBlockadeToFinish.ToArray());
+            var startConID = _simulationStorage.LinkNodes(nodeStart.guid, newNode.guid, newConnectionStartToBlockade.ToArray(), 0);
+            var endConID = _simulationStorage.LinkNodes(newNode.guid, nodeFinish.guid, newConnectionBlockadeToFinish.ToArray(), 0);
 
             if (startConID == null || endConID == null)
             {
