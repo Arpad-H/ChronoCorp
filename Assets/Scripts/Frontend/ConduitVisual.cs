@@ -385,7 +385,7 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
 
     public void ColorSplineIfValid()
     {
-    //    if (!targetNodeVisual) return;
+        if (!sameLayerConnection) return;
         Vector2Int[] cells = GetCellsOfConnection();
         int newLength = cells.Length - 1;
         Vector2Int[] trimmedCells = new Vector2Int[newLength];
@@ -456,19 +456,21 @@ pipeMaterial.SetFloatArray("_BulgePositions", positions);
         List<Vector2Int> cells = new List<Vector2Int>();
         if (!sameLayerConnection)
         {
+            if(!targetNodeVisual)  return cells.ToArray();
             Vector3 startPos = path[0];
-            Vector3 endPos = path[path.Count - 1];
             Vector3 localStartPos = planeA.WorldToLocal(startPos);
             Vector2 startCell = planeA.ToPlaneLocal(localStartPos);
-            Vector3 localEndPos = planeB.WorldToLocal(endPos);
-            Vector2 endCell = planeB.ToPlaneLocal(localEndPos);
             localStartPos -= new Vector3(0.5f, 0.5f, 0); // Adjust for cell center
-            localEndPos -= new Vector3(0.5f, 0.5f, 0); // Adjust for cell center
             int startX = Mathf.RoundToInt(localStartPos.x);
             int startY = Mathf.RoundToInt(localStartPos.y);
+            cells.Add(new Vector2Int(startX, startY));
+            if(!targetNodeVisual)  return cells.ToArray();
+            Vector3 endPos = path[path.Count - 1];
+            Vector3 localEndPos = planeB.WorldToLocal(endPos);
+            Vector2 endCell = planeB.ToPlaneLocal(localEndPos);
+            localEndPos -= new Vector3(0.5f, 0.5f, 0); // Adjust for cell center
             int endX = Mathf.RoundToInt(localEndPos.x);
             int endY = Mathf.RoundToInt(localEndPos.y);
-            cells.Add(new Vector2Int(startX, startY));
             cells.Add(new Vector2Int(endX, endY));
             return cells.ToArray();
         }
