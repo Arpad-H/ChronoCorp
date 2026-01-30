@@ -1075,6 +1075,62 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 604185045}
     - target: {fileID: 6246356308269687659, guid: bc897573d02b5ee49a87d7ea508e1ce4, type: 3}
+      propertyPath: dialogueLines.Array.size
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 6246356308269687659, guid: bc897573d02b5ee49a87d7ea508e1ce4, type: 3}
+      propertyPath: dialogueLines.Array.data[0].text
+      value: "Ah! New hire detected. Good. Welcome to Chrono Corp \u2014 Time Travel.
+        But Profitable."
+      objectReference: {fileID: 0}
+    - target: {fileID: 6246356308269687659, guid: bc897573d02b5ee49a87d7ea508e1ce4, type: 3}
+      propertyPath: dialogueLines.Array.data[1].text
+      value: 'I am your Regional Temporal Director.
+
+        (That means boss. Very
+        big boss.)'
+      objectReference: {fileID: 0}
+    - target: {fileID: 6246356308269687659, guid: bc897573d02b5ee49a87d7ea508e1ce4, type: 3}
+      propertyPath: dialogueLines.Array.data[2].text
+      value: 'Your job is easy. You see time ripples?
+
+        You connect them.
+
+        Big
+        network. Strong network. Tourists flow. Money flow.'
+      objectReference: {fileID: 0}
+    - target: {fileID: 6246356308269687659, guid: bc897573d02b5ee49a87d7ea508e1ce4, type: 3}
+      propertyPath: dialogueLines.Array.data[3].text
+      value: 'We send tourists to dinosaurs.
+
+        They buy souvenir.
+
+        Dinosaur
+        stays dead.
+
+        Everyone wins.'
+      objectReference: {fileID: 0}
+    - target: {fileID: 6246356308269687659, guid: bc897573d02b5ee49a87d7ea508e1ce4, type: 3}
+      propertyPath: dialogueLines.Array.data[4].text
+      value: 'Do not worry about paradoxes.
+
+        Paradox is just timeline doing
+        little scream.
+
+        HR says ignore.'
+      objectReference: {fileID: 0}
+    - target: {fileID: 6246356308269687659, guid: bc897573d02b5ee49a87d7ea508e1ce4, type: 3}
+      propertyPath: dialogueLines.Array.data[5].text
+      value: 'Timeline is premium experience.
+
+        Keep it flowing. Keep it selling.
+
+        Now
+        go.
+
+        Chrono Corp thanks you for your service.'
+      objectReference: {fileID: 0}
+    - target: {fileID: 6246356308269687659, guid: bc897573d02b5ee49a87d7ea508e1ce4, type: 3}
       propertyPath: dialogueLines.Array.data[0].image
       value: 
       objectReference: {fileID: 21300000, guid: c72e4e7cb982e3847b4d382c477261f5, type: 3}
@@ -1085,15 +1141,19 @@ PrefabInstance:
     - target: {fileID: 6246356308269687659, guid: bc897573d02b5ee49a87d7ea508e1ce4, type: 3}
       propertyPath: dialogueLines.Array.data[2].image
       value: 
-      objectReference: {fileID: 21300000, guid: 3e11f50a0e9779b4db297336315ade4c, type: 3}
+      objectReference: {fileID: 21300000, guid: 023a339d920c11e429f427c2ad424209, type: 3}
     - target: {fileID: 6246356308269687659, guid: bc897573d02b5ee49a87d7ea508e1ce4, type: 3}
       propertyPath: dialogueLines.Array.data[3].image
       value: 
-      objectReference: {fileID: 21300000, guid: 023a339d920c11e429f427c2ad424209, type: 3}
+      objectReference: {fileID: 21300000, guid: c72e4e7cb982e3847b4d382c477261f5, type: 3}
     - target: {fileID: 6246356308269687659, guid: bc897573d02b5ee49a87d7ea508e1ce4, type: 3}
       propertyPath: dialogueLines.Array.data[4].image
       value: 
       objectReference: {fileID: 21300000, guid: 3e11f50a0e9779b4db297336315ade4c, type: 3}
+    - target: {fileID: 6246356308269687659, guid: bc897573d02b5ee49a87d7ea508e1ce4, type: 3}
+      propertyPath: dialogueLines.Array.data[5].image
+      value: 
+      objectReference: {fileID: 21300000, guid: 023a339d920c11e429f427c2ad424209, type: 3}
     - target: {fileID: 7391112448284197004, guid: bc897573d02b5ee49a87d7ea508e1ce4, type: 3}
       propertyPath: m_Name
       value: DialogueIntro
