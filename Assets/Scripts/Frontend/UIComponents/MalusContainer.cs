@@ -52,7 +52,7 @@ public class MalusContainer : MonoBehaviour
             return 3;
         if (stability < malusConfig[0])
             return 2;
-        if (stability < 1f)
+        if (stability <= 1f)
             return 1;
 
         return 0;
