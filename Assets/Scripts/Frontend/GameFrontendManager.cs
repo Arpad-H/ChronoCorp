@@ -31,7 +31,7 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
     
     public static GameFrontendManager Instance;
     public CameraController cameraController;
-   
+   public CRTController crtController;
 
     [Header("Layer Management")] public TemporalLayerStack temporalLayerStack;
     public float layerDuplicationTime = 60f;
@@ -46,7 +46,7 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
     public StabilityBar stabilityBar;
     [SerializeField] private GameState gameState = GameState.PAUSED;
     
-private Coroutine pauseGameCoroutine;
+    private Coroutine pauseGameCoroutine;
     private void Awake()
     {
         if (Instance != null && Instance != this) {
@@ -67,6 +67,13 @@ private Coroutine pauseGameCoroutine;
     private void Start()
     {
         InputManager.Instance.OnSpacebarPress += UnPauseGame;
+       StartCoroutine(TurnCRTOn());
+    }
+
+    IEnumerator TurnCRTOn()
+    {
+        yield return new WaitForSeconds(1f);
+        crtController.TurnOn(0.5f);
     }
 
     private void FixedUpdate()

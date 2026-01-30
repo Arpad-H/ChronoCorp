@@ -17,7 +17,11 @@ public class DialogueIntro : MonoBehaviour
 
     [Header("UI References")] public TextMeshProUGUI dialogueText;
     public Image dialogueImage;
-
+    public GameObject dialogueBox;
+    public GameObject dialoguebg;
+    public Animation anim;
+    public Animation anim2;
+    public CanvasGroup frameCanvasGroup;
     [Header("Typing Settings")] public float typingSpeed = 0.04f;
 
     private int currentLineIndex = 0;
@@ -85,8 +89,20 @@ public class DialogueIntro : MonoBehaviour
 
     private void EndDialogue()
     {
-        
+        dialogueBox.SetActive(false);
+       
+        anim.Play("anim");
+        anim2.Play("anim2");
+        frameCanvasGroup.alpha = 1;
+        StartCoroutine(WaitForSeconds(3f));
         //load scene
+     
+    }
+    IEnumerator WaitForSeconds(float waitTime)
+    {
+        yield return new WaitForSeconds(waitTime/2);
+        dialoguebg.SetActive(false);
+        yield return new WaitForSeconds(waitTime/2);
         UnityEngine.SceneManagement.SceneManager.LoadScene("GameScene");
     }
 }

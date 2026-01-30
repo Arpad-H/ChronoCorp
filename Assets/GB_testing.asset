@@ -20,7 +20,7 @@ MonoBehaviour:
   nodeMinHp: 0
   nodeHealthDrain: 5
   nodeDrainHealthEveryNTicks: 60
-  nodeSpawnIntervalPerSecond: 25
+  nodeSpawnIntervalPerSecond: 15
   layerModifierToNodeSpawnInterval: 2
   nodeBlinkThreshhold: 0.25
   blackHoleStabilityDrainRate: 1
