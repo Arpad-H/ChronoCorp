@@ -35,9 +35,10 @@ namespace Util
         MalusThreshold2, 
         
         // Upgrade Cards Settings
-        CardsShownPerUpgradeChoice
+        CardsShownPerUpgradeChoice,
 
-        
+        HpThresholdForScoreBonus,
+        PauseDurationSeconds
     }
     
     [CreateAssetMenu(menuName = "Game/Balance")]
