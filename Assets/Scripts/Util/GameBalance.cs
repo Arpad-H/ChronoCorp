@@ -173,9 +173,9 @@ namespace Util
             if (field != null)
             {
                 if (field.FieldType == typeof(int))
-                    field.SetValue(this, (int)(int)field.GetValue(this) * factor);
+                    field.SetValue(this, (int)((int)field.GetValue(this) * factor));
                 else if (field.FieldType == typeof(float))
-                    field.SetValue(this, (float)field.GetValue(this) * factor);
+                    field.SetValue(this,(float)field.GetValue(this) * factor);
             }
         }
     }

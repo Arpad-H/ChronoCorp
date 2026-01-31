@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f153cb32e9694d9c8e166139a398a9ca, type: 3}
-  m_Name: Condensed Energy 1
+  m_Name: Very Condensed Energy
   m_EditorClassIdentifier: 
   upgradeName: Very Condensed Energy
   description: Energy packets contain 25% more energy

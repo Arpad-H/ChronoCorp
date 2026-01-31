@@ -4334,7 +4334,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf235471523944b0b0424aea0ea51e6f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  balance: {fileID: 11400000, guid: 07dc378888a883544bd9708cd8e2880c, type: 2}
+  balance: {fileID: 11400000, guid: 7793479429c312246bee1b6574adf352, type: 2}
 --- !u!1 &1236028378
 GameObject:
   m_ObjectHideFlags: 0
