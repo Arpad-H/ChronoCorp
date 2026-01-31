@@ -38,7 +38,7 @@ MonoBehaviour:
   pauseDurationSeconds: 60
   initialUpgradeCardCount: 10
   initialBridgeCount: 2
-  stabilityMaxValue: 100
+  stabilityMaxValue: 1
   stabilityMinValue: 0
   stabilityDecreaseValue: 1
   stabilityDecreaseTicks: 50

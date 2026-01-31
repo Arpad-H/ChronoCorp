@@ -258,15 +258,30 @@ public class TemporalLayerStack : MonoBehaviour
         CoordinatePlane obj;
 
         if (Application.isPlaying)
-            obj = Instantiate(framePrefab, pos, rot, transform).GetComponent<CoordinatePlane>();
-        else
-            obj = ((GameObject)UnityEditor.PrefabUtility.InstantiatePrefab(framePrefab, transform))
+        {
+            obj = Instantiate(framePrefab, pos, rot, transform)
                 .GetComponent<CoordinatePlane>();
+        }
+#if UNITY_EDITOR
+        else
+        {
+            obj = ((GameObject)PrefabUtility.InstantiatePrefab(framePrefab, transform))
+                .GetComponent<CoordinatePlane>();
+        }
+#else
+    else
+    {
+        // This should never be hit in a build, but keeps compiler happy
+        obj = Instantiate(framePrefab, pos, rot, transform)
+            .GetComponent<CoordinatePlane>();
+    }
+#endif
 
         obj.transform.SetLocalPositionAndRotation(pos, rot);
         obj.name = objName;
         return obj;
     }
+
 
     public void UpdateCoverFlowFrames(float scrollDelta)
     {
