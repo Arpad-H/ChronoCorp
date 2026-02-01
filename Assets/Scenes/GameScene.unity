@@ -5146,7 +5146,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 11, y: -17.000244}
+  m_AnchoredPosition: {x: 11, y: -17.000305}
   m_SizeDelta: {x: 22, y: 86.288}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1586017169
@@ -6502,7 +6502,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   content: "Failsafes: Activate below a certain stability Level. \nProvide a chance
-    to recover your Stability at the expense of points"
+    to recover your Stability at the expense of points\nLevel 1:  Time Ripples loose
+    HP slower\nLevel 2:  Spawn interval increases\nLecel 3:  Curb stability fall"
   delay: 0.5
 --- !u!114 &2008544250
 MonoBehaviour:

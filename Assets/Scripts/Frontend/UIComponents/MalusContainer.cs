@@ -96,6 +96,6 @@ public class MalusContainer : MonoBehaviour
         else if (stability < malusConfig[0])
             multiplier = BalanceProvider.Balance.scoreBonusMultipliersPerHpThreshold[0];
 
-         BalanceProvider.Balance.scoreInterval = (int)(BalanceProvider.Balance.baseScorePerInterval*multiplier);
+         BalanceProvider.Balance.scorePerInterval = (int)(BalanceProvider.Balance.baseScorePerInterval*multiplier);
     }
 }

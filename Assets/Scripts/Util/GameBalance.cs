@@ -73,7 +73,7 @@ namespace Util
         [Tooltip("HP percent Threshold below which node starts to blink")]
         public float nodeBlinkThreshhold;
 
-        [Tooltip("How much stability this blackhole drains per tick")]
+        [Tooltip("How much stability this blackhole drains per interval")]
         public int blackHoleStabilityDrainRate;
 
         [Tooltip("every n ticks, black hole drains stability")]

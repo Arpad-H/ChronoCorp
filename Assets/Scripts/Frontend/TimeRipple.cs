@@ -177,7 +177,7 @@ public class TimeRipple : NodeVisual
     private void EvaluateScore(float currentValue) 
     {
         bool isAboveThreshold = currentValue > BalanceProvider.Balance.hpThresholdForScoreBonus;
-        if (isAboveThreshold && scoreRoutine == null) {
+        if (isAboveThreshold && scoreRoutine == null && isEnergySupplied) {
             scoreRoutine = StartCoroutine(ScoreBonusRoutine());
         } 
         else if (!isAboveThreshold && scoreRoutine != null) {

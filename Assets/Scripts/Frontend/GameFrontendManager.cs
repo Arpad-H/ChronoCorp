@@ -381,6 +381,7 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
 
     public void AddScore(int scorePerInterval)
     {
+        if (gameState != GameState.PLAYING) return;
         UIManager.Instance.AddScore(scorePerInterval);
     }
 }

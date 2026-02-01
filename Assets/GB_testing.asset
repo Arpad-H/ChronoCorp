@@ -19,7 +19,7 @@ MonoBehaviour:
   nodeMaxHp: 100
   nodeMinHp: 0
   nodeHealthDrain: 5
-  nodeDrainHealthEveryNTicks: 60
+  nodeDrainHealthEveryNTicks: 50
   nodeSpawnIntervalPerSecond: 15
   layerModifierToNodeSpawnInterval: 2
   nodeBlinkThreshhold: 0.25
