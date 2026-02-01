@@ -24,4 +24,4 @@ MonoBehaviour:
       type: {class: MultiplyStatValueEffect, ns: , asm: Assembly-CSharp}
       data:
         stat: 2
-        factor: 0.15
+        factor: 1.15

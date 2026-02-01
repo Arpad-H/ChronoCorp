@@ -40,8 +40,8 @@ MonoBehaviour:
   initialBridgeCount: 2
   stabilityMaxValue: 1000
   stabilityMinValue: 0
-  stabilityDecreaseValue: 10
-  stabilityDecreaseTicks: 250
+  stabilityDecreaseValue: 3
+  stabilityDecreaseTicks: 50
   stabilityDecreaseMaxPerTick: 10
   malusThresholds:
   - 0.75

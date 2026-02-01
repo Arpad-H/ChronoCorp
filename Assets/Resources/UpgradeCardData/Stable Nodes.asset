@@ -24,4 +24,4 @@ MonoBehaviour:
       type: {class: AddValueToStatEffect, ns: , asm: Assembly-CSharp}
       data:
         stat: 19
-        amount: -0.1
+        amount: 0.9

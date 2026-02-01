@@ -155,10 +155,12 @@ namespace Util
             FieldInfo field = typeof(GameBalance).GetField(fieldName, BindingFlags.Public | BindingFlags.Instance  | BindingFlags.IgnoreCase);
             if (field != null)
             {
+                Debug.Log("Stat" + type + " was " + field.GetValue(this));
                 if (field.FieldType == typeof(int))
                     field.SetValue(this, (int)field.GetValue(this) + (int)amount);
                 else if (field.FieldType == typeof(float))
                     field.SetValue(this, (float)field.GetValue(this) + amount);
+                Debug.Log("Stat" + type + " added " + amount + "is now " + field.GetValue(this));
             }
             else
             {
@@ -172,11 +174,14 @@ namespace Util
             FieldInfo field = typeof(GameBalance).GetField(fieldName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
             if (field != null)
             {
+                Debug.Log("Stat" + type + " was " + field.GetValue(this));
                 if (field.FieldType == typeof(int))
                     field.SetValue(this, (int)((int)field.GetValue(this) * factor));
                 else if (field.FieldType == typeof(float))
                     field.SetValue(this,(float)field.GetValue(this) * factor);
+                Debug.Log("Stat" + type + " multiplied by " + factor + "is now " + field.GetValue(this));
             }
+         
         }
     }
 }

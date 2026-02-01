@@ -2745,7 +2745,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 493d6db9f5e31fe428da3cb1273af232, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  content: Drag onto field for a 1 min break
+  content: Drag onto field for a quick break
   delay: 0.5
 --- !u!1 &909495644
 GameObject:
