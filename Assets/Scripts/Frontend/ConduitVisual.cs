@@ -205,6 +205,7 @@ public class ConduitVisual : MonoBehaviour, IPointerClickHandler
 
     public void SetPreviewPosition(Vector3 lineEnd, CoordinatePlane layerB)
     {
+        if (sourceNodeVisual == null) return;
         int layerA = sourceNodeVisual.layerNum;
         Vector3 A = sourceNodeVisual.transform.position;
         Vector3 B = lineEnd;

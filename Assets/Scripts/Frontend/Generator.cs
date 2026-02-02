@@ -38,16 +38,26 @@ public class Generator : NodeVisual
         {
             if (GameFrontendManager.Instance.DestroyNode(backendID))
             {
-                foreach (ConduitVisual conduit in new List<ConduitVisual>(connectedConduits))
-                {
-                    conduit.ConnectedNodeDestroyedConnection(this);
-                }
-                GameFrontendManager.Instance.AddToInventory(InventoryItem.UPGRADE_CARD, generatorTier -1);
-                Destroy(this.gameObject);
+                DeleteGenerator();
                 Destroy(deleteBtn.gameObject);
             }
         });
     }
+
+    private void DeleteGenerator()
+    {
+        foreach (ConduitVisual conduit in new List<ConduitVisual>(connectedConduits))
+        {
+            conduit.ConnectedNodeDestroyedConnection(this);
+        }
+        GameFrontendManager.Instance.AddToInventory(InventoryItem.UPGRADE_CARD, generatorTier -1);
+        Destroy(this.gameObject);
+    }
+    public override void DeleteNodeVisual()
+    {
+        DeleteGenerator();
+    }
+
     protected override void ShowInfoWindow(bool show)
     {
         if (GeneratorInfoWindow.Instance == null) return;

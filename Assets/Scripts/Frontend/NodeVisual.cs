@@ -157,4 +157,8 @@ public class NodeVisual : MonoBehaviour, IPointerClickHandler, IPointerEnterHand
     {
         return connectedConduits.Count;
     }
+    public virtual void DeleteNodeVisual()
+    {
+      
+    }
 }

@@ -253,4 +253,9 @@ public class TimeRipple : NodeVisual
         energyConsumptionPerSecond = BalanceProvider.Balance.nodeHealthDrain/(BalanceProvider.Balance.nodeDrainHealthEveryNTicks * 1f/SimulationStorage.TICKS_PER_SECOND);
         return energyConsumptionPerSecond;
     }
+
+    public override void DeleteNodeVisual()
+    {
+        Destroy(this.gameObject);
+    }
 }

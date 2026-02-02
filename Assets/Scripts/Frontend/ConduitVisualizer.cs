@@ -25,7 +25,7 @@ public class ConduitVisualizer : MonoBehaviour
             OnGet,
             OnRelease,
             OnDestroyItem,
-            true, // helps catch double-release mistakes
+            false, 
             10,
             100
         );

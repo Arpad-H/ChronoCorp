@@ -41,7 +41,10 @@ public class Blockade : NodeVisual
         isDirectionOccupied[dir] = conduitVisual;
         connectedConduits.Add(conduitVisual);
     }
-
+    public override void DeleteNodeVisual()
+    {
+      Destroy(this.gameObject);
+    }
     private void OnDestroy()
     {
         foreach (var conduit in connectedConduits.ToList())
