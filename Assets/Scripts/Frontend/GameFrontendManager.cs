@@ -28,6 +28,11 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
     public event Action TimeRipplePlaced;
     public event Action GeneratorPlaced;
     public event Action ScoreUpdated;
+    public event Action GameStarted;
+    
+    public event Action ExpansionTutorial;
+   
+    
     
     public static GameFrontendManager Instance;
     public CameraController cameraController;
@@ -44,8 +49,8 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
     private long fixedTickCount;
 
     public StabilityBar stabilityBar;
-    [SerializeField] private GameState gameState = GameState.PAUSED;
-    
+    private GameState gameState = GameState.PLAYING;
+    public bool showTutorial = true;
     private Coroutine pauseGameCoroutine;
     private void Awake()
     {
@@ -74,6 +79,22 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
     {
         yield return new WaitForSeconds(1f);
         crtController.TurnOn(0.5f);
+        yield return new WaitForSeconds(1f);
+       StartGameSequence();
+      
+    }
+
+    private void StartGameSequence()
+    {
+        if (showTutorial)
+        {
+            GameStarted?.Invoke();
+        }
+        else
+        {
+            UIManager.Instance.DisableTutorial();
+            EndTutorial();
+        }
     }
 
     private void FixedUpdate()
@@ -173,14 +194,34 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
 
     public bool AddTimeSlice(int sliceNum)
     {
+        EndTutorialWhenSafe(sliceNum);
         CoordinatePlane newLayer = temporalLayerStack.AddNewFrame(sliceNum);
         if (newLayer && sliceNum != 0)
         {
-            UIManager.Instance.ShowUpgradeChoiceMenu();
+         //   UIManager.Instance.ShowUpgradeChoiceMenu();
             BalanceProvider.Balance.nodeSpawnIntervalPerSecond += BalanceProvider.Balance.layerModifierToNodeSpawnInterval;
             return true;
         }
         return false;
+    }
+
+    private void EndTutorialWhenSafe(int sliceNum)
+    {
+        if (sliceNum != 1) return;
+        StartCoroutine(EndTutorialWhenSafeRoutine(sliceNum));
+    }
+    
+    private IEnumerator EndTutorialWhenSafeRoutine(int sliceNum)
+    {
+        while (true)
+        {
+            if (gameState == GameState.PLAYING)
+            {
+                ExpansionTutorial.Invoke();
+                yield break; 
+            }
+            yield return new WaitForSeconds(1f);
+        }
     }
 
     public void onNodeHealthChange(Guid id, int minValue, int maxValue, int currentValue)
@@ -340,6 +381,7 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
 
     public void UpgradeCardSelected(UpgradeCardData upgradeCard)
     {
+       
         CardEffectEvaluator.ApplyEffect(upgradeCard);
     }
 
@@ -384,4 +426,6 @@ public class GameFrontendManager : MonoBehaviour, IFrontend
         if (gameState != GameState.PLAYING) return;
         UIManager.Instance.AddScore(scorePerInterval);
     }
+
+  
 }

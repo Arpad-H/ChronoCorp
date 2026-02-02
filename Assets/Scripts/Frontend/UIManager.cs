@@ -22,6 +22,7 @@ public class UIManager : MonoBehaviour
     public GameObject cardChoiceMenu;
     private UpgradeCardData[] allUpgrades;
     public ScoreDisplay scoreDisplay;
+    public TutorialOrchestrator tutorialOrchestrator;
 private Coroutine blinkCoroutine;
 private Coroutine countdownCoroutine;
 float remainingTime;
@@ -180,4 +181,9 @@ float remainingTime;
         }
     }
 
+    public void DisableTutorial()
+    {
+        Destroy(tutorialOrchestrator.presenter.gameObject);
+        tutorialOrchestrator = null;
+    }
 }

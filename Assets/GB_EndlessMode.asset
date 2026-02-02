@@ -20,29 +20,29 @@ MonoBehaviour:
   nodeMinHp: 0
   nodeHealthDrain: 5
   nodeDrainHealthEveryNTicks: 50
-  nodeSpawnIntervalPerSecond: 20
+  nodeSpawnIntervalPerSecond: 16
   layerModifierToNodeSpawnInterval: 2
   nodeBlinkThreshhold: 0.25
   blackHoleStabilityDrainRate: 1
   blackHoleDrainEveryNTicks: 200
   blackHoleEnergyPacketConsumeAmount: 50
   blockadeEnergyPacketConsumeAmount: 50
-  baseStabilityDecreasePerNode: 0
+  baseStabilityDecreasePerNode: 4
   nodeStableThresholdPercentage: 0.5
   layerDuplicationTime: 3000
   maxLayerCount: 4
   layerGridCellCount: {x: 16, y: 9}
   cellSize: 1
-  initialGeneratorCount: 4
+  initialGeneratorCount: 3
   initialPausePowerupCount: 0
   pauseDurationSeconds: 30
-  initialUpgradeCardCount: 3
+  initialUpgradeCardCount: 1
   initialBridgeCount: 2
-  stabilityMaxValue: 1000
+  stabilityMaxValue: 500
   stabilityMinValue: 0
-  stabilityDecreaseValue: 3
-  stabilityDecreaseTicks: 50
-  stabilityDecreaseMaxPerTick: 10
+  stabilityDecreaseValue: 9
+  stabilityDecreaseTicks: 150
+  stabilityDecreaseMaxPerTick: 30
   malusThresholds:
   - 0.75
   - 0.5
@@ -51,10 +51,10 @@ MonoBehaviour:
   cameraPanSpeed: 0.03
   spiralGridminMaxCameraY: {x: 2, y: 15}
   cardsShownPerUpgradeChoice: 3
-  baseScorePerInterval: 5
+  baseScorePerInterval: 1
   scorePerInterval: 5
   scoreInterval: 5
-  startTargetScore: 50
+  startTargetScore: 20
   hpThresholdForScoreBonus: 0.8
   targetScoreMultiplierAfterCashIn: 0.5
   scoreBonusMultipliersPerHpThreshold:

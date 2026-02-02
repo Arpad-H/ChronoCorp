@@ -1,4 +1,6 @@
 using System.Collections;
+using System.Collections.Generic;
+using NUnit.Framework;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,7 +17,8 @@ public class TutorialScreen : MonoBehaviour
 
     [Header("Tutorial Data")]
     public TutorialStep[] steps;
-
+    private int[] currentSequence;   
+    private int currentSequencePos = 0;   
     [Header("UI References")]
     public TextMeshProUGUI tutorialText;
     public GameObject crtTextHolder;
@@ -32,7 +35,7 @@ public class TutorialScreen : MonoBehaviour
     private bool isMoving = false; // Track movement state
     private Coroutine typingCoroutine;
     private Coroutine movementCoroutine;
-
+    public bool end = false;
     void Start()
     {
         
@@ -129,26 +132,57 @@ public class TutorialScreen : MonoBehaviour
         }
         else
         {
-            this.gameObject.SetActive(false);
-            crtTextHolder.SetActive(false);
-            // currentStepIndex++;
-            // if (currentStepIndex < steps.Length) StartStep();
-            // else EndTutorial();
+            AdvanceSequenceOrClose();
         }
     }
 
     private void EndTutorial()
     {
-       GameFrontendManager.Instance.EndTutorial();
+        GameFrontendManager.Instance.EndTutorial();
         Destroy(this.gameObject);
         Destroy(crtTextHolder);
     }
 
     public void ShowStep(TutorialOrchestrator.TutorialStep step)
     {
+        ShowSteps(new List<TutorialOrchestrator.TutorialStep> { step });
+    }
+    public void ShowSteps(List<TutorialOrchestrator.TutorialStep> group)
+    {
+        GameFrontendManager.Instance.SetGameState(GameFrontendManager.GameState.PAUSED);
         this.gameObject.SetActive(true);
         crtTextHolder.SetActive(true);
-        currentStepIndex = (int)step;
+
+        // Convert orchestrator enum steps to indices into steps[]
+        currentSequence = new int[group.Count];
+        for (int i = 0; i < group.Count; i++)
+            currentSequence[i] = (int)group[i];
+
+        currentSequencePos = 0;
+        StartCurrentInSequence();
+    }
+    private void StartCurrentInSequence()
+    {
+        if (currentSequence == null || currentSequence.Length == 0)
+            return;
+
+        currentStepIndex = currentSequence[currentSequencePos];
         StartStep();
+    }
+    private void AdvanceSequenceOrClose()
+    {
+        currentSequencePos++;
+
+        if (currentSequencePos < currentSequence.Length)
+        {
+            StartCurrentInSequence();
+            return;
+        }
+
+        // Sequence finished
+        this.gameObject.SetActive(false);
+        crtTextHolder.SetActive(false);
+        GameFrontendManager.Instance.SetGameState(GameFrontendManager.GameState.PLAYING);
+   //     if (currentSequencePos == currentSequence.Length-1) EndTutorial();
     }
 }

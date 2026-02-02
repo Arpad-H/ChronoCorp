@@ -10,7 +10,7 @@ public class ScoreDisplay : MonoBehaviour
     public TextMeshProUGUI targetText;
     int currentTarget = 0;
     const int DIGITS = 5;
-
+    public event Action ScoreAlmostReached;
     private void Start()
     {
         SetTargetScore(BalanceProvider.Balance.startTargetScore);
@@ -43,6 +43,10 @@ public class ScoreDisplay : MonoBehaviour
     public void AddScore(int scorePerInterval)
     {
         currentScore += scorePerInterval;
+        if (currentScore >= currentTarget - 3)
+        {
+            ScoreAlmostReached?.Invoke();
+        }
         SetCurrentScore(currentScore);
     }
     public void AnimateTarget(int newTarget)
