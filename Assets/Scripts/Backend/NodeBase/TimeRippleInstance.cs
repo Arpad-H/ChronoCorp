@@ -56,9 +56,18 @@ namespace NodeBase
             {
                 var currentEnergyThreshold = currentStability * 1f / maxStability;
                 var maximumGlobalStabilityGain = BalanceProvider.Balance.baseStabilityDecreasePerNode / BalanceProvider.Balance.nodeStableThresholdPercentage;
-                var currentStabilityGain = currentEnergyThreshold * maximumGlobalStabilityGain;
+                float currentStabilityGain;
                 
-                storage.StabilityBar.increaseStability(currentStabilityGain, storage);
+                if (currentEnergyThreshold > BalanceProvider.Balance.nodeStableThresholdPercentage)
+                {
+                    currentStabilityGain = BalanceProvider.Balance.stabilityIncreasePerTick;
+                    storage.StabilityBar.increaseStability(currentStabilityGain, storage);
+                }else
+                {
+                    currentStabilityGain = BalanceProvider.Balance.baseStabilityDecreasePerNode;
+                    storage.StabilityBar.decreaseStability(currentStabilityGain, storage);
+                }
+              
                 lastStabilityDrainTick = tickCount;
             }
         }

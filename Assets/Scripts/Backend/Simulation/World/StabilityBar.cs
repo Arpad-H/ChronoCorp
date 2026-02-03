@@ -41,7 +41,7 @@ namespace Backend.Simulation.World
             valueDecreasePerTick = BalanceProvider.Balance.stabilityDecreaseValue +
                                    amountRipplesInSimulation * BalanceProvider.Balance.baseStabilityDecreasePerNode;
 
-            decreaseStability(valueDecreasePerTick, storage);
+          //  decreaseStability(valueDecreasePerTick, storage);
 
             UpdateActiveMalusses(storage.Frontend);
 

@@ -116,7 +116,7 @@ namespace Util
 
         [Header("Stability Bar Settings")]
         public int stabilityMaxValue;
-
+        public float stabilityIncreasePerTick;
         public int stabilityMinValue;
         public float stabilityDecreaseValue;
         public int stabilityDecreaseTicks;
@@ -147,7 +147,8 @@ namespace Util
         public float hpThresholdForScoreBonus;
         public float targetScoreMultiplierAfterCashIn;
         public float[] scoreBonusMultipliersPerHpThreshold;
-      
+        
+
 
         public void Add(StatType type, float amount)
         {
