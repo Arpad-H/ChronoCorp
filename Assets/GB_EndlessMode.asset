@@ -27,22 +27,23 @@ MonoBehaviour:
   blackHoleDrainEveryNTicks: 200
   blackHoleEnergyPacketConsumeAmount: 50
   blockadeEnergyPacketConsumeAmount: 50
-  baseStabilityDecreasePerNode: 4
+  baseStabilityDecreasePerNode: 10
   nodeStableThresholdPercentage: 0.5
   layerDuplicationTime: 3000
   maxLayerCount: 4
   layerGridCellCount: {x: 16, y: 9}
   cellSize: 1
   initialGeneratorCount: 3
-  initialPausePowerupCount: 0
+  initialPausePowerupCount: 1
   pauseDurationSeconds: 30
   initialUpgradeCardCount: 1
   initialBridgeCount: 2
   stabilityMaxValue: 500
+  stabilityIncreasePerTick: 5
   stabilityMinValue: 0
-  stabilityDecreaseValue: 9
-  stabilityDecreaseTicks: 150
-  stabilityDecreaseMaxPerTick: 30
+  stabilityDecreaseValue: 50
+  stabilityDecreaseTicks: 50
+  stabilityDecreaseMaxPerTick: 50
   malusThresholds:
   - 0.75
   - 0.5

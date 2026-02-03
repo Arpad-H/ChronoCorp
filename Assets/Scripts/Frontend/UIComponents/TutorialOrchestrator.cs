@@ -9,8 +9,9 @@ public class TutorialOrchestrator : MonoBehaviour
         TimeRipples,
         SupplyTimeRippleWithEnergy,
         Scoring,
+        Expansion,
         Stability,
-        End1,
+       
         End2,
         End3
     }
@@ -75,12 +76,11 @@ public class TutorialOrchestrator : MonoBehaviour
     {
         if(stepsCompleted[(int)TutorialStep.Scoring]) return;
         stepsCompleted[(int)TutorialStep.Scoring] = true;
-        presenter.ShowSteps(new List<TutorialStep>{TutorialStep.Scoring,TutorialStep.End3});
+        presenter.ShowSteps(new List<TutorialStep>{TutorialStep.Scoring,TutorialStep.Expansion,TutorialStep.End3});
     }
     private void OnExpansionTutorial()
     {
-        if(stepsCompleted[(int)TutorialStep.End1]) return;
-        stepsCompleted[(int)TutorialStep.End1] = true;
+        if(stepsCompleted[(int)TutorialStep.End2]) return;
         stepsCompleted[(int)TutorialStep.End2] = true;
         stepsCompleted[(int)TutorialStep.End3] = true;
         presenter.ShowSteps(new List<TutorialStep>{ TutorialStep.End2});
