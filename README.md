@@ -1,3 +1,10 @@
+A game created during the Computer Games Laboratory (IN7106, IN710615) at the Technical University Munich
+
+Team Members:
+-Arpad Horvaht
+-Anian Kalb
+-Lucas Jonsson
+
 Chrono Corp is a real-time simulation and strategy game about managing energy networks
 across layers of time. The player works as a technician for Chrono Corp, a futuristic time-travel
 agency that powers “time tourism” by stabilizing fragments of time known as Time Ripples.
