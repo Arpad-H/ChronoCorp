@@ -11,3 +11,14 @@ corresponding points across layers.
 As the network expands, the game becomes a balancing act of causality and complexity.
 Players must think in temporal depth, predicting how current and past configurations will echo
 through time.
+
+<img width="702" height="391" alt="image" src="https://github.com/user-attachments/assets/84341c3b-25fb-481b-ab95-4f923e70a0a0" />
+<img width="702" height="392" alt="image" src="https://github.com/user-attachments/assets/b3af1383-0b72-4b03-8a59-9df335b72f52" />
+<img width="700" height="392" alt="image" src="https://github.com/user-attachments/assets/a72600ab-41c2-4ac2-98ae-fdd351ef66af" />
+<img width="697" height="398" alt="image" src="https://github.com/user-attachments/assets/ff7ee41c-64c2-4300-85bc-c987f29060fd" />
+<img width="701" height="395" alt="image" src="https://github.com/user-attachments/assets/3a6ae962-8f90-4604-b44c-8f6ce16e0e0f" />
+<img width="701" height="396" alt="image" src="https://github.com/user-attachments/assets/45f1039b-a25d-4193-ad0b-189e26503a62" />
+
+
+
+
